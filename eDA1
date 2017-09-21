@@ -1,0 +1,58 @@
+devtools::install_github("datadotworld/data.world-r", build_vignettes = TRUE)
+data.world::set_config(save_config(auth_token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om5hdGFzaGFwaXJhbmk5NiIsImlzcyI6ImFnZW50Om5hdGFzaGFwaXJhbmk5Njo6YTU4NWU5NmItYWM4ZC00NDAzLWE0MjUtYzc2MDM2ZTY5MjczIiwiaWF0IjoxNTA1MzM2NTM2LCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCIsInVzZXJfYXBpX2FkbWluIl0sImdlbmVyYWwtcHVycG9zZSI6dHJ1ZX0.HRx49T2J1V4cK7rYB7dztiIhYBR3jIGp9BCXi2DNVGdHTv-iRoJekXMeBHzsyenvzdXV4NX_X6QPe5MzIeL7Mg"))
+vignette("quickstart", package = "data.world")
+
+require(dplyr)
+
+require(data.world)
+library(tidyverse)
+require(ggplot2)
+require(plotly)
+library(MASS)
+library(ISLR)
+
+
+project <- "https://data.world/jdramosf/f-17-eda-project-1"
+df <- data.world::query(
+  data.world::qry_sql("SELECT * FROM  day"),
+  dataset = project
+)
+
+
+
+summary(df)
+attach(df)
+
+
+
+ggplot(data=df) +
+  geom_boxplot(mapping = aes(x=workingday, y=registered))
+ggplot(data=df) +
+  geom_boxplot(mapping = aes(x=holiday, y=registered))
+
+plot_ly(x=~workingday, y=~registered, type='box')
+
+plot_ly(x=~workingday, y=~casual, type='box')
+
+plot_ly(x=~season, y=~cnt, type='histogram2d')
+
+# Multiple Linear Regression
+
+fit=lm(cnt~atemp+hum)
+fit
+summary(fit)
+
+fitAll=lm(cnt~.,df)
+fitAll
+
+par(mfrow=c(2,2))
+plot(fitAll)
+plot(fit)
+
+# Interactions
+
+fit2=lm(cnt~temp*hum)
+summary(fit2)
+
+fit3=lm(cnt~temp)
+summary(fit3)
