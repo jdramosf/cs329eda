@@ -43,7 +43,8 @@ To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authorin
 
 ## Just a plot
 ```{r, warning=FALSE}
-source("Plots.R", echo = FALSE)
+getwd()
+source("Project2/Plots.R", echo = FALSE)
 
 ```
 

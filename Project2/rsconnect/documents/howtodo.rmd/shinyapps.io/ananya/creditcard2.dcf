@@ -1,0 +1,12 @@
+name: creditcard2
+title: creditcard
+username:
+account: ananya
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 224533
+bundleId: 1023318
+url: https://ananya.shinyapps.io/creditcard2/
+when: 1507814857.97973
+asMultiple: FALSE
+asStatic: FALSE
