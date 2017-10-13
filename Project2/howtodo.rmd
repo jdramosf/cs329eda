@@ -1,6 +1,6 @@
 ---
-title: "Example"
-author: "null"
+title: "Data Analytics Project 2: Credit Card Default"
+author: "Team 7"
 resource_files:
 - .Renviron
 output:
@@ -15,14 +15,19 @@ runtime: shiny
 ```{r setup, include=FALSE}
 library(tidyverse)
 require(data.world)
+require(ggplot2)
 require(shiny)
 require(dplyr)
+require(ISLR)
+require(MASS)
+require(vcd)
+library(class)
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
 ## **R Session Info**  
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 sessionInfo()
 ```
 
@@ -30,88 +35,30 @@ sessionInfo()
 https://github.com/jdramosf/cs329eda
 
 ## **Connecting to data.world** 
-```{r, warning = FALSE}
+```{r, message=FALSE, warning=FALSE}
 source("data.R", echo = FALSE)
 ```
 
 ## **Introduction** 
-This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+This document contains an analysis on the credit card default rate of individuals from Taiwan. We used different statistical analysis methods to predict the probability of an individual to default on their credit card payments. The dataset was obtained from the UCI Machine Learning Repository and contains 30000 records. 
 
-To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
-
-## Just a plot
+## **Dataset -  Credit Card Default**
 ```{r, warning=FALSE}
 source("Plots.R", echo = FALSE)
 ```
 
 ```{r, warning=FALSE}
-renderTable({
-  head(df1)
-})
-
-renderPlot({
-  p1
-})
+source("dap2.R", echo = FALSE)
 ```
 
-
-## Inputs and Outputs
-
-You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
-
-```{r eruptions}
-inputPanel(
-  selectInput("n_breaks", label = "Number of bins:",
-              choices = c(10, 20, 35, 50), selected = 20),
-  
-  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
-              min = 0.2, max = 2, value = 1, step = 0.2)
-)
-
-renderPlot({
-  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
-       xlab = "Duration (minutes)", main = "Geyser eruption duration")
-  
-  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
-  lines(dens, col = "blue")
+```{r, warning=FALSE}
+renderDataTable({
+  df[c("limit_bal", "sex", "age", "marriage", "education", "pay_0", "bill_amt1", "pay_amt1", "default")]
 })
-```
 
-## Embedded Application
-
-It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
-
-```{r tabsets}
-shinyAppDir(
-  system.file("examples/06_tabsets", package = "shiny"),
-  options = list(
-    width = "100%", height = 900
-  )
-)
-```
-
-Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
-
-You can also use the `shinyApp` function to define an application inline rather then in an external directory.
-
-In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
-
-## Inputs and Outputs 2
-
-```{r eruptions2}
-inputPanel(
-  selectInput("n_breaks2", label = "Number of bins:",
-              choices = c(10, 20, 35, 50), selected = 20),
-  
-  sliderInput("bw_adjust2", label = "Bandwidth adjustment:",
-              min = 0.2, max = 2, value = 1, step = 0.2)
-)
+table(df1$class,df$default)
 
 renderPlot({
-  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks2),
-       xlab = "Duration (minutes)", main = "Geyser eruption duration")
-  
-  dens <- density(faithful$eruptions, adjust = input$bw_adjust2)
-  lines(dens, col = "blue")
+  plot(lda.fit)
 })
 ```
