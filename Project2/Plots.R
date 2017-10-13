@@ -1,13 +1,5 @@
-require(MASS)
-require(ISLR)
 require(ggplot2)
 require(data.world)
-
-
-summary(df)
-attach(df)
-
-#print(df)
 
 #LDA w payment timings
 

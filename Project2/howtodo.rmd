@@ -16,12 +16,13 @@ runtime: shiny
 library(tidyverse)
 require(data.world)
 require(shiny)
+require(dplyr)
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
 ## **R Session Info**  
 
-```{r}
+```{r, echo=FALSE}
 sessionInfo()
 ```
 
@@ -29,11 +30,8 @@ sessionInfo()
 https://github.com/jdramosf/cs329eda
 
 ## **Connecting to data.world** 
-```{r}
-project <- "https://data.world/jdramosf/f-17-eda-project-2"
-data.world::set_config(cfg_env("DW_API"))
-df <- data.world::query(data.world::qry_sql("SELECT * FROM data"), dataset = project)
-regions = df %>% dplyr::distinct(region)
+```{r, warning = FALSE}
+source("data.R", echo = FALSE)
 ```
 
 ## **Introduction** 
@@ -43,9 +41,7 @@ To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authorin
 
 ## Just a plot
 ```{r, warning=FALSE}
-getwd()
-source("Project2/Plots.R", echo = FALSE)
-
+source("Plots.R", echo = FALSE)
 ```
 
 ```{r, warning=FALSE}
