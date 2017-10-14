@@ -298,6 +298,9 @@ div.tocify {
 <div id="section-introduction" class="section level2">
 <h2><strong>Introduction</strong></h2>
 <p>This document contains an analysis on the credit card default rate of individuals from Taiwan. We used different statistical analysis methods to predict the probability of an individual to default on their credit card payments. The dataset was obtained from the UCI Machine Learning Repository and contains 30000 records.</p>
+</div>
+<div id="section-dataset---credit-card-default" class="section level2">
+<h2><strong>Dataset - Credit Card Default</strong></h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwiUGxvdHMuUlwiLCBlY2hvID0gRkFMU0UpXG5gYGAifQ== -->
@@ -307,10 +310,19 @@ div.tocify {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyVGFibGUoc3RyaXBlZCA9IFRSVUUsIHdpZHRoID0gXCJhdXRvXCIsIHtcbiAgaGVhZChkZltjKFwibGltaXRfYmFsXCIsIFwic2V4XCIsIFwiYWdlXCIsIFwibWFycmlhZ2VcIiwgXCJlZHVjYXRpb25cIiwgXCJwYXlfMFwiLCBcImJpbGxfYW10MVwiLCBcInBheV9hbXQxXCIsIFwiZGVmYXVsdFwiKV0pXG59KVxuXG5yZW5kZXJQbG90KHtcbiAgcGxvdChsZGEuZml0KVxufSlcbmBgYCJ9 -->
-<pre class="r"><code>renderTable(striped = TRUE, width = &quot;auto&quot;, {
-  head(df[c(&quot;limit_bal&quot;, &quot;sex&quot;, &quot;age&quot;, &quot;marriage&quot;, &quot;education&quot;, &quot;pay_0&quot;, &quot;bill_amt1&quot;, &quot;pay_amt1&quot;, &quot;default&quot;)])
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwiZGFwMi5SXCIsIGVjaG8gPSBGQUxTRSlcbmBgYCJ9 -->
+<pre class="r"><code>source(&quot;dap2.R&quot;, echo = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyRGF0YVRhYmxlKHtcbiAgZGZbYyhcImxpbWl0X2JhbFwiLCBcInNleFwiLCBcImFnZVwiLCBcIm1hcnJpYWdlXCIsIFwiZWR1Y2F0aW9uXCIsIFwicGF5XzBcIiwgXCJiaWxsX2FtdDFcIiwgXCJwYXlfYW10MVwiLCBcImRlZmF1bHRcIildXG59KVxuXG50YWJsZShkZjEkY2xhc3MsZGYkZGVmYXVsdClcblxucmVuZGVyUGxvdCh7XG4gIHBsb3QobGRhLmZpdClcbn0pXG5gYGAifQ== -->
+<pre class="r"><code>renderDataTable({
+  df[c(&quot;limit_bal&quot;, &quot;sex&quot;, &quot;age&quot;, &quot;marriage&quot;, &quot;education&quot;, &quot;pay_0&quot;, &quot;bill_amt1&quot;, &quot;pay_amt1&quot;, &quot;default&quot;)]
 })
+
+table(df1$class,df$default)
 
 renderPlot({
   plot(lda.fit)
@@ -319,7 +331,7 @@ renderPlot({
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXRpY3MgUHJvamVjdCAyOiBDcmVkaXQgQ2FyZCBEZWZhdWx0IgphdXRob3I6ICJUZWFtIDciCnJlc291cmNlX2ZpbGVzOgotIC5SZW52aXJvbgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGNvZGVfZm9sZGluZzogaGlkZQogICAgdG9jOiB5ZXMKICAgIHRvY19kZXB0aDogNAogICAgdG9jX2Zsb2F0OiB5ZXMKcnVudGltZTogc2hpbnkKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0KbGlicmFyeSh0aWR5dmVyc2UpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShzaGlueSkKcmVxdWlyZShkcGx5cikKcmVxdWlyZShJU0xSKQpyZXF1aXJlKE1BU1MpCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkKYGBgCiAgCiMjICoqUiBTZXNzaW9uIEluZm8qKiAgCgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCiMjICoqR2l0aHViIExpbmsqKiAKaHR0cHM6Ly9naXRodWIuY29tL2pkcmFtb3NmL2NzMzI5ZWRhCgojIyAqKkNvbm5lY3RpbmcgdG8gZGF0YS53b3JsZCoqIApgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJkYXRhLlIiLCBlY2hvID0gRkFMU0UpCmBgYAoKIyMgKipJbnRyb2R1Y3Rpb24qKiAKVGhpcyBkb2N1bWVudCBjb250YWlucyBhbiBhbmFseXNpcyBvbiB0aGUgY3JlZGl0IGNhcmQgZGVmYXVsdCByYXRlIG9mIGluZGl2aWR1YWxzIGZyb20gVGFpd2FuLiBXZSB1c2VkIGRpZmZlcmVudCBzdGF0aXN0aWNhbCBhbmFseXNpcyBtZXRob2RzIHRvIHByZWRpY3QgdGhlIHByb2JhYmlsaXR5IG9mIGFuIGluZGl2aWR1YWwgdG8gZGVmYXVsdCBvbiB0aGVpciBjcmVkaXQgY2FyZCBwYXltZW50cy4gVGhlIGRhdGFzZXQgd2FzIG9idGFpbmVkIGZyb20gdGhlIFVDSSBNYWNoaW5lIExlYXJuaW5nIFJlcG9zaXRvcnkgYW5kIGNvbnRhaW5zIDMwMDAwIHJlY29yZHMuIAoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CnNvdXJjZSgiUGxvdHMuUiIsIGVjaG8gPSBGQUxTRSkKYGBgCgpgYGB7ciwgd2FybmluZz1GQUxTRX0KcmVuZGVyVGFibGUoc3RyaXBlZCA9IFRSVUUsIHdpZHRoID0gImF1dG8iLCB7CiAgaGVhZChkZltjKCJsaW1pdF9iYWwiLCAic2V4IiwgImFnZSIsICJtYXJyaWFnZSIsICJlZHVjYXRpb24iLCAicGF5XzAiLCAiYmlsbF9hbXQxIiwgInBheV9hbXQxIiwgImRlZmF1bHQiKV0pCn0pCgpyZW5kZXJQbG90KHsKICBwbG90KGxkYS5maXQpCn0pCmBgYAo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXRpY3MgUHJvamVjdCAyOiBDcmVkaXQgQ2FyZCBEZWZhdWx0IgphdXRob3I6ICJUZWFtIDciCnJlc291cmNlX2ZpbGVzOgotIC5SZW52aXJvbgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGNvZGVfZm9sZGluZzogaGlkZQogICAgdG9jOiB5ZXMKICAgIHRvY19kZXB0aDogNAogICAgdG9jX2Zsb2F0OiB5ZXMKcnVudGltZTogc2hpbnkKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0KbGlicmFyeSh0aWR5dmVyc2UpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShnZ3Bsb3QyKQpyZXF1aXJlKHNoaW55KQpyZXF1aXJlKGRwbHlyKQpyZXF1aXJlKElTTFIpCnJlcXVpcmUoTUFTUykKcmVxdWlyZSh2Y2QpCmxpYnJhcnkoY2xhc3MpCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkKYGBgCiAgCiMjICoqUiBTZXNzaW9uIEluZm8qKiAgCgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCiMjICoqR2l0aHViIExpbmsqKiAKaHR0cHM6Ly9naXRodWIuY29tL2pkcmFtb3NmL2NzMzI5ZWRhCgojIyAqKkNvbm5lY3RpbmcgdG8gZGF0YS53b3JsZCoqIApgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJkYXRhLlIiLCBlY2hvID0gRkFMU0UpCmBgYAoKIyMgKipJbnRyb2R1Y3Rpb24qKiAKVGhpcyBkb2N1bWVudCBjb250YWlucyBhbiBhbmFseXNpcyBvbiB0aGUgY3JlZGl0IGNhcmQgZGVmYXVsdCByYXRlIG9mIGluZGl2aWR1YWxzIGZyb20gVGFpd2FuLiBXZSB1c2VkIGRpZmZlcmVudCBzdGF0aXN0aWNhbCBhbmFseXNpcyBtZXRob2RzIHRvIHByZWRpY3QgdGhlIHByb2JhYmlsaXR5IG9mIGFuIGluZGl2aWR1YWwgdG8gZGVmYXVsdCBvbiB0aGVpciBjcmVkaXQgY2FyZCBwYXltZW50cy4gVGhlIGRhdGFzZXQgd2FzIG9idGFpbmVkIGZyb20gdGhlIFVDSSBNYWNoaW5lIExlYXJuaW5nIFJlcG9zaXRvcnkgYW5kIGNvbnRhaW5zIDMwMDAwIHJlY29yZHMuIAoKIyMgKipEYXRhc2V0IC0gIENyZWRpdCBDYXJkIERlZmF1bHQqKgpgYGB7ciwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJQbG90cy5SIiwgZWNobyA9IEZBTFNFKQpgYGAKCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpzb3VyY2UoImRhcDIuUiIsIGVjaG8gPSBGQUxTRSkKYGBgCgpgYGB7ciwgd2FybmluZz1GQUxTRX0KcmVuZGVyRGF0YVRhYmxlKHsKICBkZltjKCJsaW1pdF9iYWwiLCAic2V4IiwgImFnZSIsICJtYXJyaWFnZSIsICJlZHVjYXRpb24iLCAicGF5XzAiLCAiYmlsbF9hbXQxIiwgInBheV9hbXQxIiwgImRlZmF1bHQiKV0KfSkKCnRhYmxlKGRmMSRjbGFzcyxkZiRkZWZhdWx0KQoKcmVuZGVyUGxvdCh7CiAgcGxvdChsZGEuZml0KQp9KQpgYGAK</div>
 
 
 </div>

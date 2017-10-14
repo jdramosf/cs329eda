@@ -1,11 +1,11 @@
 ---
 title: "Data Analytics Project 2: Credit Card Default"
-author: "Team 7"
+author: "Ananya Kaushik, Natasha Pirani, Nolan Bentley, and Juan Ramos Fuentes"
 resource_files:
 - .Renviron
 output:
   html_notebook:
-    code_folding: hide
+    code_folding: show
     toc: yes
     toc_depth: 4
     toc_float: yes
@@ -14,6 +14,7 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(class)
 require(data.world)
 require(ggplot2)
 require(shiny)
@@ -21,44 +22,117 @@ require(dplyr)
 require(ISLR)
 require(MASS)
 require(vcd)
-library(class)
+require(plotly)
+packageVersion('plotly')
 knitr::opts_chunk$set(echo = TRUE)
 ```
-  
-## **R Session Info**  
 
+
+
+## **Setting Up the Environment**  
+### **R Session Info**
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 sessionInfo()
 ```
 
-## **Github Link** 
+### **Github Link** 
 https://github.com/jdramosf/cs329eda
 
-## **Connecting to data.world** 
+### **Connecting to data.world** 
 ```{r, message=FALSE, warning=FALSE}
 source("data.R", echo = FALSE)
 ```
 
+
+
 ## **Introduction** 
 This document contains an analysis on the credit card default rate of individuals from Taiwan. We used different statistical analysis methods to predict the probability of an individual to default on their credit card payments. The dataset was obtained from the UCI Machine Learning Repository and contains 30000 records. 
 
-## **Dataset -  Credit Card Default**
+### **Dataset -  Credit Card Default**
 ```{r, warning=FALSE}
-source("Plots.R", echo = FALSE)
-```
-
-```{r, warning=FALSE}
-source("dap2.R", echo = FALSE)
-```
-
-```{r, warning=FALSE}
-renderDataTable({
+source("analysis.R", echo = FALSE)
+renderDataTable( options = list(pageLength = 10), {
   df[c("limit_bal", "sex", "age", "marriage", "education", "pay_0", "bill_amt1", "pay_amt1", "default")]
 })
+```
 
+
+
+## **Statistical Analysis**
+### **Logistic Regression**
+Throughout this analysis, we want to accurately predict the probability of an individual defaulting on their credit card payments. Because the variable we want to predict, *default*, is categorical, our first model is logistic regression.
+We first want to see what the data looks like. Here we can see that slightly over 22% of individuals defaulted on their payments. This number will be important later on when we predict using our models. We also start by looking at the variable *sex* as one of our potential predictors.
+
+
+Distributions and contingency tables
+```{r, warning=FALSE}
+prop.table(table(default))
+table(default, sex)
+prop.table(table(default, sex), 2)
+```
+
+From the table, we can see that there are more women (key **2** from variable **sex**) than men (key **1** from variable *sex*), but men are more likely to default on their credit card payments. Let's use logistic regression to see if sex could be a good predictor.
+
+
+Looking at the model summary and confusion matrices
+```{r, warning=FALSE}
+summary(glm.fit)
+table(glm.pred, default)
+prop.table(table(glm.pred, default), 2)
+```
+
+As you can see, *sex2*, which here represents women, has a negative coefficient, which means that being a woman actually decreases the likelihood of an individual defaulting. As we look at the confusion matrix, we see that our model is not very accurate when predicting the probability of an individual **not defaulting**, but gives better results for **defaulting** individuals. We realize that we'd rather have models that are more accurate at predicting false positives than true negatives. It is worse to classify a customer as good when s/he is bad, than classify a customer as bad when s/he is good.
+If you look at the code (found in the *analysis.R* file), you can see that we have set the threshold for our predictions to 0.2212, the same as the proportion of defaulting individuals in the entire dataset. We believe this is an accurate estimate given the size of our dataset.
+
+
+### **Linear & Quadratic Discriminant Analysis**
+Can we use the timing of individuals' payments to predict their default likelihood?
+
+
+**LDA**
+Confusion matrices and overall accuracy
+```{r, warning=FALSE}
 table(df1$class,df$default)
-
+prop.table(table(df1$class,df$default), 2)
+mean(df1$class==df$default)
 renderPlot({
   plot(lda.fit)
 })
 ```
+
+From the plot of the LDA model, we observe that individuals who paid duly are less likely to fall in group 0 (i.e, the group that does not default). Furthermore, we see that individuals who paid their bills 1, 2, or 3 months after they were due are seen more frequently in group 1 (i.e, the group that defaults). We also see that the model is slightly over 80% accurate overall, but only ~22% accurate when predicting individuals defaulting on their payments. 
+
+
+**QDA**
+Confusion matrices and overall accuracy
+```{r, warning=FALSE}
+table(df2$class,df$default)
+prop.table(table(df2$class,df$default), 2)
+mean(df2$class==df$default)
+```
+
+Comparing the confusion matrices of the LDA and the QDA models, we can see that the QDA model is a better predictor of when an individual is going to default on their payment (**48%** vs **22%**), even if overall LDA is more accurate (**80%** vs **78%**). We prefer the QDA model because, as we said before: *It is worse to classify a customer as good when s/he is bad, than classify a customer as bad when s/he is good*.
+
+
+
+### **K-Nearest Neighbors**
+For the K-Nearest Neighbors model, we will use the timing of the payment, the bill amount, and the payment amount. We will fit the model using 1, 5, 20, and 100 nearest neighbors.
+
+Confusion matrices using proportions and overall accuracy
+```{r, warning=FALSE}
+prop.table(table(knn.1, test.def), 2)
+mean(test.def == knn.1)
+prop.table(table(knn.5, test.def), 2)
+mean(test.def == knn.5)
+prop.table(table(knn.20, test.def),2)
+mean(test.def == knn.20)
+prop.table(table(knn.100,test.def),2)
+mean(test.def == knn.100)
+```
+
+We chose to look at the nearest 1 neighbor. Although using 1 neighbor has a less accurate overall prediction than using 5 neighbors, 20 neighbors, or even 100, it allows us to more accurately predict the number of true defaults (25%).
+
+
+
+## **Comparison and Conclusions**
+The most interesting aspect of this analysis is that using a logistic regression model with **sex** as the predictor gave the most accurate results for individuals who defaulted (56%). QDA and K-Nearest Neighbors with one neighbor were the most accurate for the rest of the models (48% and 25% respectively). Overall accuracy was pretty good, but as we have mentioned before, we wanted to find the model that most accurately predicted individuals who defaulted. Realistically, it’s better to incorrectly classify a customer as likely to default than it is to incorrectly classify a customer as unlikely to default, so we used the number of neighbors that allowed us to most accurately predict who defaulted.

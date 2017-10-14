@@ -1,0 +1,12 @@
+name: default
+title: default
+username:
+account: juanramos
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 225035
+bundleId: 1026187
+url: https://juanramos.shinyapps.io/default/
+when: 1507945935.89603
+asMultiple: FALSE
+asStatic: FALSE
