@@ -18,3 +18,8 @@ plot_ly(
   x = ~pctprivcoverage_nooutliers,
   y = ~medianage_nooutliers
 )
+
+plot_ly(
+  x = ~pctmarriedhouseholds,
+  y = ~target_deathrate
+)
