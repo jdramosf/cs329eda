@@ -1,0 +1,45 @@
+---
+title: 'Data Analytics Project 3: Cancer Mortality Rate'
+author: "Ananya Kaushik, Natasha Pirani, Nolan Bentley, and Juan Ramos Fuentes"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+require(MASS)
+require(ISLR)
+require(ggplot2)
+require(data.world)
+require(plotly)
+require(dplyr)
+require(leaps)
+require(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Setting Up the Environment**  
+### **R Session Info**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sessionInfo()
+```
+
+### **Github Link**
+https://github.com/jdramosf/cs329eda
+
+### **data.world Project Link**
+https://data.world/jdramosf/f-17-eda-project-3
+
+### **Connecting to data.world**
+
+
+## **Introduction** 
+This document contains an analysis on the credit card default rate of individuals from Taiwan. We used different statistical analysis methods to predict the probability of an individual to default on their credit card payments. The dataset was obtained from the UCI Machine Learning Repository and contains 30000 records. 
+
+### **Dataset -  Cancer Mortality Rate**
