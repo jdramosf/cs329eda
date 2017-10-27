@@ -23,3 +23,8 @@ plot_ly(
   x = ~pctmarriedhouseholds,
   y = ~target_deathrate
 )
+
+plot(pctwhite, birthrate)
+plot(pctblack, birthrate)
+plot(pctasian, birthrate)
+plot(pctotherrace, birthrate)
