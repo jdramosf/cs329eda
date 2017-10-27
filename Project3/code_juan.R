@@ -60,3 +60,49 @@ which.min(subsetpredsum$cp)
 points(16,subsetpredsum$cp[16],pch=20,col="red")
 plot(subsetpredsubm, scale = "Cp")
 coef(subsetpredsubm, 16)
+
+# Forward Stepwise Selection
+subsetpredsubm.fwd = regsubsets(target_deathrate ~ ., data = subsetpred, nvmax = 20,method = "forward")
+summary(subsetpredsubm.fwd)
+plot(subsetpredsubm.fwd, scale="Cp")
+# Adding a validation set
+dim(subsetpred)
+set.seed(1)
+train = sample(seq(3047), 2132, replace=FALSE)
+regfit.fwd=regsubsets(target_deathrate ~ ., data = subsetpred[train,], nvmax = 20, method = "forward")
+# Predicting on test set
+val.errors = rep(NA, 20)
+x.test = model.matrix(target_deathrate ~ ., data = subsetpred[-train,])
+for(i in 1:20){ 
+  coefi = coef(regfit.fwd, id = i)
+  pred = x.test[,names(coefi)]%*%coefi
+  val.errors[i] = mean((subsetpred$target_deathrate[-train] - pred) ^ 2)
+}
+plot(sqrt(val.errors), ylab="Root MSE", ylim = c(19, 25), pch = 20, type = "b")
+points(sqrt(regfit.fwd$rss[-1]/2132),col="blue",pch=20,type="b")
+legend("topright",legend=c("Training","Validation"),col=c("blue","black"),pch=20)
+
+# Predict formula
+predict.regsubsets=function(object,newdata,id,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form,newdata)
+  coefi=coef(object,id=id)
+  mat[,names(coefi)]%*%coefi
+}
+
+# Model Selection by Cross Validation
+set.seed(11)
+folds = sample(rep(1:10,length=nrow(subsetpred)))
+folds
+table(folds)
+cv.errors=matrix(NA,10,20)
+for(k in 1:10){
+  best.fit=regsubsets(target_deathrate~.,data=subsetpred[folds!=k,],nvmax=20,method="forward")
+  for(i in 1:20){
+    pred=predict(best.fit,subsetpred[folds==k,],id=i)
+    cv.errors[k,i]=mean( (subsetpred$target_deathrate[folds==k]-pred)^2)
+  }
+}
+rmse.cv=sqrt(apply(cv.errors,2,mean))
+plot(rmse.cv,pch=19,type="b")
+
