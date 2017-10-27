@@ -68,7 +68,7 @@ vars <- c("pctprivatecoverage", "pctmarriedhouseholds", "avghouseholdsize")
 df.subset <- df[vars]
 
 # Creating test and train subsets
-test <- 1:34
+test <- 1:2000
 df.train <- df.subset[-test,]
 df.test <- df.subset[test,]
 
