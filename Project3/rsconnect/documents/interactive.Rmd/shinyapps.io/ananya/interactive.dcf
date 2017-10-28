@@ -1,0 +1,12 @@
+name: interactive
+title: interactive
+username:
+account: ananya
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 229992
+bundleId: 1049092
+url: https://ananya.shinyapps.io/interactive/
+when: 1509155118.72887
+asMultiple: FALSE
+asStatic: FALSE
