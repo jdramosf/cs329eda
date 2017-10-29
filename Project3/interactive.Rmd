@@ -31,8 +31,6 @@ knitr::opts_chunk$set(echo = TRUE)
 sessionInfo()
 ```
 
-### **Github Link**
-https://github.com/jdramosf/cs329eda
 
 ### **data.world Project Link**
 https://data.world/jdramosf/f-17-eda-project-3
@@ -68,32 +66,50 @@ plot_ly(data = cancer, x = ~medianage, y = ~target_deathrate)
 medianage_nooutliers = medianage[medianage < 100]
 deathrate_nooutliers = cancer$target_deathrate[medianage < 100]
 plot_ly(data = cancer, x = ~medianage_nooutliers, y = ~deathrate_nooutliers)
-
-# Creating a linear regression model, using medianage and adding other variables as we see fit
+```
+Creating a linear regression model, using medianage and adding other variables as we see fit
+```{r}
 medagelm = lm(target_deathrate ~ medianage, data = cancer)
 summary(medagelm)
-# With a p-value of 0.8 for the medianage coefficient, we fail to reject the null hypothesis
-# There is no relationship between median age and cancer death rate
-# Let's add other variables
-plot(target_deathrate ~ medincome, data = cancer)
+```
+With a p-value of 0.8 for the medianage coefficient, we fail to reject the null hypothesis
+There is no relationship between median age and cancer death rate
+Let's add other variables
+```{r}
+renderPlot({
+  plot(target_deathrate ~ medincome, data = cancer)
+  medincomelm = lm(target_deathrate ~ medincome, data = cancer)
+  abline(medincomelm, col = "red")
+  summary(medincomelm)
+})
 medincomelm = lm(target_deathrate ~ medincome, data = cancer)
 summary(medincomelm)
-abline(medincomelm, col = "red")
-# There seems to be some relationship between median income and cancer death rate, a negative relationship to be precise
-# However, the R-squared value is too low (0.18), which means that our model does not fully explain the variance in the output variable
-# This means that a multi-predictor linear model could be more accurate.
+```
 
-# Let's fit a linear model with more than one predictor
+There seems to be some relationship between median income and cancer death rate, a negative relationship to be precise
+However, the R-squared value is too low (0.18), which means that our model does not fully explain the variance in the output variable
+This means that a multi-predictor linear model could be more accurate.
+
+
+Let's fit a linear model with more than one predictor
 summary(cancer)
-# Let's select predictors based on our own intuition. We believe that incidence rate, median income, population estimate, poverty percentage, unemployment percetange, and private coverage percentage could be the strongest predictors. Let's look at the relationships between these variables
+Let's select predictors based on our own intuition. We believe that incidence rate, median income, population estimate, poverty percentage, unemployment percetange, and private coverage percentage could be the strongest predictors. Let's look at the relationships between these variables
+```{r}
 multipred = cancer %>% dplyr::select(target_deathrate, incidencerate, medincome, popest2015, povertypercent, pctunemployed16_over, pctprivatecoverage)
-pairs(multipred)
-# (Some interesting relationships in this plot. We will explore some of these relationships in following insights)
+renderPlot({
+  pairs(multipred)
+})
+```
+
+(Some interesting relationships in this plot. We will explore some of these relationships in following insights)
+```{r}
 multipredlm = lm(target_deathrate ~ ., data = multipred)
 summary(multipredlm)
-# We see some great results from this model! Aside from povertypercent, all of our predictors are statistically significant, and our R-squared has improved substantially (0.4284)
-# This is a great start, but can we do better? We will look at better ways of identifying predictors for our model.
 ```
+We see some great results from this model! Aside from povertypercent, all of our predictors are statistically significant, and our R-squared has improved substantially (0.4284)
+This is a great start, but can we do better? We will look at better ways of identifying predictors for our model.
+
+
 
 ###**Model Selection - Best Subset Regression**
 ```{r, warning=FALSE}
@@ -101,11 +117,16 @@ subsetpred = cancer %>% dplyr::select(-binnedinc, -medianagefemale, -medianagema
 subsetpredsubm = regsubsets(target_deathrate ~ ., data = subsetpred, really.big = T, nvmax = 20)
 summary(subsetpredsubm)
 subsetpredsum = summary(subsetpredsubm)
-names(subsetpredsum)
-plot(subsetpredsum$cp,xlab="Number of Variables",ylab="Cp")
-which.min(subsetpredsum$cp)
-points(16,subsetpredsum$cp[16],pch=20,col="red")
-plot(subsetpredsubm, scale = "Cp")
+#names(subsetpredsum)
+renderPlot({
+  plot(subsetpredsum$cp,xlab="Number of Variables",ylab="Cp")
+  which.min(subsetpredsum$cp)
+  points(16,subsetpredsum$cp[16],pch=20,col="red")
+})
+
+renderPlot({
+  plot(subsetpredsubm, scale = "Cp")
+})
 coef(subsetpredsubm, 16)
 ```
 
@@ -113,13 +134,21 @@ coef(subsetpredsubm, 16)
 ```{r, warning=FALSE}
 subsetpredsubm.fwd = regsubsets(target_deathrate ~ ., data = subsetpred, nvmax = 20,method = "forward")
 summary(subsetpredsubm.fwd)
-plot(subsetpredsubm.fwd, scale="Cp")
-# Adding a validation set
+renderPlot({
+  plot(subsetpredsubm.fwd, scale="Cp")
+})
+```
+
+Adding a validation set
+```{r}
 dim(subsetpred)
 set.seed(1)
 train = sample(seq(3047), 2132, replace=FALSE)
 regfit.fwd=regsubsets(target_deathrate ~ ., data = subsetpred[train,], nvmax = 20, method = "forward")
-# Predicting on test set
+```
+
+Predicting on test set
+```{r}
 val.errors = rep(NA, 20)
 x.test = model.matrix(target_deathrate ~ ., data = subsetpred[-train,])
 for(i in 1:20){ 
@@ -127,9 +156,24 @@ for(i in 1:20){
   pred = x.test[,names(coefi)]%*%coefi
   val.errors[i] = mean((subsetpred$target_deathrate[-train] - pred) ^ 2)
 }
-plot(sqrt(val.errors), ylab="Root MSE", ylim = c(19, 25), pch = 20, type = "b")
-points(sqrt(regfit.fwd$rss[-1]/2132),col="blue",pch=20,type="b")
-legend("topright",legend=c("Training","Validation"),col=c("blue","black"),pch=20)
+renderPlot ({
+  plot(sqrt(val.errors), ylab="Root MSE", ylim = c(19, 25), pch = 20, type = "b")
+  points(sqrt(regfit.fwd$rss[-1]/2132),col="blue",pch=20,type="b")
+  legend("topright",legend=c("Training","Validation"),col=c("blue","black"),pch=20)
+})
+```
+
+###**Model Selection by Cross Validation**
+```{r, echo=FALSE, warning=FALSE}
+source("predictFormula.R", echo=FALSE)
+folds
+renderTable({
+  table(folds)
+})
+renderPlot({
+  plot(rmse.cv,pch=19,type="b")
+})
+
 ```
 
 
