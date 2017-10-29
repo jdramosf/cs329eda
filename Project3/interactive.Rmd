@@ -22,6 +22,7 @@ require(dplyr)
 require(leaps)
 require(tidyverse)
 require(shiny)
+require(class)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -53,15 +54,108 @@ renderDataTable( options = list(pageLength = 10), {
 
 ## **Statistical Analysis**
 ### **Logistic Regression**
-Throughout this analysis, we want to accurately predict the probability of an individual defaulting on their credit card payments. Because the variable we want to predict, *default*, is categorical, our first model is logistic regression.
-We first want to see what the data looks like. Here we can see that slightly over 22% of individuals defaulted on their payments. This number will be important later on when we predict using our models. We also start by looking at the variable *sex* as one of our potential predictors.
+```{r}
+c2 = cancer %>% dplyr::select(medincome, povertypercent, pctnohs18_24, pcths18_24, pctsomecol18_24, pcths25_over, pctbachdeg25_over, pctmarriedhouseholds)
+renderPlot({
+  pairs(c2)
+})
+```
+The pairs plot was graphed to see if there were any interesting correlations between several variables and median income (per county). We picked variables dealt with education level and marriage. From this plot, we can see that the variable pctbachdeg25_over seems to have an a correlation with median income. "pctbachdeg25_over" is the percent of county residents ages 25 and over with a bachelor's degree as the highest education obtained.
+```{r, message=FALSE, warning=FALSE}
+plot_ly(data=cancer, x = ~medincome, y = ~pctbachdeg25_over)
+```
 
+
+**25+ with a bachelor's degree**
+
+We bucketed median income into "<= 50,000" and "> 50,000" Then we used pctbachdeg25_over to predict median income.
+```{r, message=FALSE, warning=FALSE}
+cancer$medincomebuckets = cut(cancer$medincome, c(0, 50000, 150000), right=FALSE, labels=c("<= 50,000", "> 50,000"))
+attach(cancer)
+#25+ with a bachelors degree
+glm.fit1 = glm(medincomebuckets ~ pctbachdeg25_over, data=cancer, family = "binomial")
+glm.fit1
+summary(glm.fit1)
+
+#predictions
+glm.probs1=predict(glm.fit1,type="response") 
+glm.probs1[1:5]
+glm.pred1=ifelse(glm.probs1>0.5,"> 50,000","<= 50,000")
+table(glm.pred1,medincomebuckets)
+mean(glm.pred1==medincomebuckets)
+```
+
+Although the percentage of correct predictions is acceptable (around 76.5%), this does not mean pctbachdeg25_over is a good predictor. The variable predicts the income bucket of "<= 50,000" well, but it does not predict "> 50,000" well. The high mean comes from the large number of instances of median income <= 50,000.
+
+
+**25+ with a bachelor's degree, or a high school degree**
+
+To explore better predictors, we used pcths25_over with pctbachdeg25_over to predict median income. "pcths25_over" deals with the percent of county residents ages 25 and over whose highest level of education is high school.
+```{r}
+glm.fit2 = glm(medincomebuckets ~ pctbachdeg25_over+ pcths25_over, data=cancer, family = "binomial")
+glm.fit2
+summary(glm.fit2)
+
+#predictions
+glm.probs2=predict(glm.fit2,type="response") 
+glm.probs2[1:5]
+glm.pred2=ifelse(glm.probs2>0.5,"> 50,000","<= 50,000")
+table(glm.pred2,medincomebuckets)
+mean(glm.pred2==medincomebuckets)
+```
+The variable similarly produces a percentage of current predictions of around 77% but does not predict the "> 50,000" bucket well.
+```{r, message=FALSE}
+plot_ly(data=cancer, x = ~medincome, y = ~pctmarriedhouseholds)
+```
+
+
+**25+ -bachelor's degree, high school degree, married**
+
+Since only considering the education did not seem to produce good predictions, we decided to include percentage of married people because it seemed to be somewhat correlated to median income. So we predicted using the variables pctmarriedhouseholds, pctbachdeg25_over, and pcths25_over.
+```{r}
+#25+ with a bachelors degree, high school, married
+glm.fit3 = glm(medincomebuckets ~ pctbachdeg25_over+ pcths25_over + pctmarriedhouseholds, data=cancer, family = "binomial")
+glm.fit3
+summary(glm.fit3)
+
+#predictions
+glm.probs3=predict(glm.fit3,type="response") 
+glm.probs3[1:5]
+glm.pred3=ifelse(glm.probs3>0.5,"> 50,000","<= 50,000")
+table(glm.pred3,medincomebuckets)
+mean(glm.pred3==medincomebuckets)
+
+```
+
+This produces a more accurate prediction for both buckets, "<= 50,000" and "> 50,000". The percentage of correct predictions is around 82%.
+
+####Subset selection
+```{r, message=FALSE, warning=FALSE}
+#Subset selection
+# Our dataset has over 30 variables, and some of them are correlated to each other. Let's identify the useful ones only
+subsetpred = cancer %>% dplyr::select(-binnedinc, -medianagefemale, -medianagemale, -geography, -pcths18_24, -pctnohs18_24, -pctsomecol18_24, -pctbachdeg18_24, -pctemployed16_over, -pctempprivcoverage, -medincome)
+
+mincsubset = regsubsets(medincomebuckets ~ ., data = subsetpred, really.big = T, nvmax = 23)
+summary(mincsubset)
+minsubsetsum = summary(mincsubset)
+#names(mincsubsetsum)
+renderPlot({
+  plot(minsubsetsum$cp,xlab="Number of Variables",ylab="Cp")
+  which.min(minsubsetsum$cp)
+  points(11,minsubsetsum$cp[11],pch=20,col="red")
+})
+
+renderPlot({
+  plot(mincsubset, scale = "Cp")
+})
+coef(mincsubset, 23)
+```
 
 
 
 ###**Simple and Multiple Linear regression**
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 plot_ly(data = cancer, x = ~medianage, y = ~target_deathrate)
 medianage_nooutliers = medianage[medianage < 100]
 deathrate_nooutliers = cancer$target_deathrate[medianage < 100]
@@ -111,8 +205,9 @@ This is a great start, but can we do better? We will look at better ways of iden
 
 
 
-###**Model Selection - Best Subset Regression**
-```{r, warning=FALSE}
+###**Model Selection**
+####**Model Selection - Best Subset Regression**
+```{r, warning=FALSE, message = TRUE}
 subsetpred = cancer %>% dplyr::select(-binnedinc, -medianagefemale, -medianagemale, -geography, -pcths18_24, -pctnohs18_24, -pctsomecol18_24, -pctbachdeg18_24, -pctemployed16_over, -pctprivatecoveragealone, -pctempprivcoverage, -pctpubliccoverage, -pctpubliccoveragealone)
 subsetpredsubm = regsubsets(target_deathrate ~ ., data = subsetpred, really.big = T, nvmax = 20)
 summary(subsetpredsubm)
@@ -130,7 +225,7 @@ renderPlot({
 coef(subsetpredsubm, 16)
 ```
 
-###**Forward Stepwise Selection**
+####**Forward Stepwise Selection**
 ```{r, warning=FALSE}
 subsetpredsubm.fwd = regsubsets(target_deathrate ~ ., data = subsetpred, nvmax = 20,method = "forward")
 summary(subsetpredsubm.fwd)
@@ -163,7 +258,7 @@ renderPlot ({
 })
 ```
 
-###**Model Selection by Cross Validation**
+####**Model Selection by Cross Validation**
 ```{r, echo=FALSE, warning=FALSE}
 source("predictFormula.R", echo=FALSE)
 folds
@@ -177,10 +272,118 @@ renderPlot({
 ```
 
 
+###**LDA**
+Confusion matrices and overall accuracy.
+Our objective was to test Private Health Coverage (with public assistance) as a predictor of Median Income. In order to conduct a Linear Discriminant Analysis, we bucketed our Median Income data into two groups: Less than 50,000 and Greater than 50,000. Our analysis returned an LDA coefficient of 0.115277:
+```{r}
+# Bucketing Median Income into <50K and >50K
+
+bucket_income <-  transform(cancer, group=cut(medincome, breaks=c(-Inf, 50000, Inf), labels=c("Less than 50000", "Greater than 50000")))
+summary(bucket_income)
+#class(bucket_income$group)
+
+# Linear Discriminant Analysis - Private Coverage as a Predictor of Median Income
+lda.fit=lda(bucket_income$group~pctprivatecoverage, data=cancer)
+
+lda.fit
+renderPlot({
+  plot(lda.fit)
+})
+lda.pred=predict(lda.fit)
+
+renderTable({
+  data.frame(lda.pred)[1:50,]
+})
+
+c1 = data.frame(lda.pred)
+
+g <- ggplot(c1) + geom_histogram(mapping = aes(x=LD1)) + facet_wrap(~ class)
+renderPlot({
+  g
+})
+```
+We then created a confusion matrix to test our predictor:
+```{r}
+table(lda.pred$class,bucket_income$group)
+mean(lda.pred$class==bucket_income$group)
+```
+We found that Private Health Coverage was an accurate predictor 83.33% of the time.
+
+###**QDA**
+The objective of this insight was to test Percentage of Married Households as a predictor of Median Income using a Quadratic Discriminant Analysis. We bucketed the median income into two categories: Less than 50,000 and Greater than 50,000. Our QDA fit returned the following:
+```{r}
+qda.fit=qda(bucket_income$group~pctmarriedhouseholds, data=cancer)
+
+qda.fit
+qda.pred=predict(qda.fit)
+renderTable({
+  data.frame(qda.pred)[1:50,]
+})
+```
+The distribution is as follows:
+
+```{r}
+renderPlot({
+  ggplot(data=cancer, aes(bucket_income$group)) + geom_bar()
+})
+```
+
+We then created a confusion matrix to test the predictions:
+```{r}
+table(qda.pred$class,bucket_income$group)
+mean(qda.pred$class==bucket_income$group)
+```
+
+We found that Percentage of Married Households accurately Predicted Median income 72.50% of the time.
+
+###**KNN Analysis**
+Our objective was to use a K Nearest Neighbors Analysis to test Average Household Size, Percentage of Married Households, and Percentage of Private Coverage as predictors of Median Income.
+We conducted the analysis using 1, 5, 20, and 100 nearest neighbors. 
 
 
-**LDA**
-Confusion matrices and overall accuracy
+**1 nearest neighbor**
+
+```{r}
+# Choosing the relevant variables and creating a subset
+vars <- c("pctprivatecoverage", "pctmarriedhouseholds", "avghouseholdsize")
+cancer.subset <- cancer[vars]
+
+# Creating test and train subsets
+test <- 1:2000
+cancer.train <- cancer.subset[-test,]
+cancer.test <- cancer.subset[test,]
+
+train.def <- bucket_income$group[-test]
+test.def <- bucket_income$group[test]
+#length(cancer)
+# Fitting the models
+knn.1 <-  knn(cancer.train, cancer.test, train.def, k=1)
+knn.5 <-  knn(cancer.train, cancer.test, train.def, k=5)
+knn.20 <- knn(cancer.train, cancer.test, train.def, k=20)
+knn.100 <- knn(cancer.train, cancer.test, train.def, k=100)
+
+table(knn.1,test.def)
+mean(knn.1==test.def)
+```
 
 
 
+**5 nearest neighbors**
+
+```{r}
+table(knn.5,test.def)
+mean(knn.5==test.def)
+
+```
+
+
+
+**20 nearest neighbors**
+
+```{r}
+table(knn.20,test.def)
+mean(knn.20==test.def)
+
+```
+We found that using 1 nearest neighbor yielded a 76.95% rate of accuracy.
+Using 5 nearest neighbors yielded an 81.4% rate of accuracy, and the increase to 20 and 100 nearest neighbors only improved these results marginally.
