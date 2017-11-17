@@ -1,0 +1,104 @@
+---
+title: 'Data Analytics Project 4: Bank Marketing'
+author: "Ananya Kaushik, Natasha Pirani, Nolan Bentley, and Juan Ramos Fuentes"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+require(MASS)
+require(ISLR)
+require(ggplot2)
+require(data.world)
+require(plotly)
+require(dplyr)
+require(leaps)
+require(tidyverse)
+require(shiny)
+require(class)
+require(e1071)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Setting Up the Environment**  
+## **R Session Info**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sessionInfo()
+```
+
+
+## **data.world Project Link**
+https://data.world/natashapirani96/f-17-eda-project-4
+
+## **Connecting to data.world**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("data.R", echo = FALSE)
+```
+
+# **Introduction** 
+This document contains an analysis on the cancer mortality rates per county in the USA 
+
+## **Dataset -  Cancer Mortality Rate**
+```{r, warning=FALSE}
+#source("analysis.R", echo = FALSE)
+renderDataTable( options = list(pageLength = 10), {
+  bank
+})
+```
+
+# **Statistical Analysis**
+## **Decision Trees**
+```{r}
+
+```
+The pairs plot was graphed to see if there were any interesting correlations between several variables and median income (per county). We picked variables dealt with education level and marriage. From this plot, we can see that the variable pctbachdeg25_over seems to have an a correlation with median income. "pctbachdeg25_over" is the percent of county residents ages 25 and over with a bachelor's degree as the highest education obtained.
+```{r, message=FALSE, warning=FALSE}
+
+```
+
+
+##**Support Vector Machines**
+
+We bucketed median income into "<= 50,000" and "> 50,000" Then we used pctbachdeg25_over to predict median income.
+```{r, message=FALSE, warning=FALSE}
+
+```
+
+Although the percentage of correct predictions is acceptable (around 76.5%), this does not mean pctbachdeg25_over is a good predictor. The variable predicts the income bucket of "<= 50,000" well, but it does not predict "> 50,000" well. The high mean comes from the large number of instances of median income <= 50,000.
+
+##**Unsupervised Learning**
+###**Principal Components Analysis**
+
+To explore better predictors, we used pcths25_over with pctbachdeg25_over to predict median income. "pcths25_over" deals with the percent of county residents ages 25 and over whose highest level of education is high school.
+```{r}
+
+```
+The variable similarly produces a percentage of current predictions of around 77% but does not predict the "> 50,000" bucket well.
+```{r, message=FALSE}
+
+```
+
+###**K Means Clustering**
+
+Since only considering the education did not seem to produce good predictions, we decided to include percentage of married people because it seemed to be somewhat correlated to median income. So we predicted using the variables pctmarriedhouseholds, pctbachdeg25_over, and pcths25_over.
+```{r}
+
+
+```
+
+This produces a more accurate prediction for both buckets, "<= 50,000" and "> 50,000". The percentage of correct predictions is around 82%.
+
+
+```{r, message=FALSE, warning=FALSE}
+
+```
+
+
+
