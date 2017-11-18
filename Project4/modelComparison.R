@@ -36,22 +36,15 @@ matplot(1:mtry, cbind(test.err, oob.err), pch=19, col=c("red","blue"), type="b",
 legend("topright", legend=c("OOB","Test"), pch=19, col=c("red","blue"))
 
 # Boosting
---------
-  Boosting builds lots of smaller trees. Unlike random forests, each new tree in boosting tries to patch up the deficiencies of the current ensemble.
-```{r}
 require(gbm)
-boost.boston=gbm(medv~.,data=Boston[train,],distribution="gaussian",n.trees=10000,shrinkage=0.01,interaction.depth=4)
-summary(boost.boston)
-plot(boost.boston,i="lstat")
-plot(boost.boston,i="rm")
-```
-Lets make a prediction on the test set. With boosting, the number of trees is a tuning parameter, and if we have too many we can overfit. So we should use cross-validation to select the number of trees. We will leave this as an exercise. Instead, we will compute the test error as a function of the number of trees, and make a plot.
+boost.cancer = gbm(target_deathrate ~ ., data = subsetpred[train,], distribution = "gaussian", n.trees = 10000, shrinkage = 0.01, interaction.depth = 4)
+summary(boost.cancer)
+plot(boost.cancer, i = "lstat")
+plot(boost.cancer, i = "rm")
 
-```{r}
-n.trees=seq(from=100,to=10000,by=100)
-predmat=predict(boost.boston,newdata=Boston[-train,],n.trees=n.trees)
+n.trees = seq(from=100,to=10000,by=100)
+predmat = predict(boost.cancer, newdata = subsetpred[-train,], n.trees = n.trees)
 dim(predmat)
-berr=with(Boston[-train,],apply( (predmat-medv)^2,2,mean))
+berr = with(subsetpred[-train,], apply((predmat - target_deathrate)^2,2,mean))
 plot(n.trees,berr,pch=19,ylab="Mean Squared Error", xlab="# Trees",main="Boosting Test Error")
 abline(h=min(test.err),col="red")
-```
