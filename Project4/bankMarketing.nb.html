@@ -355,58 +355,160 @@ with(bank[-train,], table(tree.pred, output))
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>We will explore different tree-based methods to see if we can improve our predictive model.</p>
+<div id="section-random-forest-and-bagging" class="section level3">
+<h3><strong>Random Forest and Bagging</strong></h3>
+<p>First we implemented a cross-validation method for decision trees. We see that the number of misclassifications decreases as the size of the tree increases - to a certain point</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY3YuYmFuayA9IGN2LnRyZWUodHJlZS5iYW5rLCBGVU4gPSBwcnVuZS5taXNjbGFzcylcbmN2LmJhbmtcbnJlbmRlclBsb3Qoe1xuICBwbG90KGN2LmJhbmspXG59KVxuYGBgIn0= -->
+<pre class="r"><code>cv.bank = cv.tree(tree.bank, FUN = prune.misclass)
+cv.bank
+renderPlot({
+  plot(cv.bank)
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We then pruned the tree to that size</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJ1bmUuYmFuayA9IHBydW5lLm1pc2NsYXNzKHRyZWUuYmFuaywgYmVzdCA9IDgpXG5yZW5kZXJQbG90KHtcbiAgcGxvdChwcnVuZS5iYW5rKTt0ZXh0KHBydW5lLmJhbmssIHByZXR0eSA9IDApXG59KVxudHJlZS5wcmVkID0gcHJlZGljdChwcnVuZS5iYW5rLCBiYW5rWy10cmFpbixdLCB0eXBlPVwiY2xhc3NcIilcbndpdGgoYmFua1stdHJhaW4sXSwgdGFibGUodHJlZS5wcmVkLCBvdXRwdXQpKVxuKDE4NTArODgpLzIxMTlcbmBgYCJ9 -->
+<pre class="r"><code>prune.bank = prune.misclass(tree.bank, best = 8)
+renderPlot({
+  plot(prune.bank);text(prune.bank, pretty = 0)
+})
+tree.pred = predict(prune.bank, bank[-train,], type=&quot;class&quot;)
+with(bank[-train,], table(tree.pred, output))
+(1850+88)/2119</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The accuracy of our model has improved! But misclassifications of true positives remain high. Can we do better?</p>
+<p>We then used random forest with a training subset of 2000 records</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTAxKVxuZGltKGJhbmspXG50cmFpbiA9IHNhbXBsZSgxOm5yb3coYmFuayksIDIwMDApXG5cbnJmLmJhbmsgPSByYW5kb21Gb3Jlc3Qob3V0cHV0IH4gLi15LCBkYXRhID0gYmFuaywgc3Vic2V0ID0gdHJhaW4pXG5yZi5iYW5rXG5gYGAifQ== -->
+<pre class="r"><code>set.seed(101)
+dim(bank)
+train = sample(1:nrow(bank), 2000)
+
+rf.bank = randomForest(output ~ .-y, data = bank, subset = train)
+rf.bank</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Much much better! Our predictions for true positives are much more accurate! We will explore more tree-based models in future analysis.</p>
+</div>
 </div>
 <div id="section-support-vector-machines" class="section level2">
 <h2><strong>Support Vector Machines</strong></h2>
 <p>Here, a model was created using the output (target) variable “y”, duration (of the phone call), and consumer confidence index (CCI). This variable “y” is a boolean, indicating whether or not the client has subscribed to the term deposit.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFuayA9IG5hLm9taXQoYmFuaylcbmRmID0gZGF0YS5mcmFtZShvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KSwgQ0NJID0gYmFuayRjb25zX2NvbmZfaWR4LCBkdXJhdGlvbiA9IGJhbmskZHVyYXRpb24pXG5zdm1maXQ9c3ZtKG91dHB1dH4uLGRmLGtlcm5lbD1cImxpbmVhclwiLGNvc3Q9MTAwMCxzY2FsZT1GQUxTRSlcbnN2bWZpdFxucmVuZGVyUGxvdCh7XG4gIHBsb3Qoc3ZtZml0LCBkZiwgQ0NJIH4gZHVyYXRpb24pXG59KVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFuayA9IG5hLm9taXQoYmFuaylcbmRmID0gZGF0YS5mcmFtZShvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KSwgQ0NJID0gYmFuayRjb25zX2NvbmZfaWR4LCBkdXJhdGlvbiA9IGJhbmskZHVyYXRpb24pXG5zdm1maXQ9c3ZtKG91dHB1dH4uLGRmLGtlcm5lbD1cImxpbmVhclwiLGNvc3Q9MTAwMCxzY2FsZT1GQUxTRSlcbnN2bWZpdFxuYGBgIn0= -->
 <pre class="r"><code>bank = na.omit(bank)
 df = data.frame(output = as.factor(bank$y), CCI = bank$cons_conf_idx, duration = bank$duration)
 svmfit=svm(output~.,df,kernel=&quot;linear&quot;,cost=1000,scale=FALSE)
-svmfit
-renderPlot({
+svmfit</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The plot of the linear support vector machine was created:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIHBsb3Qoc3ZtZml0LCBkZiwgQ0NJIH4gZHVyYXRpb24pXG59KVxuYGBgIn0= -->
+<pre class="r"><code>renderPlot({
   plot(svmfit, df, CCI ~ duration)
 })</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Although the percentage of correct predictions is acceptable (around 76.5%), this does not mean pctbachdeg25_over is a good predictor. The variable predicts the income bucket of “&lt;= 50,000” well, but it does not predict “&gt; 50,000” well. The high mean comes from the large number of instances of median income &lt;= 50,000.</p>
+<p>This plots duration on the X-axis and CCI on the Y-axis, separated by output “y”.</p>
 </div>
 <div id="section-unsupervised-learning" class="section level2">
 <h2><strong>Unsupervised Learning</strong></h2>
 <div id="section-principal-components-analysis" class="section level3">
 <h3><strong>Principal Components Analysis</strong></h3>
-<p>To explore better predictors, we used pcths25_over with pctbachdeg25_over to predict median income. “pcths25_over” deals with the percent of county residents ages 25 and over whose highest level of education is high school.</p>
+<p>We wanted to do a Principal Component Analysis using the numerical variables. We began by defining a subset of the data that only included numerical variables. We then used the princomp() function to obtain the standard deviations of each component. We observed 10 components:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubnVtcyA8LSBzYXBwbHkoZGYsIGlzLm51bWVyaWMpXG5kZjEgPC0gZGZbICwgbnVtc11cblxuI3ByaW50KGRmMSlcblxucHJpbmNvbXAoZGYxKVxuXG5cbmBgYCJ9 -->
+<pre class="r"><code>nums &lt;- sapply(df, is.numeric)
+df1 &lt;- df[ , nums]
+
+#print(df1)
+
+princomp(df1)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>The variable similarly produces a percentage of current predictions of around 77% but does not predict the “&gt; 50,000” bucket well.</p>
+<p>We then created a summary of the output of this function, through which we observed that 95.7% of variation can be attributed to components 1 and 2:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFuay5QQ0EgPC0gcHJpbmNvbXAoZGYxKVxuc3VtbWFyeShiYW5rLlBDQSlcbmBgYCJ9 -->
+<pre class="r"><code>bank.PCA &lt;- princomp(df1)
+summary(bank.PCA)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>We were also able to observe the factor loadings for each component, which allow us to determine the correlation coefficients between the factors and the variables:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFuay5QQ0EkbG9hZGluZ3NcbnJlbmRlclBsb3Qoe1xuICBiaXBsb3QoYmFuay5QQ0EsIHNjYWxlPTEpXG59KVxuYGBgIn0= -->
+<pre class="r"><code>bank.PCA$loadings
+renderPlot({
+  biplot(bank.PCA, scale=1)
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Through this, we observed a strongly negative correlation between age and component 4, duration and component 1, and pdays and component 2. Our strongest positive correlation was observed between component for and nr_employed, which is the average number of employed citizens.</p>
 </div>
-<div id="section-k-means-clustering" class="section level3">
-<h3><strong>K Means Clustering</strong></h3>
-<p>Since only considering the education did not seem to produce good predictions, we decided to include percentage of married people because it seemed to be somewhat correlated to median income. So we predicted using the variables pctmarriedhouseholds, pctbachdeg25_over, and pcths25_over.</p>
+<div id="section-k-means-clustering---interesting-analysis" class="section level3">
+<h3><strong>K Means Clustering - Interesting Analysis!</strong></h3>
+<p>We wanted to perform a K-Means Clustering analysis, so we began by doing some exploratory analysis of the data to see if we found any clusters. We created a scatterplot using age to predict consumer price index, and separated the colors based on the job of the client:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5yZW5kZXJQbG90KHtcbiAgZ2dwbG90KGJhbmssIGFlcyh4PWFnZSwgeT1jb25zX3ByaWNlX2lkeCwgY29sb3I9IGpvYikpICsgZ2VvbV9wb2ludCgpXG59KVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+renderPlot({
+  ggplot(bank, aes(x=age, y=cons_price_idx, color= job)) + geom_point()
+})
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>This produces a more accurate prediction for both buckets, “&lt;= 50,000” and “&gt; 50,000”. The percentage of correct predictions is around 82%.</p>
+<p>We found an interesting distribution of jobs, but not very much clustering besides those who were retired, so we decided to test the relationship between age and consumer price index, while separating by consumer confidence index:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5yZW5kZXJQbG90KHtcbiAgZ2dwbG90KGJhbmssIGFlcyh4PWFnZSwgeT1jb25zX3ByaWNlX2lkeCwgY29sb3I9IGNvbnNfY29uZl9pZHgpKSArIGdlb21fcG9pbnQoKVxufSlcblxuYGBgIn0= -->
+<pre class="r"><code>
+renderPlot({
+  ggplot(bank, aes(x=age, y=cons_price_idx, color= cons_conf_idx)) + geom_point()
+})
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>We found that consumer confidence index appears to increase with consumer price index, so we decided to perform k-means clustering using these variables. We set the seed to 101, and used the kmeans function, which returned the following means:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTAxKVxuYmFua0NsdXN0ZXIgPC0ga21lYW5zKGRmMSwgMywgbnN0YXJ0PTIwKVxuYmFua0NsdXN0ZXJcbmBgYCJ9 -->
+<pre class="r"><code>set.seed(101)
+bankCluster &lt;- kmeans(df1, 3, nstart=20)
+bankCluster</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Because this is a form of unsupervised learning, we cannot establish how conclusive these results are, but for age, consumer price index and consumer confidence index, we observe means that do not differ greatly based on the size of the cluster, as opposed to other factors such as duration, which differ greatly based on size</p>
 <!-- rnb-text-end -->
 </div>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSBBbmFseXRpY3MgUHJvamVjdCA0OiBCYW5rIE1hcmtldGluZycKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CnJlcXVpcmUoTUFTUykKcmVxdWlyZShJU0xSKQpyZXF1aXJlKGdncGxvdDIpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoZHBseXIpCnJlcXVpcmUobGVhcHMpCnJlcXVpcmUodGlkeXZlcnNlKQpyZXF1aXJlKHNoaW55KQpyZXF1aXJlKGNsYXNzKQpyZXF1aXJlKGUxMDcxKQpyZXF1aXJlKHRyZWUpCnJlcXVpcmUocmFuZG9tRm9yZXN0KQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCm9wdGlvbnMoc2hpbnkuc2FuaXRpemUuZXJyb3JzID0gRkFMU0UpCmBgYAoKIyAqKlNldHRpbmcgVXAgdGhlIEVudmlyb25tZW50KiogIAojIyAqKlIgU2Vzc2lvbiBJbmZvKioKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnNlc3Npb25JbmZvKCkKYGBgCgoKIyMgKipDb25uZWN0aW5nIHRvIGRhdGEud29ybGQqKgpodHRwczovL2RhdGEud29ybGQvbmF0YXNoYXBpcmFuaTk2L2YtMTctZWRhLXByb2plY3QtNApgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJkYXRhLlIiLCBlY2hvID0gRkFMU0UpCmBgYAoKIyAqKkludHJvZHVjdGlvbioqIApUaGlzIGRvY3VtZW50IGNvbnRhaW5zIGFuIGFuYWx5c2lzIG9uIHRoZSBtYXJrZXRpbmcgY2FtcGFpZ25zIG9mIGEgUG9ydHVndWVzZSBiYW5raW5nIGluc3RpdHV0aW9uIHRoYXQgdXNlZCBwaG9uZSBjYWxscy4KCiMjICoqRGF0YXNldCAtICBCYW5rIE1hcmtldGluZyoqCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQojc291cmNlKCJhbmFseXNpcy5SIiwgZWNobyA9IEZBTFNFKQpyZW5kZXJEYXRhVGFibGUoIG9wdGlvbnMgPSBsaXN0KHBhZ2VMZW5ndGggPSAxMCksIHsKICBiYW5rCn0pCmBgYAoKIyAqKlN0YXRpc3RpY2FsIEFuYWx5c2lzKioKIyMgKipEZWNpc2lvbiBUcmVlcyoqCgpXZSB3YW50IHRvIGlkZW50aWZ5IHRoZSB2YXJpYWJsZXMgdGhhdCBhY2N1cmF0ZWx5IHByZWRpY3QgdGhlIG91dHB1dCB2YXJpYWJsZTogZGlkIHRoZSBjbGllbnQgc3Vic2NyaWJlIHRvIGEgdGVybSBkZXBvc2l0IGR1cmluZyB0aGUgZGlyZWN0IG1hcmtldGluZyBjYW1wYWlnbj8gV2UgdXNlIGEgdHJlZS1iYXNlZCBhcHByb2FjaDogZGVjaXNpb24gdHJlZXMuCmBgYHtyLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRX0KYmFuayRvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KQpuYS5vbWl0KGJhbmspCmJhbmsgPSBiYW5rICU+JSBtdXRhdGVfaWYoaXMuY2hhcmFjdGVyLCBhcy5mYWN0b3IpCmF0dGFjaChiYW5rKQp0cmVlLmJhbmsgPSB0cmVlKG91dHB1dCB+IC4gLSB5LCBkYXRhID0gYmFuaykKc3VtbWFyeSh0cmVlLmJhbmspCnJlbmRlclBsb3QoewogIHBsb3QodHJlZS5iYW5rKQogIHRleHQodHJlZS5iYW5rLCBwcmV0dHkgPSAwKQp9KQp0cmVlLmJhbmsKYGBgCldlIGZpcnN0IHVzZSB0aGUgZW50aXJlIGRhdGFzZXQgdG8gZml0IHRoZSB0cmVlIG1vZGVsLiBUaGUgdmFyaWFibGVzIGFjdHVhbGx5IHVzZWQgaW4gdHJlZSBjb25zdHJ1Y3Rpb24gd2VyZTogbnJfZW1wbG95ZWQsIGR1cmF0aW9uLCBwZGF5cywgY29uc19jb25mX2lkeCwgYW5kIGV1cmlib3IzbS4KCldlIHRoZW4gdXNlZCBhIHJhbmRvbSBzYW1wbGUgZnJvbSB0aGUgb3JpZ2luYWwgZGF0YXNldCBhbmQgd2UgdHJhaW4gdGhlIG1vZGVsIG9uIHRoYXQgdHJhaW5pbmcgc2FtcGxlCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzZXQuc2VlZCgxMDExKQp0cmFpbiA9IHNhbXBsZSgxOm5yb3coYmFuayksIDIwMDApCnRyZWUuYmFuayA9IHRyZWUob3V0cHV0IH4gLiAtIHksIGJhbmssIHN1YnNldCA9IHRyYWluKQpyZW5kZXJQbG90KHsKICBwbG90KHRyZWUuYmFuayk7dGV4dCh0cmVlLmJhbmssIHByZXR0eSA9IDApCn0pCmBgYApXaGVuIHdlIGxvb2sgYXQgdGhlIGNvbmZ1c2lvbiBtYXRyaXgsIHdlIGdldCBhIH45MCUgYWNjdXJhY3kgcmF0ZQpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KdHJlZS5wcmVkID0gcHJlZGljdCh0cmVlLmJhbmssIGJhbmtbLXRyYWluLF0sIHR5cGU9ImNsYXNzIikKd2l0aChiYW5rWy10cmFpbixdLCB0YWJsZSh0cmVlLnByZWQsIG91dHB1dCkpCigxODU1KzcyKS8yMTE5CmBgYAoKIyMqKlN1cHBvcnQgVmVjdG9yIE1hY2hpbmVzKioKCkhlcmUsIGEgbW9kZWwgd2FzIGNyZWF0ZWQgdXNpbmcgdGhlIG91dHB1dCAodGFyZ2V0KSB2YXJpYWJsZSAieSIsIGR1cmF0aW9uIChvZiB0aGUgcGhvbmUgY2FsbCksIGFuZCBjb25zdW1lciBjb25maWRlbmNlIGluZGV4IChDQ0kpLiBUaGlzIHZhcmlhYmxlICJ5IiBpcyBhIGJvb2xlYW4sIGluZGljYXRpbmcgd2hldGhlciBvciBub3QgdGhlIGNsaWVudCBoYXMgc3Vic2NyaWJlZCB0byB0aGUgdGVybSBkZXBvc2l0LgoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CmJhbmsgPSBuYS5vbWl0KGJhbmspCmRmID0gZGF0YS5mcmFtZShvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KSwgQ0NJID0gYmFuayRjb25zX2NvbmZfaWR4LCBkdXJhdGlvbiA9IGJhbmskZHVyYXRpb24pCnN2bWZpdD1zdm0ob3V0cHV0fi4sZGYsa2VybmVsPSJsaW5lYXIiLGNvc3Q9MTAwMCxzY2FsZT1GQUxTRSkKc3ZtZml0CnJlbmRlclBsb3QoewogIHBsb3Qoc3ZtZml0LCBkZiwgQ0NJIH4gZHVyYXRpb24pCn0pCmBgYAoKQWx0aG91Z2ggdGhlIHBlcmNlbnRhZ2Ugb2YgY29ycmVjdCBwcmVkaWN0aW9ucyBpcyBhY2NlcHRhYmxlIChhcm91bmQgNzYuNSUpLCB0aGlzIGRvZXMgbm90IG1lYW4gcGN0YmFjaGRlZzI1X292ZXIgaXMgYSBnb29kIHByZWRpY3Rvci4gVGhlIHZhcmlhYmxlIHByZWRpY3RzIHRoZSBpbmNvbWUgYnVja2V0IG9mICI8PSA1MCwwMDAiIHdlbGwsIGJ1dCBpdCBkb2VzIG5vdCBwcmVkaWN0ICI+IDUwLDAwMCIgd2VsbC4gVGhlIGhpZ2ggbWVhbiBjb21lcyBmcm9tIHRoZSBsYXJnZSBudW1iZXIgb2YgaW5zdGFuY2VzIG9mIG1lZGlhbiBpbmNvbWUgPD0gNTAsMDAwLgoKIyMqKlVuc3VwZXJ2aXNlZCBMZWFybmluZyoqCiMjIyoqUHJpbmNpcGFsIENvbXBvbmVudHMgQW5hbHlzaXMqKgoKVG8gZXhwbG9yZSBiZXR0ZXIgcHJlZGljdG9ycywgd2UgdXNlZCBwY3RoczI1X292ZXIgd2l0aCBwY3RiYWNoZGVnMjVfb3ZlciB0byBwcmVkaWN0IG1lZGlhbiBpbmNvbWUuICJwY3RoczI1X292ZXIiIGRlYWxzIHdpdGggdGhlIHBlcmNlbnQgb2YgY291bnR5IHJlc2lkZW50cyBhZ2VzIDI1IGFuZCBvdmVyIHdob3NlIGhpZ2hlc3QgbGV2ZWwgb2YgZWR1Y2F0aW9uIGlzIGhpZ2ggc2Nob29sLgpgYGB7cn0KCmBgYApUaGUgdmFyaWFibGUgc2ltaWxhcmx5IHByb2R1Y2VzIGEgcGVyY2VudGFnZSBvZiBjdXJyZW50IHByZWRpY3Rpb25zIG9mIGFyb3VuZCA3NyUgYnV0IGRvZXMgbm90IHByZWRpY3QgdGhlICI+IDUwLDAwMCIgYnVja2V0IHdlbGwuCmBgYHtyLCBtZXNzYWdlPUZBTFNFfQoKYGBgCgojIyMqKksgTWVhbnMgQ2x1c3RlcmluZyoqCgpTaW5jZSBvbmx5IGNvbnNpZGVyaW5nIHRoZSBlZHVjYXRpb24gZGlkIG5vdCBzZWVtIHRvIHByb2R1Y2UgZ29vZCBwcmVkaWN0aW9ucywgd2UgZGVjaWRlZCB0byBpbmNsdWRlIHBlcmNlbnRhZ2Ugb2YgbWFycmllZCBwZW9wbGUgYmVjYXVzZSBpdCBzZWVtZWQgdG8gYmUgc29tZXdoYXQgY29ycmVsYXRlZCB0byBtZWRpYW4gaW5jb21lLiBTbyB3ZSBwcmVkaWN0ZWQgdXNpbmcgdGhlIHZhcmlhYmxlcyBwY3RtYXJyaWVkaG91c2Vob2xkcywgcGN0YmFjaGRlZzI1X292ZXIsIGFuZCBwY3RoczI1X292ZXIuCmBgYHtyfQoKCmBgYAoKVGhpcyBwcm9kdWNlcyBhIG1vcmUgYWNjdXJhdGUgcHJlZGljdGlvbiBmb3IgYm90aCBidWNrZXRzLCAiPD0gNTAsMDAwIiBhbmQgIj4gNTAsMDAwIi4gVGhlIHBlcmNlbnRhZ2Ugb2YgY29ycmVjdCBwcmVkaWN0aW9ucyBpcyBhcm91bmQgODIlLgoKCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQoKYGBgCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSBBbmFseXRpY3MgUHJvamVjdCA0OiBCYW5rIE1hcmtldGluZycKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CnJlcXVpcmUoTUFTUykKcmVxdWlyZShJU0xSKQpyZXF1aXJlKGdncGxvdDIpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoZHBseXIpCnJlcXVpcmUobGVhcHMpCnJlcXVpcmUodGlkeXZlcnNlKQpyZXF1aXJlKHNoaW55KQpyZXF1aXJlKGNsYXNzKQpyZXF1aXJlKGUxMDcxKQpyZXF1aXJlKHRyZWUpCnJlcXVpcmUocmFuZG9tRm9yZXN0KQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCm9wdGlvbnMoc2hpbnkuc2FuaXRpemUuZXJyb3JzID0gRkFMU0UpCmBgYAoKIyAqKlNldHRpbmcgVXAgdGhlIEVudmlyb25tZW50KiogIAojIyAqKlIgU2Vzc2lvbiBJbmZvKioKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnNlc3Npb25JbmZvKCkKYGBgCgoKIyMgKipDb25uZWN0aW5nIHRvIGRhdGEud29ybGQqKgpodHRwczovL2RhdGEud29ybGQvbmF0YXNoYXBpcmFuaTk2L2YtMTctZWRhLXByb2plY3QtNApgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJkYXRhLlIiLCBlY2hvID0gRkFMU0UpCmBgYAoKIyAqKkludHJvZHVjdGlvbioqIApUaGlzIGRvY3VtZW50IGNvbnRhaW5zIGFuIGFuYWx5c2lzIG9uIHRoZSBtYXJrZXRpbmcgY2FtcGFpZ25zIG9mIGEgUG9ydHVndWVzZSBiYW5raW5nIGluc3RpdHV0aW9uIHRoYXQgdXNlZCBwaG9uZSBjYWxscy4KCiMjICoqRGF0YXNldCAtICBCYW5rIE1hcmtldGluZyoqCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQojc291cmNlKCJhbmFseXNpcy5SIiwgZWNobyA9IEZBTFNFKQpyZW5kZXJEYXRhVGFibGUoIG9wdGlvbnMgPSBsaXN0KHBhZ2VMZW5ndGggPSAxMCksIHsKICBiYW5rCn0pCmBgYAoKIyAqKlN0YXRpc3RpY2FsIEFuYWx5c2lzKioKIyMgKipEZWNpc2lvbiBUcmVlcyoqCgpXZSB3YW50IHRvIGlkZW50aWZ5IHRoZSB2YXJpYWJsZXMgdGhhdCBhY2N1cmF0ZWx5IHByZWRpY3QgdGhlIG91dHB1dCB2YXJpYWJsZTogZGlkIHRoZSBjbGllbnQgc3Vic2NyaWJlIHRvIGEgdGVybSBkZXBvc2l0IGR1cmluZyB0aGUgZGlyZWN0IG1hcmtldGluZyBjYW1wYWlnbj8gV2UgdXNlIGEgdHJlZS1iYXNlZCBhcHByb2FjaDogZGVjaXNpb24gdHJlZXMuCmBgYHtyLCB3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRX0KYmFuayRvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KQpuYS5vbWl0KGJhbmspCmJhbmsgPSBiYW5rICU+JSBtdXRhdGVfaWYoaXMuY2hhcmFjdGVyLCBhcy5mYWN0b3IpCmF0dGFjaChiYW5rKQp0cmVlLmJhbmsgPSB0cmVlKG91dHB1dCB+IC4gLSB5LCBkYXRhID0gYmFuaykKc3VtbWFyeSh0cmVlLmJhbmspCnJlbmRlclBsb3QoewogIHBsb3QodHJlZS5iYW5rKQogIHRleHQodHJlZS5iYW5rLCBwcmV0dHkgPSAwKQp9KQp0cmVlLmJhbmsKYGBgCldlIGZpcnN0IHVzZSB0aGUgZW50aXJlIGRhdGFzZXQgdG8gZml0IHRoZSB0cmVlIG1vZGVsLiBUaGUgdmFyaWFibGVzIGFjdHVhbGx5IHVzZWQgaW4gdHJlZSBjb25zdHJ1Y3Rpb24gd2VyZTogbnJfZW1wbG95ZWQsIGR1cmF0aW9uLCBwZGF5cywgY29uc19jb25mX2lkeCwgYW5kIGV1cmlib3IzbS4KCldlIHRoZW4gdXNlZCBhIHJhbmRvbSBzYW1wbGUgZnJvbSB0aGUgb3JpZ2luYWwgZGF0YXNldCBhbmQgd2UgdHJhaW4gdGhlIG1vZGVsIG9uIHRoYXQgdHJhaW5pbmcgc2FtcGxlCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzZXQuc2VlZCgxMDExKQp0cmFpbiA9IHNhbXBsZSgxOm5yb3coYmFuayksIDIwMDApCnRyZWUuYmFuayA9IHRyZWUob3V0cHV0IH4gLiAtIHksIGJhbmssIHN1YnNldCA9IHRyYWluKQpyZW5kZXJQbG90KHsKICBwbG90KHRyZWUuYmFuayk7dGV4dCh0cmVlLmJhbmssIHByZXR0eSA9IDApCn0pCmBgYApXaGVuIHdlIGxvb2sgYXQgdGhlIGNvbmZ1c2lvbiBtYXRyaXgsIHdlIGdldCBhIH45MCUgYWNjdXJhY3kgcmF0ZQpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KdHJlZS5wcmVkID0gcHJlZGljdCh0cmVlLmJhbmssIGJhbmtbLXRyYWluLF0sIHR5cGU9ImNsYXNzIikKd2l0aChiYW5rWy10cmFpbixdLCB0YWJsZSh0cmVlLnByZWQsIG91dHB1dCkpCigxODU1KzcyKS8yMTE5CmBgYApXZSB3aWxsIGV4cGxvcmUgZGlmZmVyZW50IHRyZWUtYmFzZWQgbWV0aG9kcyB0byBzZWUgaWYgd2UgY2FuIGltcHJvdmUgb3VyIHByZWRpY3RpdmUgbW9kZWwuCgojIyMqKlJhbmRvbSBGb3Jlc3QgYW5kIEJhZ2dpbmcqKgoKRmlyc3Qgd2UgaW1wbGVtZW50ZWQgYSBjcm9zcy12YWxpZGF0aW9uIG1ldGhvZCBmb3IgZGVjaXNpb24gdHJlZXMuIFdlIHNlZSB0aGF0IHRoZSBudW1iZXIgb2YgbWlzY2xhc3NpZmljYXRpb25zIGRlY3JlYXNlcyBhcyB0aGUgc2l6ZSBvZiB0aGUgdHJlZSBpbmNyZWFzZXMgLSB0byBhIGNlcnRhaW4gcG9pbnQKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CmN2LmJhbmsgPSBjdi50cmVlKHRyZWUuYmFuaywgRlVOID0gcHJ1bmUubWlzY2xhc3MpCmN2LmJhbmsKcmVuZGVyUGxvdCh7CiAgcGxvdChjdi5iYW5rKQp9KQpgYGAKCldlIHRoZW4gcHJ1bmVkIHRoZSB0cmVlIHRvIHRoYXQgc2l6ZQpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KcHJ1bmUuYmFuayA9IHBydW5lLm1pc2NsYXNzKHRyZWUuYmFuaywgYmVzdCA9IDgpCnJlbmRlclBsb3QoewogIHBsb3QocHJ1bmUuYmFuayk7dGV4dChwcnVuZS5iYW5rLCBwcmV0dHkgPSAwKQp9KQp0cmVlLnByZWQgPSBwcmVkaWN0KHBydW5lLmJhbmssIGJhbmtbLXRyYWluLF0sIHR5cGU9ImNsYXNzIikKd2l0aChiYW5rWy10cmFpbixdLCB0YWJsZSh0cmVlLnByZWQsIG91dHB1dCkpCigxODUwKzg4KS8yMTE5CmBgYAoKVGhlIGFjY3VyYWN5IG9mIG91ciBtb2RlbCBoYXMgaW1wcm92ZWQhIEJ1dCBtaXNjbGFzc2lmaWNhdGlvbnMgb2YgdHJ1ZSBwb3NpdGl2ZXMgcmVtYWluIGhpZ2guIENhbiB3ZSBkbyBiZXR0ZXI/CgpXZSB0aGVuIHVzZWQgcmFuZG9tIGZvcmVzdCB3aXRoIGEgdHJhaW5pbmcgc3Vic2V0IG9mIDIwMDAgcmVjb3JkcwoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnNldC5zZWVkKDEwMSkKZGltKGJhbmspCnRyYWluID0gc2FtcGxlKDE6bnJvdyhiYW5rKSwgMjAwMCkKCnJmLmJhbmsgPSByYW5kb21Gb3Jlc3Qob3V0cHV0IH4gLi15LCBkYXRhID0gYmFuaywgc3Vic2V0ID0gdHJhaW4pCnJmLmJhbmsKYGBgCk11Y2ggbXVjaCBiZXR0ZXIhIE91ciBwcmVkaWN0aW9ucyBmb3IgdHJ1ZSBwb3NpdGl2ZXMgYXJlIG11Y2ggbW9yZSBhY2N1cmF0ZSEgV2Ugd2lsbCBleHBsb3JlIG1vcmUgdHJlZS1iYXNlZCBtb2RlbHMgaW4gZnV0dXJlIGFuYWx5c2lzLgoKIyMqKlN1cHBvcnQgVmVjdG9yIE1hY2hpbmVzKioKCkhlcmUsIGEgbW9kZWwgd2FzIGNyZWF0ZWQgdXNpbmcgdGhlIG91dHB1dCAodGFyZ2V0KSB2YXJpYWJsZSAieSIsIGR1cmF0aW9uIChvZiB0aGUgcGhvbmUgY2FsbCksIGFuZCBjb25zdW1lciBjb25maWRlbmNlIGluZGV4IChDQ0kpLiBUaGlzIHZhcmlhYmxlICJ5IiBpcyBhIGJvb2xlYW4sIGluZGljYXRpbmcgd2hldGhlciBvciBub3QgdGhlIGNsaWVudCBoYXMgc3Vic2NyaWJlZCB0byB0aGUgdGVybSBkZXBvc2l0LgoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CmJhbmsgPSBuYS5vbWl0KGJhbmspCmRmID0gZGF0YS5mcmFtZShvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KSwgQ0NJID0gYmFuayRjb25zX2NvbmZfaWR4LCBkdXJhdGlvbiA9IGJhbmskZHVyYXRpb24pCnN2bWZpdD1zdm0ob3V0cHV0fi4sZGYsa2VybmVsPSJsaW5lYXIiLGNvc3Q9MTAwMCxzY2FsZT1GQUxTRSkKc3ZtZml0CmBgYAoKVGhlIHBsb3Qgb2YgdGhlIGxpbmVhciBzdXBwb3J0IHZlY3RvciBtYWNoaW5lIHdhcyBjcmVhdGVkOgoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnJlbmRlclBsb3QoewogIHBsb3Qoc3ZtZml0LCBkZiwgQ0NJIH4gZHVyYXRpb24pCn0pCmBgYAoKVGhpcyBwbG90cyBkdXJhdGlvbiBvbiB0aGUgWC1heGlzIGFuZCBDQ0kgb24gdGhlIFktYXhpcywgc2VwYXJhdGVkIGJ5IG91dHB1dCAieSIuCgojIyoqVW5zdXBlcnZpc2VkIExlYXJuaW5nKioKIyMjKipQcmluY2lwYWwgQ29tcG9uZW50cyBBbmFseXNpcyoqCgpXZSB3YW50ZWQgdG8gZG8gYSBQcmluY2lwYWwgQ29tcG9uZW50IEFuYWx5c2lzIHVzaW5nIHRoZSBudW1lcmljYWwgdmFyaWFibGVzLiBXZSBiZWdhbiBieSBkZWZpbmluZyBhIHN1YnNldCBvZiB0aGUgZGF0YSB0aGF0IG9ubHkgaW5jbHVkZWQgbnVtZXJpY2FsIHZhcmlhYmxlcy4gV2UgdGhlbiB1c2VkIHRoZSBwcmluY29tcCgpIGZ1bmN0aW9uIHRvIG9idGFpbiB0aGUgc3RhbmRhcmQgZGV2aWF0aW9ucyBvZiBlYWNoIGNvbXBvbmVudC4gV2Ugb2JzZXJ2ZWQgMTAgY29tcG9uZW50czoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9Cm51bXMgPC0gc2FwcGx5KGRmLCBpcy5udW1lcmljKQpkZjEgPC0gZGZbICwgbnVtc10KCiNwcmludChkZjEpCgpwcmluY29tcChkZjEpCgoKYGBgIAoKV2UgdGhlbiBjcmVhdGVkIGEgc3VtbWFyeSBvZiB0aGUgb3V0cHV0IG9mIHRoaXMgZnVuY3Rpb24sIHRocm91Z2ggd2hpY2ggd2Ugb2JzZXJ2ZWQgdGhhdCA5NS43JSBvZiB2YXJpYXRpb24gY2FuIGJlIGF0dHJpYnV0ZWQgdG8gY29tcG9uZW50cyAxIGFuZCAyOgoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CmJhbmsuUENBIDwtIHByaW5jb21wKGRmMSkKc3VtbWFyeShiYW5rLlBDQSkKYGBgCgpXZSB3ZXJlIGFsc28gYWJsZSB0byBvYnNlcnZlIHRoZSBmYWN0b3IgbG9hZGluZ3MgZm9yIGVhY2ggY29tcG9uZW50LCB3aGljaCBhbGxvdyB1cyB0byBkZXRlcm1pbmUgdGhlIGNvcnJlbGF0aW9uIGNvZWZmaWNpZW50cyBiZXR3ZWVuIHRoZSBmYWN0b3JzIGFuZCB0aGUgdmFyaWFibGVzOgoKCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpiYW5rLlBDQSRsb2FkaW5ncwpyZW5kZXJQbG90KHsKICBiaXBsb3QoYmFuay5QQ0EsIHNjYWxlPTEpCn0pCmBgYAoKVGhyb3VnaCB0aGlzLCB3ZSBvYnNlcnZlZCBhIHN0cm9uZ2x5IG5lZ2F0aXZlIGNvcnJlbGF0aW9uIGJldHdlZW4gYWdlIGFuZCBjb21wb25lbnQgNCwgZHVyYXRpb24gYW5kIGNvbXBvbmVudCAxLCBhbmQgcGRheXMgYW5kIGNvbXBvbmVudCAyLiBPdXIgc3Ryb25nZXN0IHBvc2l0aXZlIGNvcnJlbGF0aW9uIHdhcyBvYnNlcnZlZCBiZXR3ZWVuIGNvbXBvbmVudCBmb3IgYW5kIG5yX2VtcGxveWVkLCB3aGljaCBpcyB0aGUgYXZlcmFnZSBudW1iZXIgb2YgZW1wbG95ZWQgY2l0aXplbnMuCgoKIyMjKipLIE1lYW5zIENsdXN0ZXJpbmcgLSBJbnRlcmVzdGluZyBBbmFseXNpcyEqKgoKV2Ugd2FudGVkIHRvIHBlcmZvcm0gYSBLLU1lYW5zIENsdXN0ZXJpbmcgYW5hbHlzaXMsIHNvIHdlIGJlZ2FuIGJ5IGRvaW5nIHNvbWUgZXhwbG9yYXRvcnkgYW5hbHlzaXMgb2YgdGhlIGRhdGEgdG8gc2VlIGlmIHdlIGZvdW5kIGFueSBjbHVzdGVycy4gV2UgY3JlYXRlZCBhIHNjYXR0ZXJwbG90IHVzaW5nIGFnZSB0byBwcmVkaWN0IGNvbnN1bWVyIHByaWNlIGluZGV4LCBhbmQgc2VwYXJhdGVkIHRoZSBjb2xvcnMgYmFzZWQgb24gdGhlIGpvYiBvZiB0aGUgY2xpZW50OgoKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CgpyZW5kZXJQbG90KHsKICBnZ3Bsb3QoYmFuaywgYWVzKHg9YWdlLCB5PWNvbnNfcHJpY2VfaWR4LCBjb2xvcj0gam9iKSkgKyBnZW9tX3BvaW50KCkKfSkKCmBgYAoKV2UgZm91bmQgYW4gaW50ZXJlc3RpbmcgZGlzdHJpYnV0aW9uIG9mIGpvYnMsIGJ1dCBub3QgdmVyeSBtdWNoIGNsdXN0ZXJpbmcgYmVzaWRlcyB0aG9zZSB3aG8gd2VyZSByZXRpcmVkLCBzbyB3ZSBkZWNpZGVkIHRvIHRlc3QgdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGFnZSBhbmQgY29uc3VtZXIgcHJpY2UgaW5kZXgsIHdoaWxlIHNlcGFyYXRpbmcgYnkgY29uc3VtZXIgY29uZmlkZW5jZSBpbmRleDoKCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQoKcmVuZGVyUGxvdCh7CiAgZ2dwbG90KGJhbmssIGFlcyh4PWFnZSwgeT1jb25zX3ByaWNlX2lkeCwgY29sb3I9IGNvbnNfY29uZl9pZHgpKSArIGdlb21fcG9pbnQoKQp9KQoKYGBgCgpXZSBmb3VuZCB0aGF0IGNvbnN1bWVyIGNvbmZpZGVuY2UgaW5kZXggYXBwZWFycyB0byBpbmNyZWFzZSB3aXRoIGNvbnN1bWVyIHByaWNlIGluZGV4LCBzbyB3ZSBkZWNpZGVkIHRvIHBlcmZvcm0gay1tZWFucyBjbHVzdGVyaW5nIHVzaW5nIHRoZXNlIHZhcmlhYmxlcy4gV2Ugc2V0IHRoZSBzZWVkIHRvIDEwMSwgYW5kIHVzZWQgdGhlIGttZWFucyBmdW5jdGlvbiwgd2hpY2ggcmV0dXJuZWQgdGhlIGZvbGxvd2luZyBtZWFuczoKCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzZXQuc2VlZCgxMDEpCmJhbmtDbHVzdGVyIDwtIGttZWFucyhkZjEsIDMsIG5zdGFydD0yMCkKYmFua0NsdXN0ZXIKYGBgCkJlY2F1c2UgdGhpcyBpcyBhIGZvcm0gb2YgdW5zdXBlcnZpc2VkIGxlYXJuaW5nLCB3ZSBjYW5ub3QgZXN0YWJsaXNoIGhvdyBjb25jbHVzaXZlIHRoZXNlIHJlc3VsdHMgYXJlLCBidXQgZm9yIGFnZSwgY29uc3VtZXIgcHJpY2UgaW5kZXggYW5kIGNvbnN1bWVyIGNvbmZpZGVuY2UgaW5kZXgsIHdlIG9ic2VydmUgbWVhbnMgdGhhdCBkbyBub3QgZGlmZmVyIGdyZWF0bHkgYmFzZWQgb24gdGhlIHNpemUgb2YgdGhlIGNsdXN0ZXIsIGFzIG9wcG9zZWQgdG8gb3RoZXIgZmFjdG9ycyBzdWNoIGFzIGR1cmF0aW9uLCB3aGljaCBkaWZmZXIgZ3JlYXRseSBiYXNlZCBvbiBzaXplCg==</div>
 
 
 </div>

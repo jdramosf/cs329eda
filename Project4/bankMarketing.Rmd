@@ -88,6 +88,43 @@ tree.pred = predict(tree.bank, bank[-train,], type="class")
 with(bank[-train,], table(tree.pred, output))
 (1855+72)/2119
 ```
+We will explore different tree-based methods to see if we can improve our predictive model.
+
+###**Random Forest and Bagging**
+
+First we implemented a cross-validation method for decision trees. We see that the number of misclassifications decreases as the size of the tree increases - to a certain point
+```{r, message=FALSE, warning=FALSE}
+cv.bank = cv.tree(tree.bank, FUN = prune.misclass)
+cv.bank
+renderPlot({
+  plot(cv.bank)
+})
+```
+
+We then pruned the tree to that size
+```{r, message=FALSE, warning=FALSE}
+prune.bank = prune.misclass(tree.bank, best = 8)
+renderPlot({
+  plot(prune.bank);text(prune.bank, pretty = 0)
+})
+tree.pred = predict(prune.bank, bank[-train,], type="class")
+with(bank[-train,], table(tree.pred, output))
+(1850+88)/2119
+```
+
+The accuracy of our model has improved! But misclassifications of true positives remain high. Can we do better?
+
+We then used random forest with a training subset of 2000 records
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(101)
+dim(bank)
+train = sample(1:nrow(bank), 2000)
+
+rf.bank = randomForest(output ~ .-y, data = bank, subset = train)
+rf.bank
+```
+Much much better! Our predictions for true positives are much more accurate! We will explore more tree-based models in future analysis.
 
 ##**Support Vector Machines**
 
@@ -113,29 +150,65 @@ This plots duration on the X-axis and CCI on the Y-axis, separated by output "y"
 ##**Unsupervised Learning**
 ###**Principal Components Analysis**
 
-To explore better predictors, we used pcths25_over with pctbachdeg25_over to predict median income. "pcths25_over" deals with the percent of county residents ages 25 and over whose highest level of education is high school.
-```{r}
+We wanted to do a Principal Component Analysis using the numerical variables. We began by defining a subset of the data that only included numerical variables. We then used the princomp() function to obtain the standard deviations of each component. We observed 10 components:
+```{r, message=FALSE, warning=FALSE}
+nums <- sapply(df, is.numeric)
+df1 <- df[ , nums]
 
+#print(df1)
+
+princomp(df1)
+
+
+``` 
+
+We then created a summary of the output of this function, through which we observed that 95.7% of variation can be attributed to components 1 and 2:
+
+```{r, message=FALSE, warning=FALSE}
+bank.PCA <- princomp(df1)
+summary(bank.PCA)
 ```
-The variable similarly produces a percentage of current predictions of around 77% but does not predict the "> 50,000" bucket well.
-```{r, message=FALSE}
 
-```
-
-###**K Means Clustering**
-
-Since only considering the education did not seem to produce good predictions, we decided to include percentage of married people because it seemed to be somewhat correlated to median income. So we predicted using the variables pctmarriedhouseholds, pctbachdeg25_over, and pcths25_over.
-```{r}
-
-
-```
-
-This produces a more accurate prediction for both buckets, "<= 50,000" and "> 50,000". The percentage of correct predictions is around 82%.
+We were also able to observe the factor loadings for each component, which allow us to determine the correlation coefficients between the factors and the variables:
 
 
 ```{r, message=FALSE, warning=FALSE}
+bank.PCA$loadings
+renderPlot({
+  biplot(bank.PCA, scale=1)
+})
+```
+
+Through this, we observed a strongly negative correlation between age and component 4, duration and component 1, and pdays and component 2. Our strongest positive correlation was observed between component for and nr_employed, which is the average number of employed citizens.
+
+
+###**K Means Clustering - Interesting Analysis!**
+
+We wanted to perform a K-Means Clustering analysis, so we began by doing some exploratory analysis of the data to see if we found any clusters. We created a scatterplot using age to predict consumer price index, and separated the colors based on the job of the client:
+
+```{r, message=FALSE, warning=FALSE}
+
+renderPlot({
+  ggplot(bank, aes(x=age, y=cons_price_idx, color= job)) + geom_point()
+})
 
 ```
 
+We found an interesting distribution of jobs, but not very much clustering besides those who were retired, so we decided to test the relationship between age and consumer price index, while separating by consumer confidence index:
 
+```{r, message=FALSE, warning=FALSE}
 
+renderPlot({
+  ggplot(bank, aes(x=age, y=cons_price_idx, color= cons_conf_idx)) + geom_point()
+})
+
+```
+
+We found that consumer confidence index appears to increase with consumer price index, so we decided to perform k-means clustering using these variables. We set the seed to 101, and used the kmeans function, which returned the following means:
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(101)
+bankCluster <- kmeans(df1, 3, nstart=20)
+bankCluster
+```
+Because this is a form of unsupervised learning, we cannot establish how conclusive these results are, but for age, consumer price index and consumer confidence index, we observe means that do not differ greatly based on the size of the cluster, as opposed to other factors such as duration, which differ greatly based on size
