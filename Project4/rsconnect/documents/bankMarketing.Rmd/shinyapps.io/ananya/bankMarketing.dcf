@@ -1,0 +1,12 @@
+name: bankMarketing
+title: bankMarketing
+username:
+account: ananya
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 236996
+bundleId: 1082308
+url: https://ananya.shinyapps.io/bankMarketing/
+when: 1510971755.49539
+asMultiple: FALSE
+asStatic: FALSE

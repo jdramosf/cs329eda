@@ -24,7 +24,10 @@ require(tidyverse)
 require(shiny)
 require(class)
 require(e1071)
+require(tree)
+require(randomForest)
 knitr::opts_chunk$set(echo = TRUE)
+options(shiny.sanitize.errors = FALSE)
 ```
 
 # **Setting Up the Environment**  
@@ -34,18 +37,16 @@ sessionInfo()
 ```
 
 
-## **data.world Project Link**
-https://data.world/natashapirani96/f-17-eda-project-4
-
 ## **Connecting to data.world**
+https://data.world/natashapirani96/f-17-eda-project-4
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 source("data.R", echo = FALSE)
 ```
 
 # **Introduction** 
-This document contains an analysis on the cancer mortality rates per county in the USA 
+This document contains an analysis on the marketing campaigns of a Portuguese banking institution that used phone calls.
 
-## **Dataset -  Cancer Mortality Rate**
+## **Dataset -  Bank Marketing**
 ```{r, warning=FALSE}
 #source("analysis.R", echo = FALSE)
 renderDataTable( options = list(pageLength = 10), {
@@ -55,14 +56,38 @@ renderDataTable( options = list(pageLength = 10), {
 
 # **Statistical Analysis**
 ## **Decision Trees**
-```{r}
 
+We want to identify the variables that accurately predict the output variable: did the client subscribe to a term deposit during the direct marketing campaign? We use a tree-based approach: decision trees.
+```{r, warning = FALSE, message = FALSE}
+bank$output = as.factor(bank$y)
+na.omit(bank)
+bank = bank %>% mutate_if(is.character, as.factor)
+attach(bank)
+tree.bank = tree(output ~ . - y, data = bank)
+summary(tree.bank)
+renderPlot({
+  plot(tree.bank)
+  text(tree.bank, pretty = 0)
+})
+tree.bank
 ```
-The pairs plot was graphed to see if there were any interesting correlations between several variables and median income (per county). We picked variables dealt with education level and marriage. From this plot, we can see that the variable pctbachdeg25_over seems to have an a correlation with median income. "pctbachdeg25_over" is the percent of county residents ages 25 and over with a bachelor's degree as the highest education obtained.
+We first use the entire dataset to fit the tree model. The variables actually used in tree construction were: nr_employed, duration, pdays, cons_conf_idx, and euribor3m.
+
+We then used a random sample from the original dataset and we train the model on that training sample
 ```{r, message=FALSE, warning=FALSE}
-
+set.seed(1011)
+train = sample(1:nrow(bank), 2000)
+tree.bank = tree(output ~ . - y, bank, subset = train)
+renderPlot({
+  plot(tree.bank);text(tree.bank, pretty = 0)
+})
 ```
-
+When we look at the confusion matrix, we get a ~90% accuracy rate
+```{r, message=FALSE, warning=FALSE}
+tree.pred = predict(tree.bank, bank[-train,], type="class")
+with(bank[-train,], table(tree.pred, output))
+(1855+72)/2119
+```
 
 ##**Support Vector Machines**
 

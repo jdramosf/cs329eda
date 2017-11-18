@@ -274,32 +274,32 @@ div.tocify {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-text-begin -->
-<div id="section-setting-up-the-environment" class="section level2">
-<h2><strong>Setting Up the Environment</strong></h2>
-<div id="section-r-session-info" class="section level3">
-<h3><strong>R Session Info</strong></h3>
+<div id="section-setting-up-the-environment" class="section level1">
+<h1><strong>Setting Up the Environment</strong></h1>
+<div id="section-r-session-info" class="section level2">
+<h2><strong>R Session Info</strong></h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="section-data.world-project-link" class="section level3">
-<h3><strong>data.world Project Link</strong></h3>
+<div id="section-data.world-project-link" class="section level2">
+<h2><strong>data.world Project Link</strong></h2>
 <p><a href="https://data.world/natashapirani96/f-17-eda-project-4" class="uri">https://data.world/natashapirani96/f-17-eda-project-4</a></p>
 </div>
-<div id="section-connecting-to-data.world" class="section level3">
-<h3><strong>Connecting to data.world</strong></h3>
+<div id="section-connecting-to-data.world" class="section level2">
+<h2><strong>Connecting to data.world</strong></h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 </div>
-<div id="section-introduction" class="section level2">
-<h2><strong>Introduction</strong></h2>
+<div id="section-introduction" class="section level1">
+<h1><strong>Introduction</strong></h1>
 <p>This document contains an analysis on the cancer mortality rates per county in the USA</p>
-<div id="section-dataset---cancer-mortality-rate" class="section level3">
-<h3><strong>Dataset - Cancer Mortality Rate</strong></h3>
+<div id="section-dataset---bank-marketing" class="section level2">
+<h2><strong>Dataset - Bank Marketing</strong></h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3NvdXJjZShcImFuYWx5c2lzLlJcIiwgZWNobyA9IEZBTFNFKVxucmVuZGVyRGF0YVRhYmxlKCBvcHRpb25zID0gbGlzdChwYWdlTGVuZ3RoID0gMTApLCB7XG4gIGJhbmtcbn0pXG5gYGAifQ== -->
@@ -312,400 +312,95 @@ renderDataTable( options = list(pageLength = 10), {
 <!-- rnb-text-begin -->
 </div>
 </div>
-<div id="section-statistical-analysis" class="section level2">
-<h2><strong>Statistical Analysis</strong></h2>
-<div id="section-logistic-regression" class="section level3">
-<h3><strong>Logistic Regression</strong></h3>
+<div id="section-statistical-analysis" class="section level1">
+<h1><strong>Statistical Analysis</strong></h1>
+<div id="section-decision-trees" class="section level2">
+<h2><strong>Decision Trees</strong></h2>
+<p>We want to identify the variables that accurately predict the output variable: did the client subscribe to a term deposit during the direct marketing campaign? We use a tree-based approach: decision trees.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYzIgPSBjYW5jZXIgJT4lIGRwbHlyOjpzZWxlY3QobWVkaW5jb21lLCBwb3ZlcnR5cGVyY2VudCwgcGN0bm9oczE4XzI0LCBwY3RoczE4XzI0LCBwY3Rzb21lY29sMThfMjQsIHBjdGhzMjVfb3ZlciwgcGN0YmFjaGRlZzI1X292ZXIsIHBjdG1hcnJpZWRob3VzZWhvbGRzKVxucmVuZGVyUGxvdCh7XG4gIHBhaXJzKGMyKVxufSlcbmBgYCJ9 -->
-<pre class="r"><code>c2 = cancer %&gt;% dplyr::select(medincome, povertypercent, pctnohs18_24, pcths18_24, pctsomecol18_24, pcths25_over, pctbachdeg25_over, pctmarriedhouseholds)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFuayRvdXRwdXQgPSBhcy5mYWN0b3IoYmFuayR5KVxubmEub21pdChiYW5rKVxuYmFuayA9IGJhbmsgJT4lIG11dGF0ZV9pZihpcy5jaGFyYWN0ZXIsIGFzLmZhY3RvcilcbmF0dGFjaChiYW5rKVxudHJlZS5iYW5rID0gdHJlZShvdXRwdXQgfiAuIC0geSwgZGF0YSA9IGJhbmspXG5zdW1tYXJ5KHRyZWUuYmFuaylcbnJlbmRlclBsb3Qoe1xuICBwbG90KHRyZWUuYmFuaylcbiAgdGV4dCh0cmVlLmJhbmssIHByZXR0eSA9IDApXG59KVxudHJlZS5iYW5rXG5gYGAifQ== -->
+<pre class="r"><code>bank$output = as.factor(bank$y)
+na.omit(bank)
+bank = bank %&gt;% mutate_if(is.character, as.factor)
+attach(bank)
+tree.bank = tree(output ~ . - y, data = bank)
+summary(tree.bank)
 renderPlot({
-  pairs(c2)
+  plot(tree.bank)
+  text(tree.bank, pretty = 0)
+})
+tree.bank</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We first use the entire dataset to fit the tree model. The variables actually used in tree construction were: nr_employed, duration, pdays, cons_conf_idx, and euribor3m.</p>
+<p>We then used a random sample from the original dataset and we train the model on that training sample</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTAxMSlcbnRyYWluID0gc2FtcGxlKDE6bnJvdyhiYW5rKSwgMjAwMClcbnRyZWUuYmFuayA9IHRyZWUob3V0cHV0IH4gLiAtIHksIGJhbmssIHN1YnNldCA9IHRyYWluKVxucmVuZGVyUGxvdCh7XG4gIHBsb3QodHJlZS5iYW5rKTt0ZXh0KHRyZWUuYmFuaywgcHJldHR5ID0gMClcbn0pXG5gYGAifQ== -->
+<pre class="r"><code>set.seed(1011)
+train = sample(1:nrow(bank), 2000)
+tree.bank = tree(output ~ . - y, bank, subset = train)
+renderPlot({
+  plot(tree.bank);text(tree.bank, pretty = 0)
 })</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>The pairs plot was graphed to see if there were any interesting correlations between several variables and median income (per county). We picked variables dealt with education level and marriage. From this plot, we can see that the variable pctbachdeg25_over seems to have an a correlation with median income. “pctbachdeg25_over” is the percent of county residents ages 25 and over with a bachelor’s degree as the highest education obtained.</p>
+<p>When we look at the confusion matrix, we get a ~90% accuracy rate</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9seShkYXRhPWNhbmNlciwgeCA9IH5tZWRpbmNvbWUsIHkgPSB+cGN0YmFjaGRlZzI1X292ZXIpXG5gYGAifQ== -->
-<pre class="r"><code>plot_ly(data=cancer, x = ~medincome, y = ~pctbachdeg25_over)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJlZS5wcmVkID0gcHJlZGljdCh0cmVlLmJhbmssIGJhbmtbLXRyYWluLF0sIHR5cGU9XCJjbGFzc1wiKVxud2l0aChiYW5rWy10cmFpbixdLCB0YWJsZSh0cmVlLnByZWQsIG91dHB1dCkpXG4oMTg1NSs3MikvMjExOVxuYGBgIn0= -->
+<pre class="r"><code>tree.pred = predict(tree.bank, bank[-train,], type=&quot;class&quot;)
+with(bank[-train,], table(tree.pred, output))
+(1855+72)/2119</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><strong>25+ with a bachelor’s degree</strong></p>
+</div>
+<div id="section-support-vector-machines" class="section level2">
+<h2><strong>Support Vector Machines</strong></h2>
 <p>We bucketed median income into “&lt;= 50,000” and “&gt; 50,000” Then we used pctbachdeg25_over to predict median income.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FuY2VyJG1lZGluY29tZWJ1Y2tldHMgPSBjdXQoY2FuY2VyJG1lZGluY29tZSwgYygwLCA1MDAwMCwgMTUwMDAwKSwgcmlnaHQ9RkFMU0UsIGxhYmVscz1jKFwiPD0gNTAsMDAwXCIsIFwiPiA1MCwwMDBcIikpXG5hdHRhY2goY2FuY2VyKVxuIzI1KyB3aXRoIGEgYmFjaGVsb3JzIGRlZ3JlZVxuZ2xtLmZpdDEgPSBnbG0obWVkaW5jb21lYnVja2V0cyB+IHBjdGJhY2hkZWcyNV9vdmVyLCBkYXRhPWNhbmNlciwgZmFtaWx5ID0gXCJiaW5vbWlhbFwiKVxuZ2xtLmZpdDFcbnN1bW1hcnkoZ2xtLmZpdDEpXG5cbiNwcmVkaWN0aW9uc1xuZ2xtLnByb2JzMT1wcmVkaWN0KGdsbS5maXQxLHR5cGU9XCJyZXNwb25zZVwiKSBcbmdsbS5wcm9iczFbMTo1XVxuZ2xtLnByZWQxPWlmZWxzZShnbG0ucHJvYnMxPjAuNSxcIj4gNTAsMDAwXCIsXCI8PSA1MCwwMDBcIilcbnRhYmxlKGdsbS5wcmVkMSxtZWRpbmNvbWVidWNrZXRzKVxubWVhbihnbG0ucHJlZDE9PW1lZGluY29tZWJ1Y2tldHMpXG5gYGAifQ== -->
-<pre class="r"><code>cancer$medincomebuckets = cut(cancer$medincome, c(0, 50000, 150000), right=FALSE, labels=c(&quot;&lt;= 50,000&quot;, &quot;&gt; 50,000&quot;))
-attach(cancer)
-#25+ with a bachelors degree
-glm.fit1 = glm(medincomebuckets ~ pctbachdeg25_over, data=cancer, family = &quot;binomial&quot;)
-glm.fit1
-summary(glm.fit1)
-
-#predictions
-glm.probs1=predict(glm.fit1,type=&quot;response&quot;) 
-glm.probs1[1:5]
-glm.pred1=ifelse(glm.probs1&gt;0.5,&quot;&gt; 50,000&quot;,&quot;&lt;= 50,000&quot;)
-table(glm.pred1,medincomebuckets)
-mean(glm.pred1==medincomebuckets)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Although the percentage of correct predictions is acceptable (around 76.5%), this does not mean pctbachdeg25_over is a good predictor. The variable predicts the income bucket of “&lt;= 50,000” well, but it does not predict “&gt; 50,000” well. The high mean comes from the large number of instances of median income &lt;= 50,000.</p>
-<p><strong>25+ with a bachelor’s degree, or a high school degree</strong></p>
+</div>
+<div id="section-unsupervised-learning" class="section level2">
+<h2><strong>Unsupervised Learning</strong></h2>
+<div id="section-principal-components-analysis" class="section level3">
+<h3><strong>Principal Components Analysis</strong></h3>
 <p>To explore better predictors, we used pcths25_over with pctbachdeg25_over to predict median income. “pcths25_over” deals with the percent of county residents ages 25 and over whose highest level of education is high school.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtLmZpdDIgPSBnbG0obWVkaW5jb21lYnVja2V0cyB+IHBjdGJhY2hkZWcyNV9vdmVyKyBwY3RoczI1X292ZXIsIGRhdGE9Y2FuY2VyLCBmYW1pbHkgPSBcImJpbm9taWFsXCIpXG5nbG0uZml0Mlxuc3VtbWFyeShnbG0uZml0MilcblxuI3ByZWRpY3Rpb25zXG5nbG0ucHJvYnMyPXByZWRpY3QoZ2xtLmZpdDIsdHlwZT1cInJlc3BvbnNlXCIpIFxuZ2xtLnByb2JzMlsxOjVdXG5nbG0ucHJlZDI9aWZlbHNlKGdsbS5wcm9iczI+MC41LFwiPiA1MCwwMDBcIixcIjw9IDUwLDAwMFwiKVxudGFibGUoZ2xtLnByZWQyLG1lZGluY29tZWJ1Y2tldHMpXG5tZWFuKGdsbS5wcmVkMj09bWVkaW5jb21lYnVja2V0cylcbmBgYCJ9 -->
-<pre class="r"><code>glm.fit2 = glm(medincomebuckets ~ pctbachdeg25_over+ pcths25_over, data=cancer, family = &quot;binomial&quot;)
-glm.fit2
-summary(glm.fit2)
-
-#predictions
-glm.probs2=predict(glm.fit2,type=&quot;response&quot;) 
-glm.probs2[1:5]
-glm.pred2=ifelse(glm.probs2&gt;0.5,&quot;&gt; 50,000&quot;,&quot;&lt;= 50,000&quot;)
-table(glm.pred2,medincomebuckets)
-mean(glm.pred2==medincomebuckets)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The variable similarly produces a percentage of current predictions of around 77% but does not predict the “&gt; 50,000” bucket well.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9seShkYXRhPWNhbmNlciwgeCA9IH5tZWRpbmNvbWUsIHkgPSB+cGN0bWFycmllZGhvdXNlaG9sZHMpXG5gYGAifQ== -->
-<pre class="r"><code>plot_ly(data=cancer, x = ~medincome, y = ~pctmarriedhouseholds)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><strong>25+ -bachelor’s degree, high school degree, married</strong></p>
+</div>
+<div id="section-k-means-clustering" class="section level3">
+<h3><strong>K Means Clustering</strong></h3>
 <p>Since only considering the education did not seem to produce good predictions, we decided to include percentage of married people because it seemed to be somewhat correlated to median income. So we predicted using the variables pctmarriedhouseholds, pctbachdeg25_over, and pcths25_over.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIzI1KyB3aXRoIGEgYmFjaGVsb3JzIGRlZ3JlZSwgaGlnaCBzY2hvb2wsIG1hcnJpZWRcbmdsbS5maXQzID0gZ2xtKG1lZGluY29tZWJ1Y2tldHMgfiBwY3RiYWNoZGVnMjVfb3ZlcisgcGN0aHMyNV9vdmVyICsgcGN0bWFycmllZGhvdXNlaG9sZHMsIGRhdGE9Y2FuY2VyLCBmYW1pbHkgPSBcImJpbm9taWFsXCIpXG5nbG0uZml0M1xuc3VtbWFyeShnbG0uZml0MylcblxuI3ByZWRpY3Rpb25zXG5nbG0ucHJvYnMzPXByZWRpY3QoZ2xtLmZpdDMsdHlwZT1cInJlc3BvbnNlXCIpIFxuZ2xtLnByb2JzM1sxOjVdXG5nbG0ucHJlZDM9aWZlbHNlKGdsbS5wcm9iczM+MC41LFwiPiA1MCwwMDBcIixcIjw9IDUwLDAwMFwiKVxudGFibGUoZ2xtLnByZWQzLG1lZGluY29tZWJ1Y2tldHMpXG5tZWFuKGdsbS5wcmVkMz09bWVkaW5jb21lYnVja2V0cylcblxuYGBgIn0= -->
-<pre class="r"><code>#25+ with a bachelors degree, high school, married
-glm.fit3 = glm(medincomebuckets ~ pctbachdeg25_over+ pcths25_over + pctmarriedhouseholds, data=cancer, family = &quot;binomial&quot;)
-glm.fit3
-summary(glm.fit3)
-
-#predictions
-glm.probs3=predict(glm.fit3,type=&quot;response&quot;) 
-glm.probs3[1:5]
-glm.pred3=ifelse(glm.probs3&gt;0.5,&quot;&gt; 50,000&quot;,&quot;&lt;= 50,000&quot;)
-table(glm.pred3,medincomebuckets)
-mean(glm.pred3==medincomebuckets)
-</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>This produces a more accurate prediction for both buckets, “&lt;= 50,000” and “&gt; 50,000”. The percentage of correct predictions is around 82%.</p>
-<div id="section-subset-selection" class="section level4">
-<h4>Subset selection</h4>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1N1YnNldCBzZWxlY3Rpb25cbiMgT3VyIGRhdGFzZXQgaGFzIG92ZXIgMzAgdmFyaWFibGVzLCBhbmQgc29tZSBvZiB0aGVtIGFyZSBjb3JyZWxhdGVkIHRvIGVhY2ggb3RoZXIuIExldCdzIGlkZW50aWZ5IHRoZSB1c2VmdWwgb25lcyBvbmx5XG5zdWJzZXRwcmVkID0gY2FuY2VyICU+JSBkcGx5cjo6c2VsZWN0KC1iaW5uZWRpbmMsIC1tZWRpYW5hZ2VmZW1hbGUsIC1tZWRpYW5hZ2VtYWxlLCAtZ2VvZ3JhcGh5LCAtcGN0aHMxOF8yNCwgLXBjdG5vaHMxOF8yNCwgLXBjdHNvbWVjb2wxOF8yNCwgLXBjdGJhY2hkZWcxOF8yNCwgLXBjdGVtcGxveWVkMTZfb3ZlciwgLXBjdGVtcHByaXZjb3ZlcmFnZSwgLW1lZGluY29tZSlcblxubWluY3N1YnNldCA9IHJlZ3N1YnNldHMobWVkaW5jb21lYnVja2V0cyB+IC4sIGRhdGEgPSBzdWJzZXRwcmVkLCByZWFsbHkuYmlnID0gVCwgbnZtYXggPSAyMylcbnN1bW1hcnkobWluY3N1YnNldClcbm1pbnN1YnNldHN1bSA9IHN1bW1hcnkobWluY3N1YnNldClcbiNuYW1lcyhtaW5jc3Vic2V0c3VtKVxucmVuZGVyUGxvdCh7XG4gIHBsb3QobWluc3Vic2V0c3VtJGNwLHhsYWI9XCJOdW1iZXIgb2YgVmFyaWFibGVzXCIseWxhYj1cIkNwXCIpXG4gIHdoaWNoLm1pbihtaW5zdWJzZXRzdW0kY3ApXG4gIHBvaW50cygxMSxtaW5zdWJzZXRzdW0kY3BbMTFdLHBjaD0yMCxjb2w9XCJyZWRcIilcbn0pXG5cbnJlbmRlclBsb3Qoe1xuICBwbG90KG1pbmNzdWJzZXQsIHNjYWxlID0gXCJDcFwiKVxufSlcbmNvZWYobWluY3N1YnNldCwgMjMpXG5gYGAifQ== -->
-<pre class="r"><code>#Subset selection
-# Our dataset has over 30 variables, and some of them are correlated to each other. Let's identify the useful ones only
-subsetpred = cancer %&gt;% dplyr::select(-binnedinc, -medianagefemale, -medianagemale, -geography, -pcths18_24, -pctnohs18_24, -pctsomecol18_24, -pctbachdeg18_24, -pctemployed16_over, -pctempprivcoverage, -medincome)
-
-mincsubset = regsubsets(medincomebuckets ~ ., data = subsetpred, really.big = T, nvmax = 23)
-summary(mincsubset)
-minsubsetsum = summary(mincsubset)
-#names(mincsubsetsum)
-renderPlot({
-  plot(minsubsetsum$cp,xlab=&quot;Number of Variables&quot;,ylab=&quot;Cp&quot;)
-  which.min(minsubsetsum$cp)
-  points(11,minsubsetsum$cp[11],pch=20,col=&quot;red&quot;)
-})
-
-renderPlot({
-  plot(mincsubset, scale = &quot;Cp&quot;)
-})
-coef(mincsubset, 23)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-</div>
-<div id="section-simple-and-multiple-linear-regression" class="section level3">
-<h3><strong>Simple and Multiple Linear regression</strong></h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9seShkYXRhID0gY2FuY2VyLCB4ID0gfm1lZGlhbmFnZSwgeSA9IH50YXJnZXRfZGVhdGhyYXRlKVxubWVkaWFuYWdlX25vb3V0bGllcnMgPSBtZWRpYW5hZ2VbbWVkaWFuYWdlIDwgMTAwXVxuZGVhdGhyYXRlX25vb3V0bGllcnMgPSBjYW5jZXIkdGFyZ2V0X2RlYXRocmF0ZVttZWRpYW5hZ2UgPCAxMDBdXG5wbG90X2x5KGRhdGEgPSBjYW5jZXIsIHggPSB+bWVkaWFuYWdlX25vb3V0bGllcnMsIHkgPSB+ZGVhdGhyYXRlX25vb3V0bGllcnMpXG5gYGAifQ== -->
-<pre class="r"><code>plot_ly(data = cancer, x = ~medianage, y = ~target_deathrate)
-medianage_nooutliers = medianage[medianage &lt; 100]
-deathrate_nooutliers = cancer$target_deathrate[medianage &lt; 100]
-plot_ly(data = cancer, x = ~medianage_nooutliers, y = ~deathrate_nooutliers)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Creating a linear regression model, using medianage and adding other variables as we see fit</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVkYWdlbG0gPSBsbSh0YXJnZXRfZGVhdGhyYXRlIH4gbWVkaWFuYWdlLCBkYXRhID0gY2FuY2VyKVxuc3VtbWFyeShtZWRhZ2VsbSlcbmBgYCJ9 -->
-<pre class="r"><code>medagelm = lm(target_deathrate ~ medianage, data = cancer)
-summary(medagelm)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>With a p-value of 0.8 for the medianage coefficient, we fail to reject the null hypothesis There is no relationship between median age and cancer death rate Let’s add other variables</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIHBsb3QodGFyZ2V0X2RlYXRocmF0ZSB+IG1lZGluY29tZSwgZGF0YSA9IGNhbmNlcilcbiAgbWVkaW5jb21lbG0gPSBsbSh0YXJnZXRfZGVhdGhyYXRlIH4gbWVkaW5jb21lLCBkYXRhID0gY2FuY2VyKVxuICBhYmxpbmUobWVkaW5jb21lbG0sIGNvbCA9IFwicmVkXCIpXG4gIHN1bW1hcnkobWVkaW5jb21lbG0pXG59KVxubWVkaW5jb21lbG0gPSBsbSh0YXJnZXRfZGVhdGhyYXRlIH4gbWVkaW5jb21lLCBkYXRhID0gY2FuY2VyKVxuc3VtbWFyeShtZWRpbmNvbWVsbSlcbmBgYCJ9 -->
-<pre class="r"><code>renderPlot({
-  plot(target_deathrate ~ medincome, data = cancer)
-  medincomelm = lm(target_deathrate ~ medincome, data = cancer)
-  abline(medincomelm, col = &quot;red&quot;)
-  summary(medincomelm)
-})
-medincomelm = lm(target_deathrate ~ medincome, data = cancer)
-summary(medincomelm)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>There seems to be some relationship between median income and cancer death rate, a negative relationship to be precise However, the R-squared value is too low (0.18), which means that our model does not fully explain the variance in the output variable This means that a multi-predictor linear model could be more accurate.</p>
-<p>Let’s fit a linear model with more than one predictor summary(cancer) Let’s select predictors based on our own intuition. We believe that incidence rate, median income, population estimate, poverty percentage, unemployment percetange, and private coverage percentage could be the strongest predictors. Let’s look at the relationships between these variables</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXVsdGlwcmVkID0gY2FuY2VyICU+JSBkcGx5cjo6c2VsZWN0KHRhcmdldF9kZWF0aHJhdGUsIGluY2lkZW5jZXJhdGUsIG1lZGluY29tZSwgcG9wZXN0MjAxNSwgcG92ZXJ0eXBlcmNlbnQsIHBjdHVuZW1wbG95ZWQxNl9vdmVyLCBwY3Rwcml2YXRlY292ZXJhZ2UpXG5yZW5kZXJQbG90KHtcbiAgcGFpcnMobXVsdGlwcmVkKVxufSlcbmBgYCJ9 -->
-<pre class="r"><code>multipred = cancer %&gt;% dplyr::select(target_deathrate, incidencerate, medincome, popest2015, povertypercent, pctunemployed16_over, pctprivatecoverage)
-renderPlot({
-  pairs(multipred)
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>(Some interesting relationships in this plot. We will explore some of these relationships in following insights)</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXVsdGlwcmVkbG0gPSBsbSh0YXJnZXRfZGVhdGhyYXRlIH4gLiwgZGF0YSA9IG11bHRpcHJlZClcbnN1bW1hcnkobXVsdGlwcmVkbG0pXG5gYGAifQ== -->
-<pre class="r"><code>multipredlm = lm(target_deathrate ~ ., data = multipred)
-summary(multipredlm)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We see some great results from this model! Aside from povertypercent, all of our predictors are statistically significant, and our R-squared has improved substantially (0.4284) This is a great start, but can we do better? We will look at better ways of identifying predictors for our model.</p>
-</div>
-<div id="section-model-selection" class="section level3">
-<h3><strong>Model Selection</strong></h3>
-<div id="section-model-selection---best-subset-regression" class="section level4">
-<h4><strong>Model Selection - Best Subset Regression</strong></h4>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3Vic2V0cHJlZCA9IGNhbmNlciAlPiUgZHBseXI6OnNlbGVjdCgtYmlubmVkaW5jLCAtbWVkaWFuYWdlZmVtYWxlLCAtbWVkaWFuYWdlbWFsZSwgLWdlb2dyYXBoeSwgLXBjdGhzMThfMjQsIC1wY3Rub2hzMThfMjQsIC1wY3Rzb21lY29sMThfMjQsIC1wY3RiYWNoZGVnMThfMjQsIC1wY3RlbXBsb3llZDE2X292ZXIsIC1wY3Rwcml2YXRlY292ZXJhZ2VhbG9uZSwgLXBjdGVtcHByaXZjb3ZlcmFnZSwgLXBjdHB1YmxpY2NvdmVyYWdlLCAtcGN0cHVibGljY292ZXJhZ2VhbG9uZSlcbnN1YnNldHByZWRzdWJtID0gcmVnc3Vic2V0cyh0YXJnZXRfZGVhdGhyYXRlIH4gLiwgZGF0YSA9IHN1YnNldHByZWQsIHJlYWxseS5iaWcgPSBULCBudm1heCA9IDIwKVxuc3VtbWFyeShzdWJzZXRwcmVkc3VibSlcbnN1YnNldHByZWRzdW0gPSBzdW1tYXJ5KHN1YnNldHByZWRzdWJtKVxuI25hbWVzKHN1YnNldHByZWRzdW0pXG5yZW5kZXJQbG90KHtcbiAgcGxvdChzdWJzZXRwcmVkc3VtJGNwLHhsYWI9XCJOdW1iZXIgb2YgVmFyaWFibGVzXCIseWxhYj1cIkNwXCIpXG4gIHdoaWNoLm1pbihzdWJzZXRwcmVkc3VtJGNwKVxuICBwb2ludHMoMTYsc3Vic2V0cHJlZHN1bSRjcFsxNl0scGNoPTIwLGNvbD1cInJlZFwiKVxufSlcblxucmVuZGVyUGxvdCh7XG4gIHBsb3Qoc3Vic2V0cHJlZHN1Ym0sIHNjYWxlID0gXCJDcFwiKVxufSlcbmNvZWYoc3Vic2V0cHJlZHN1Ym0sIDE2KVxuYGBgIn0= -->
-<pre class="r"><code>subsetpred = cancer %&gt;% dplyr::select(-binnedinc, -medianagefemale, -medianagemale, -geography, -pcths18_24, -pctnohs18_24, -pctsomecol18_24, -pctbachdeg18_24, -pctemployed16_over, -pctprivatecoveragealone, -pctempprivcoverage, -pctpubliccoverage, -pctpubliccoveragealone)
-subsetpredsubm = regsubsets(target_deathrate ~ ., data = subsetpred, really.big = T, nvmax = 20)
-summary(subsetpredsubm)
-subsetpredsum = summary(subsetpredsubm)
-#names(subsetpredsum)
-renderPlot({
-  plot(subsetpredsum$cp,xlab=&quot;Number of Variables&quot;,ylab=&quot;Cp&quot;)
-  which.min(subsetpredsum$cp)
-  points(16,subsetpredsum$cp[16],pch=20,col=&quot;red&quot;)
-})
-
-renderPlot({
-  plot(subsetpredsubm, scale = &quot;Cp&quot;)
-})
-coef(subsetpredsubm, 16)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="section-forward-stepwise-selection" class="section level4">
-<h4><strong>Forward Stepwise Selection</strong></h4>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3Vic2V0cHJlZHN1Ym0uZndkID0gcmVnc3Vic2V0cyh0YXJnZXRfZGVhdGhyYXRlIH4gLiwgZGF0YSA9IHN1YnNldHByZWQsIG52bWF4ID0gMjAsbWV0aG9kID0gXCJmb3J3YXJkXCIpXG5zdW1tYXJ5KHN1YnNldHByZWRzdWJtLmZ3ZClcbnJlbmRlclBsb3Qoe1xuICBwbG90KHN1YnNldHByZWRzdWJtLmZ3ZCwgc2NhbGU9XCJDcFwiKVxufSlcbmBgYCJ9 -->
-<pre class="r"><code>subsetpredsubm.fwd = regsubsets(target_deathrate ~ ., data = subsetpred, nvmax = 20,method = &quot;forward&quot;)
-summary(subsetpredsubm.fwd)
-renderPlot({
-  plot(subsetpredsubm.fwd, scale=&quot;Cp&quot;)
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Adding a validation set</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGltKHN1YnNldHByZWQpXG5zZXQuc2VlZCgxKVxudHJhaW4gPSBzYW1wbGUoc2VxKDMwNDcpLCAyMTMyLCByZXBsYWNlPUZBTFNFKVxucmVnZml0LmZ3ZD1yZWdzdWJzZXRzKHRhcmdldF9kZWF0aHJhdGUgfiAuLCBkYXRhID0gc3Vic2V0cHJlZFt0cmFpbixdLCBudm1heCA9IDIwLCBtZXRob2QgPSBcImZvcndhcmRcIilcbmBgYCJ9 -->
-<pre class="r"><code>dim(subsetpred)
-set.seed(1)
-train = sample(seq(3047), 2132, replace=FALSE)
-regfit.fwd=regsubsets(target_deathrate ~ ., data = subsetpred[train,], nvmax = 20, method = &quot;forward&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Predicting on test set</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudmFsLmVycm9ycyA9IHJlcChOQSwgMjApXG54LnRlc3QgPSBtb2RlbC5tYXRyaXgodGFyZ2V0X2RlYXRocmF0ZSB+IC4sIGRhdGEgPSBzdWJzZXRwcmVkWy10cmFpbixdKVxuZm9yKGkgaW4gMToyMCl7IFxuICBjb2VmaSA9IGNvZWYocmVnZml0LmZ3ZCwgaWQgPSBpKVxuICBwcmVkID0geC50ZXN0WyxuYW1lcyhjb2VmaSldJSolY29lZmlcbiAgdmFsLmVycm9yc1tpXSA9IG1lYW4oKHN1YnNldHByZWQkdGFyZ2V0X2RlYXRocmF0ZVstdHJhaW5dIC0gcHJlZCkgXiAyKVxufVxucmVuZGVyUGxvdCAoe1xuICBwbG90KHNxcnQodmFsLmVycm9ycyksIHlsYWI9XCJSb290IE1TRVwiLCB5bGltID0gYygxOSwgMjUpLCBwY2ggPSAyMCwgdHlwZSA9IFwiYlwiKVxuICBwb2ludHMoc3FydChyZWdmaXQuZndkJHJzc1stMV0vMjEzMiksY29sPVwiYmx1ZVwiLHBjaD0yMCx0eXBlPVwiYlwiKVxuICBsZWdlbmQoXCJ0b3ByaWdodFwiLGxlZ2VuZD1jKFwiVHJhaW5pbmdcIixcIlZhbGlkYXRpb25cIiksY29sPWMoXCJibHVlXCIsXCJibGFja1wiKSxwY2g9MjApXG59KVxuYGBgIn0= -->
-<pre class="r"><code>val.errors = rep(NA, 20)
-x.test = model.matrix(target_deathrate ~ ., data = subsetpred[-train,])
-for(i in 1:20){ 
-  coefi = coef(regfit.fwd, id = i)
-  pred = x.test[,names(coefi)]%*%coefi
-  val.errors[i] = mean((subsetpred$target_deathrate[-train] - pred) ^ 2)
-}
-renderPlot ({
-  plot(sqrt(val.errors), ylab=&quot;Root MSE&quot;, ylim = c(19, 25), pch = 20, type = &quot;b&quot;)
-  points(sqrt(regfit.fwd$rss[-1]/2132),col=&quot;blue&quot;,pch=20,type=&quot;b&quot;)
-  legend(&quot;topright&quot;,legend=c(&quot;Training&quot;,&quot;Validation&quot;),col=c(&quot;blue&quot;,&quot;black&quot;),pch=20)
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="section-model-selection-by-cross-validation" class="section level4">
-<h4><strong>Model Selection by Cross Validation</strong></h4>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-</div>
-<div id="section-lda" class="section level3">
-<h3><strong>LDA</strong></h3>
-<p>Confusion matrices and overall accuracy. Our objective was to test Private Health Coverage (with public assistance) as a predictor of Median Income. In order to conduct a Linear Discriminant Analysis, we bucketed our Median Income data into two groups: Less than 50,000 and Greater than 50,000. Our analysis returned an LDA coefficient of 0.115277:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBCdWNrZXRpbmcgTWVkaWFuIEluY29tZSBpbnRvIDw1MEsgYW5kID41MEtcblxuYnVja2V0X2luY29tZSA8LSAgdHJhbnNmb3JtKGNhbmNlciwgZ3JvdXA9Y3V0KG1lZGluY29tZSwgYnJlYWtzPWMoLUluZiwgNTAwMDAsIEluZiksIGxhYmVscz1jKFwiTGVzcyB0aGFuIDUwMDAwXCIsIFwiR3JlYXRlciB0aGFuIDUwMDAwXCIpKSlcbnN1bW1hcnkoYnVja2V0X2luY29tZSlcbiNjbGFzcyhidWNrZXRfaW5jb21lJGdyb3VwKVxuXG4jIExpbmVhciBEaXNjcmltaW5hbnQgQW5hbHlzaXMgLSBQcml2YXRlIENvdmVyYWdlIGFzIGEgUHJlZGljdG9yIG9mIE1lZGlhbiBJbmNvbWVcbmxkYS5maXQ9bGRhKGJ1Y2tldF9pbmNvbWUkZ3JvdXB+cGN0cHJpdmF0ZWNvdmVyYWdlLCBkYXRhPWNhbmNlcilcblxubGRhLmZpdFxucmVuZGVyUGxvdCh7XG4gIHBsb3QobGRhLmZpdClcbn0pXG5sZGEucHJlZD1wcmVkaWN0KGxkYS5maXQpXG5cbnJlbmRlclRhYmxlKHtcbiAgZGF0YS5mcmFtZShsZGEucHJlZClbMTo1MCxdXG59KVxuXG5jMSA9IGRhdGEuZnJhbWUobGRhLnByZWQpXG5cbmcgPC0gZ2dwbG90KGMxKSArIGdlb21faGlzdG9ncmFtKG1hcHBpbmcgPSBhZXMoeD1MRDEpKSArIGZhY2V0X3dyYXAofiBjbGFzcylcbnJlbmRlclBsb3Qoe1xuICBnXG59KVxuYGBgIn0= -->
-<pre class="r"><code># Bucketing Median Income into &lt;50K and &gt;50K
-
-bucket_income &lt;-  transform(cancer, group=cut(medincome, breaks=c(-Inf, 50000, Inf), labels=c(&quot;Less than 50000&quot;, &quot;Greater than 50000&quot;)))
-summary(bucket_income)
-#class(bucket_income$group)
-
-# Linear Discriminant Analysis - Private Coverage as a Predictor of Median Income
-lda.fit=lda(bucket_income$group~pctprivatecoverage, data=cancer)
-
-lda.fit
-renderPlot({
-  plot(lda.fit)
-})
-lda.pred=predict(lda.fit)
-
-renderTable({
-  data.frame(lda.pred)[1:50,]
-})
-
-c1 = data.frame(lda.pred)
-
-g &lt;- ggplot(c1) + geom_histogram(mapping = aes(x=LD1)) + facet_wrap(~ class)
-renderPlot({
-  g
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We then created a confusion matrix to test our predictor:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUobGRhLnByZWQkY2xhc3MsYnVja2V0X2luY29tZSRncm91cClcbm1lYW4obGRhLnByZWQkY2xhc3M9PWJ1Y2tldF9pbmNvbWUkZ3JvdXApXG5gYGAifQ== -->
-<pre class="r"><code>table(lda.pred$class,bucket_income$group)
-mean(lda.pred$class==bucket_income$group)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We found that Private Health Coverage was an accurate predictor 83.33% of the time.</p>
-</div>
-<div id="section-qda" class="section level3">
-<h3><strong>QDA</strong></h3>
-<p>The objective of this insight was to test Percentage of Married Households as a predictor of Median Income using a Quadratic Discriminant Analysis. We bucketed the median income into two categories: Less than 50,000 and Greater than 50,000. Our QDA fit returned the following:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucWRhLmZpdD1xZGEoYnVja2V0X2luY29tZSRncm91cH5wY3RtYXJyaWVkaG91c2Vob2xkcywgZGF0YT1jYW5jZXIpXG5cbnFkYS5maXRcbnFkYS5wcmVkPXByZWRpY3QocWRhLmZpdClcbnJlbmRlclRhYmxlKHtcbiAgZGF0YS5mcmFtZShxZGEucHJlZClbMTo1MCxdXG59KVxuYGBgIn0= -->
-<pre class="r"><code>qda.fit=qda(bucket_income$group~pctmarriedhouseholds, data=cancer)
-
-qda.fit
-qda.pred=predict(qda.fit)
-renderTable({
-  data.frame(qda.pred)[1:50,]
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>The distribution is as follows:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIGdncGxvdChkYXRhPWNhbmNlciwgYWVzKGJ1Y2tldF9pbmNvbWUkZ3JvdXApKSArIGdlb21fYmFyKClcbn0pXG5gYGAifQ== -->
-<pre class="r"><code>renderPlot({
-  ggplot(data=cancer, aes(bucket_income$group)) + geom_bar()
-})</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We then created a confusion matrix to test the predictions:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUocWRhLnByZWQkY2xhc3MsYnVja2V0X2luY29tZSRncm91cClcbm1lYW4ocWRhLnByZWQkY2xhc3M9PWJ1Y2tldF9pbmNvbWUkZ3JvdXApXG5gYGAifQ== -->
-<pre class="r"><code>table(qda.pred$class,bucket_income$group)
-mean(qda.pred$class==bucket_income$group)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We found that Percentage of Married Households accurately Predicted Median income 72.50% of the time.</p>
-</div>
-<div id="section-knn-analysis" class="section level3">
-<h3><strong>KNN Analysis</strong></h3>
-<p>Our objective was to use a K Nearest Neighbors Analysis to test Average Household Size, Percentage of Married Households, and Percentage of Private Coverage as predictors of Median Income. We conducted the analysis using 1, 5, 20, and 100 nearest neighbors.</p>
-<p><strong>1 nearest neighbor</strong></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDaG9vc2luZyB0aGUgcmVsZXZhbnQgdmFyaWFibGVzIGFuZCBjcmVhdGluZyBhIHN1YnNldFxudmFycyA8LSBjKFwicGN0cHJpdmF0ZWNvdmVyYWdlXCIsIFwicGN0bWFycmllZGhvdXNlaG9sZHNcIiwgXCJhdmdob3VzZWhvbGRzaXplXCIpXG5jYW5jZXIuc3Vic2V0IDwtIGNhbmNlclt2YXJzXVxuXG4jIENyZWF0aW5nIHRlc3QgYW5kIHRyYWluIHN1YnNldHNcbnRlc3QgPC0gMToyMDAwXG5jYW5jZXIudHJhaW4gPC0gY2FuY2VyLnN1YnNldFstdGVzdCxdXG5jYW5jZXIudGVzdCA8LSBjYW5jZXIuc3Vic2V0W3Rlc3QsXVxuXG50cmFpbi5kZWYgPC0gYnVja2V0X2luY29tZSRncm91cFstdGVzdF1cbnRlc3QuZGVmIDwtIGJ1Y2tldF9pbmNvbWUkZ3JvdXBbdGVzdF1cbiNsZW5ndGgoY2FuY2VyKVxuIyBGaXR0aW5nIHRoZSBtb2RlbHNcbmtubi4xIDwtICBrbm4oY2FuY2VyLnRyYWluLCBjYW5jZXIudGVzdCwgdHJhaW4uZGVmLCBrPTEpXG5rbm4uNSA8LSAga25uKGNhbmNlci50cmFpbiwgY2FuY2VyLnRlc3QsIHRyYWluLmRlZiwgaz01KVxua25uLjIwIDwtIGtubihjYW5jZXIudHJhaW4sIGNhbmNlci50ZXN0LCB0cmFpbi5kZWYsIGs9MjApXG5rbm4uMTAwIDwtIGtubihjYW5jZXIudHJhaW4sIGNhbmNlci50ZXN0LCB0cmFpbi5kZWYsIGs9MTAwKVxuXG50YWJsZShrbm4uMSx0ZXN0LmRlZilcbm1lYW4oa25uLjE9PXRlc3QuZGVmKVxuYGBgIn0= -->
-<pre class="r"><code># Choosing the relevant variables and creating a subset
-vars &lt;- c(&quot;pctprivatecoverage&quot;, &quot;pctmarriedhouseholds&quot;, &quot;avghouseholdsize&quot;)
-cancer.subset &lt;- cancer[vars]
-
-# Creating test and train subsets
-test &lt;- 1:2000
-cancer.train &lt;- cancer.subset[-test,]
-cancer.test &lt;- cancer.subset[test,]
-
-train.def &lt;- bucket_income$group[-test]
-test.def &lt;- bucket_income$group[test]
-#length(cancer)
-# Fitting the models
-knn.1 &lt;-  knn(cancer.train, cancer.test, train.def, k=1)
-knn.5 &lt;-  knn(cancer.train, cancer.test, train.def, k=5)
-knn.20 &lt;- knn(cancer.train, cancer.test, train.def, k=20)
-knn.100 &lt;- knn(cancer.train, cancer.test, train.def, k=100)
-
-table(knn.1,test.def)
-mean(knn.1==test.def)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p><strong>5 nearest neighbors</strong></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUoa25uLjUsdGVzdC5kZWYpXG5tZWFuKGtubi41PT10ZXN0LmRlZilcblxuYGBgIn0= -->
-<pre class="r"><code>table(knn.5,test.def)
-mean(knn.5==test.def)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p><strong>20 nearest neighbors</strong></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUoa25uLjIwLHRlc3QuZGVmKVxubWVhbihrbm4uMjA9PXRlc3QuZGVmKVxuXG5gYGAifQ== -->
-<pre class="r"><code>table(knn.20,test.def)
-mean(knn.20==test.def)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We found that using 1 nearest neighbor yielded a 76.95% rate of accuracy. Using 5 nearest neighbors yielded an 81.4% rate of accuracy, and the increase to 20 and 100 nearest neighbors only improved these results marginally.</p>
 <!-- rnb-text-end -->
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSBBbmFseXRpY3MgUHJvamVjdCA0OiBCYW5rIE1hcmtldGluZycKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CnJlcXVpcmUoTUFTUykKcmVxdWlyZShJU0xSKQpyZXF1aXJlKGdncGxvdDIpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoZHBseXIpCnJlcXVpcmUobGVhcHMpCnJlcXVpcmUodGlkeXZlcnNlKQpyZXF1aXJlKHNoaW55KQpyZXF1aXJlKGNsYXNzKQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCmBgYAoKIyMgKipTZXR0aW5nIFVwIHRoZSBFbnZpcm9ubWVudCoqICAKIyMjICoqUiBTZXNzaW9uIEluZm8qKgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCgojIyMgKipkYXRhLndvcmxkIFByb2plY3QgTGluayoqCmh0dHBzOi8vZGF0YS53b3JsZC9uYXRhc2hhcGlyYW5pOTYvZi0xNy1lZGEtcHJvamVjdC00CgojIyMgKipDb25uZWN0aW5nIHRvIGRhdGEud29ybGQqKgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc291cmNlKCJkYXRhLlIiLCBlY2hvID0gRkFMU0UpCmBgYAoKIyMgKipJbnRyb2R1Y3Rpb24qKiAKVGhpcyBkb2N1bWVudCBjb250YWlucyBhbiBhbmFseXNpcyBvbiB0aGUgY2FuY2VyIG1vcnRhbGl0eSByYXRlcyBwZXIgY291bnR5IGluIHRoZSBVU0EgCgojIyMgKipEYXRhc2V0IC0gIENhbmNlciBNb3J0YWxpdHkgUmF0ZSoqCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQojc291cmNlKCJhbmFseXNpcy5SIiwgZWNobyA9IEZBTFNFKQpyZW5kZXJEYXRhVGFibGUoIG9wdGlvbnMgPSBsaXN0KHBhZ2VMZW5ndGggPSAxMCksIHsKICBiYW5rCn0pCmBgYAoKIyMgKipTdGF0aXN0aWNhbCBBbmFseXNpcyoqCiMjIyAqKkxvZ2lzdGljIFJlZ3Jlc3Npb24qKgpgYGB7cn0KYzIgPSBjYW5jZXIgJT4lIGRwbHlyOjpzZWxlY3QobWVkaW5jb21lLCBwb3ZlcnR5cGVyY2VudCwgcGN0bm9oczE4XzI0LCBwY3RoczE4XzI0LCBwY3Rzb21lY29sMThfMjQsIHBjdGhzMjVfb3ZlciwgcGN0YmFjaGRlZzI1X292ZXIsIHBjdG1hcnJpZWRob3VzZWhvbGRzKQpyZW5kZXJQbG90KHsKICBwYWlycyhjMikKfSkKYGBgClRoZSBwYWlycyBwbG90IHdhcyBncmFwaGVkIHRvIHNlZSBpZiB0aGVyZSB3ZXJlIGFueSBpbnRlcmVzdGluZyBjb3JyZWxhdGlvbnMgYmV0d2VlbiBzZXZlcmFsIHZhcmlhYmxlcyBhbmQgbWVkaWFuIGluY29tZSAocGVyIGNvdW50eSkuIFdlIHBpY2tlZCB2YXJpYWJsZXMgZGVhbHQgd2l0aCBlZHVjYXRpb24gbGV2ZWwgYW5kIG1hcnJpYWdlLiBGcm9tIHRoaXMgcGxvdCwgd2UgY2FuIHNlZSB0aGF0IHRoZSB2YXJpYWJsZSBwY3RiYWNoZGVnMjVfb3ZlciBzZWVtcyB0byBoYXZlIGFuIGEgY29ycmVsYXRpb24gd2l0aCBtZWRpYW4gaW5jb21lLiAicGN0YmFjaGRlZzI1X292ZXIiIGlzIHRoZSBwZXJjZW50IG9mIGNvdW50eSByZXNpZGVudHMgYWdlcyAyNSBhbmQgb3ZlciB3aXRoIGEgYmFjaGVsb3IncyBkZWdyZWUgYXMgdGhlIGhpZ2hlc3QgZWR1Y2F0aW9uIG9idGFpbmVkLgpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KcGxvdF9seShkYXRhPWNhbmNlciwgeCA9IH5tZWRpbmNvbWUsIHkgPSB+cGN0YmFjaGRlZzI1X292ZXIpCmBgYAoKCioqMjUrIHdpdGggYSBiYWNoZWxvcidzIGRlZ3JlZSoqCgpXZSBidWNrZXRlZCBtZWRpYW4gaW5jb21lIGludG8gIjw9IDUwLDAwMCIgYW5kICI+IDUwLDAwMCIgVGhlbiB3ZSB1c2VkIHBjdGJhY2hkZWcyNV9vdmVyIHRvIHByZWRpY3QgbWVkaWFuIGluY29tZS4KYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CmNhbmNlciRtZWRpbmNvbWVidWNrZXRzID0gY3V0KGNhbmNlciRtZWRpbmNvbWUsIGMoMCwgNTAwMDAsIDE1MDAwMCksIHJpZ2h0PUZBTFNFLCBsYWJlbHM9YygiPD0gNTAsMDAwIiwgIj4gNTAsMDAwIikpCmF0dGFjaChjYW5jZXIpCiMyNSsgd2l0aCBhIGJhY2hlbG9ycyBkZWdyZWUKZ2xtLmZpdDEgPSBnbG0obWVkaW5jb21lYnVja2V0cyB+IHBjdGJhY2hkZWcyNV9vdmVyLCBkYXRhPWNhbmNlciwgZmFtaWx5ID0gImJpbm9taWFsIikKZ2xtLmZpdDEKc3VtbWFyeShnbG0uZml0MSkKCiNwcmVkaWN0aW9ucwpnbG0ucHJvYnMxPXByZWRpY3QoZ2xtLmZpdDEsdHlwZT0icmVzcG9uc2UiKSAKZ2xtLnByb2JzMVsxOjVdCmdsbS5wcmVkMT1pZmVsc2UoZ2xtLnByb2JzMT4wLjUsIj4gNTAsMDAwIiwiPD0gNTAsMDAwIikKdGFibGUoZ2xtLnByZWQxLG1lZGluY29tZWJ1Y2tldHMpCm1lYW4oZ2xtLnByZWQxPT1tZWRpbmNvbWVidWNrZXRzKQpgYGAKCkFsdGhvdWdoIHRoZSBwZXJjZW50YWdlIG9mIGNvcnJlY3QgcHJlZGljdGlvbnMgaXMgYWNjZXB0YWJsZSAoYXJvdW5kIDc2LjUlKSwgdGhpcyBkb2VzIG5vdCBtZWFuIHBjdGJhY2hkZWcyNV9vdmVyIGlzIGEgZ29vZCBwcmVkaWN0b3IuIFRoZSB2YXJpYWJsZSBwcmVkaWN0cyB0aGUgaW5jb21lIGJ1Y2tldCBvZiAiPD0gNTAsMDAwIiB3ZWxsLCBidXQgaXQgZG9lcyBub3QgcHJlZGljdCAiPiA1MCwwMDAiIHdlbGwuIFRoZSBoaWdoIG1lYW4gY29tZXMgZnJvbSB0aGUgbGFyZ2UgbnVtYmVyIG9mIGluc3RhbmNlcyBvZiBtZWRpYW4gaW5jb21lIDw9IDUwLDAwMC4KCgoqKjI1KyB3aXRoIGEgYmFjaGVsb3IncyBkZWdyZWUsIG9yIGEgaGlnaCBzY2hvb2wgZGVncmVlKioKClRvIGV4cGxvcmUgYmV0dGVyIHByZWRpY3RvcnMsIHdlIHVzZWQgcGN0aHMyNV9vdmVyIHdpdGggcGN0YmFjaGRlZzI1X292ZXIgdG8gcHJlZGljdCBtZWRpYW4gaW5jb21lLiAicGN0aHMyNV9vdmVyIiBkZWFscyB3aXRoIHRoZSBwZXJjZW50IG9mIGNvdW50eSByZXNpZGVudHMgYWdlcyAyNSBhbmQgb3ZlciB3aG9zZSBoaWdoZXN0IGxldmVsIG9mIGVkdWNhdGlvbiBpcyBoaWdoIHNjaG9vbC4KYGBge3J9CmdsbS5maXQyID0gZ2xtKG1lZGluY29tZWJ1Y2tldHMgfiBwY3RiYWNoZGVnMjVfb3ZlcisgcGN0aHMyNV9vdmVyLCBkYXRhPWNhbmNlciwgZmFtaWx5ID0gImJpbm9taWFsIikKZ2xtLmZpdDIKc3VtbWFyeShnbG0uZml0MikKCiNwcmVkaWN0aW9ucwpnbG0ucHJvYnMyPXByZWRpY3QoZ2xtLmZpdDIsdHlwZT0icmVzcG9uc2UiKSAKZ2xtLnByb2JzMlsxOjVdCmdsbS5wcmVkMj1pZmVsc2UoZ2xtLnByb2JzMj4wLjUsIj4gNTAsMDAwIiwiPD0gNTAsMDAwIikKdGFibGUoZ2xtLnByZWQyLG1lZGluY29tZWJ1Y2tldHMpCm1lYW4oZ2xtLnByZWQyPT1tZWRpbmNvbWVidWNrZXRzKQpgYGAKVGhlIHZhcmlhYmxlIHNpbWlsYXJseSBwcm9kdWNlcyBhIHBlcmNlbnRhZ2Ugb2YgY3VycmVudCBwcmVkaWN0aW9ucyBvZiBhcm91bmQgNzclIGJ1dCBkb2VzIG5vdCBwcmVkaWN0IHRoZSAiPiA1MCwwMDAiIGJ1Y2tldCB3ZWxsLgpgYGB7ciwgbWVzc2FnZT1GQUxTRX0KcGxvdF9seShkYXRhPWNhbmNlciwgeCA9IH5tZWRpbmNvbWUsIHkgPSB+cGN0bWFycmllZGhvdXNlaG9sZHMpCmBgYAoKCioqMjUrIC1iYWNoZWxvcidzIGRlZ3JlZSwgaGlnaCBzY2hvb2wgZGVncmVlLCBtYXJyaWVkKioKClNpbmNlIG9ubHkgY29uc2lkZXJpbmcgdGhlIGVkdWNhdGlvbiBkaWQgbm90IHNlZW0gdG8gcHJvZHVjZSBnb29kIHByZWRpY3Rpb25zLCB3ZSBkZWNpZGVkIHRvIGluY2x1ZGUgcGVyY2VudGFnZSBvZiBtYXJyaWVkIHBlb3BsZSBiZWNhdXNlIGl0IHNlZW1lZCB0byBiZSBzb21ld2hhdCBjb3JyZWxhdGVkIHRvIG1lZGlhbiBpbmNvbWUuIFNvIHdlIHByZWRpY3RlZCB1c2luZyB0aGUgdmFyaWFibGVzIHBjdG1hcnJpZWRob3VzZWhvbGRzLCBwY3RiYWNoZGVnMjVfb3ZlciwgYW5kIHBjdGhzMjVfb3Zlci4KYGBge3J9CiMyNSsgd2l0aCBhIGJhY2hlbG9ycyBkZWdyZWUsIGhpZ2ggc2Nob29sLCBtYXJyaWVkCmdsbS5maXQzID0gZ2xtKG1lZGluY29tZWJ1Y2tldHMgfiBwY3RiYWNoZGVnMjVfb3ZlcisgcGN0aHMyNV9vdmVyICsgcGN0bWFycmllZGhvdXNlaG9sZHMsIGRhdGE9Y2FuY2VyLCBmYW1pbHkgPSAiYmlub21pYWwiKQpnbG0uZml0MwpzdW1tYXJ5KGdsbS5maXQzKQoKI3ByZWRpY3Rpb25zCmdsbS5wcm9iczM9cHJlZGljdChnbG0uZml0Myx0eXBlPSJyZXNwb25zZSIpIApnbG0ucHJvYnMzWzE6NV0KZ2xtLnByZWQzPWlmZWxzZShnbG0ucHJvYnMzPjAuNSwiPiA1MCwwMDAiLCI8PSA1MCwwMDAiKQp0YWJsZShnbG0ucHJlZDMsbWVkaW5jb21lYnVja2V0cykKbWVhbihnbG0ucHJlZDM9PW1lZGluY29tZWJ1Y2tldHMpCgpgYGAKClRoaXMgcHJvZHVjZXMgYSBtb3JlIGFjY3VyYXRlIHByZWRpY3Rpb24gZm9yIGJvdGggYnVja2V0cywgIjw9IDUwLDAwMCIgYW5kICI+IDUwLDAwMCIuIFRoZSBwZXJjZW50YWdlIG9mIGNvcnJlY3QgcHJlZGljdGlvbnMgaXMgYXJvdW5kIDgyJS4KCiMjIyNTdWJzZXQgc2VsZWN0aW9uCmBgYHtyLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQojU3Vic2V0IHNlbGVjdGlvbgojIE91ciBkYXRhc2V0IGhhcyBvdmVyIDMwIHZhcmlhYmxlcywgYW5kIHNvbWUgb2YgdGhlbSBhcmUgY29ycmVsYXRlZCB0byBlYWNoIG90aGVyLiBMZXQncyBpZGVudGlmeSB0aGUgdXNlZnVsIG9uZXMgb25seQpzdWJzZXRwcmVkID0gY2FuY2VyICU+JSBkcGx5cjo6c2VsZWN0KC1iaW5uZWRpbmMsIC1tZWRpYW5hZ2VmZW1hbGUsIC1tZWRpYW5hZ2VtYWxlLCAtZ2VvZ3JhcGh5LCAtcGN0aHMxOF8yNCwgLXBjdG5vaHMxOF8yNCwgLXBjdHNvbWVjb2wxOF8yNCwgLXBjdGJhY2hkZWcxOF8yNCwgLXBjdGVtcGxveWVkMTZfb3ZlciwgLXBjdGVtcHByaXZjb3ZlcmFnZSwgLW1lZGluY29tZSkKCm1pbmNzdWJzZXQgPSByZWdzdWJzZXRzKG1lZGluY29tZWJ1Y2tldHMgfiAuLCBkYXRhID0gc3Vic2V0cHJlZCwgcmVhbGx5LmJpZyA9IFQsIG52bWF4ID0gMjMpCnN1bW1hcnkobWluY3N1YnNldCkKbWluc3Vic2V0c3VtID0gc3VtbWFyeShtaW5jc3Vic2V0KQojbmFtZXMobWluY3N1YnNldHN1bSkKcmVuZGVyUGxvdCh7CiAgcGxvdChtaW5zdWJzZXRzdW0kY3AseGxhYj0iTnVtYmVyIG9mIFZhcmlhYmxlcyIseWxhYj0iQ3AiKQogIHdoaWNoLm1pbihtaW5zdWJzZXRzdW0kY3ApCiAgcG9pbnRzKDExLG1pbnN1YnNldHN1bSRjcFsxMV0scGNoPTIwLGNvbD0icmVkIikKfSkKCnJlbmRlclBsb3QoewogIHBsb3QobWluY3N1YnNldCwgc2NhbGUgPSAiQ3AiKQp9KQpjb2VmKG1pbmNzdWJzZXQsIDIzKQpgYGAKCgoKIyMjKipTaW1wbGUgYW5kIE11bHRpcGxlIExpbmVhciByZWdyZXNzaW9uKioKCmBgYHtyLCB3YXJuaW5nPUZBTFNFLCBtZXNzYWdlPUZBTFNFfQpwbG90X2x5KGRhdGEgPSBjYW5jZXIsIHggPSB+bWVkaWFuYWdlLCB5ID0gfnRhcmdldF9kZWF0aHJhdGUpCm1lZGlhbmFnZV9ub291dGxpZXJzID0gbWVkaWFuYWdlW21lZGlhbmFnZSA8IDEwMF0KZGVhdGhyYXRlX25vb3V0bGllcnMgPSBjYW5jZXIkdGFyZ2V0X2RlYXRocmF0ZVttZWRpYW5hZ2UgPCAxMDBdCnBsb3RfbHkoZGF0YSA9IGNhbmNlciwgeCA9IH5tZWRpYW5hZ2Vfbm9vdXRsaWVycywgeSA9IH5kZWF0aHJhdGVfbm9vdXRsaWVycykKYGBgCkNyZWF0aW5nIGEgbGluZWFyIHJlZ3Jlc3Npb24gbW9kZWwsIHVzaW5nIG1lZGlhbmFnZSBhbmQgYWRkaW5nIG90aGVyIHZhcmlhYmxlcyBhcyB3ZSBzZWUgZml0CmBgYHtyfQptZWRhZ2VsbSA9IGxtKHRhcmdldF9kZWF0aHJhdGUgfiBtZWRpYW5hZ2UsIGRhdGEgPSBjYW5jZXIpCnN1bW1hcnkobWVkYWdlbG0pCmBgYApXaXRoIGEgcC12YWx1ZSBvZiAwLjggZm9yIHRoZSBtZWRpYW5hZ2UgY29lZmZpY2llbnQsIHdlIGZhaWwgdG8gcmVqZWN0IHRoZSBudWxsIGh5cG90aGVzaXMKVGhlcmUgaXMgbm8gcmVsYXRpb25zaGlwIGJldHdlZW4gbWVkaWFuIGFnZSBhbmQgY2FuY2VyIGRlYXRoIHJhdGUKTGV0J3MgYWRkIG90aGVyIHZhcmlhYmxlcwpgYGB7cn0KcmVuZGVyUGxvdCh7CiAgcGxvdCh0YXJnZXRfZGVhdGhyYXRlIH4gbWVkaW5jb21lLCBkYXRhID0gY2FuY2VyKQogIG1lZGluY29tZWxtID0gbG0odGFyZ2V0X2RlYXRocmF0ZSB+IG1lZGluY29tZSwgZGF0YSA9IGNhbmNlcikKICBhYmxpbmUobWVkaW5jb21lbG0sIGNvbCA9ICJyZWQiKQogIHN1bW1hcnkobWVkaW5jb21lbG0pCn0pCm1lZGluY29tZWxtID0gbG0odGFyZ2V0X2RlYXRocmF0ZSB+IG1lZGluY29tZSwgZGF0YSA9IGNhbmNlcikKc3VtbWFyeShtZWRpbmNvbWVsbSkKYGBgCgpUaGVyZSBzZWVtcyB0byBiZSBzb21lIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIG1lZGlhbiBpbmNvbWUgYW5kIGNhbmNlciBkZWF0aCByYXRlLCBhIG5lZ2F0aXZlIHJlbGF0aW9uc2hpcCB0byBiZSBwcmVjaXNlCkhvd2V2ZXIsIHRoZSBSLXNxdWFyZWQgdmFsdWUgaXMgdG9vIGxvdyAoMC4xOCksIHdoaWNoIG1lYW5zIHRoYXQgb3VyIG1vZGVsIGRvZXMgbm90IGZ1bGx5IGV4cGxhaW4gdGhlIHZhcmlhbmNlIGluIHRoZSBvdXRwdXQgdmFyaWFibGUKVGhpcyBtZWFucyB0aGF0IGEgbXVsdGktcHJlZGljdG9yIGxpbmVhciBtb2RlbCBjb3VsZCBiZSBtb3JlIGFjY3VyYXRlLgoKCkxldCdzIGZpdCBhIGxpbmVhciBtb2RlbCB3aXRoIG1vcmUgdGhhbiBvbmUgcHJlZGljdG9yCnN1bW1hcnkoY2FuY2VyKQpMZXQncyBzZWxlY3QgcHJlZGljdG9ycyBiYXNlZCBvbiBvdXIgb3duIGludHVpdGlvbi4gV2UgYmVsaWV2ZSB0aGF0IGluY2lkZW5jZSByYXRlLCBtZWRpYW4gaW5jb21lLCBwb3B1bGF0aW9uIGVzdGltYXRlLCBwb3ZlcnR5IHBlcmNlbnRhZ2UsIHVuZW1wbG95bWVudCBwZXJjZXRhbmdlLCBhbmQgcHJpdmF0ZSBjb3ZlcmFnZSBwZXJjZW50YWdlIGNvdWxkIGJlIHRoZSBzdHJvbmdlc3QgcHJlZGljdG9ycy4gTGV0J3MgbG9vayBhdCB0aGUgcmVsYXRpb25zaGlwcyBiZXR3ZWVuIHRoZXNlIHZhcmlhYmxlcwpgYGB7cn0KbXVsdGlwcmVkID0gY2FuY2VyICU+JSBkcGx5cjo6c2VsZWN0KHRhcmdldF9kZWF0aHJhdGUsIGluY2lkZW5jZXJhdGUsIG1lZGluY29tZSwgcG9wZXN0MjAxNSwgcG92ZXJ0eXBlcmNlbnQsIHBjdHVuZW1wbG95ZWQxNl9vdmVyLCBwY3Rwcml2YXRlY292ZXJhZ2UpCnJlbmRlclBsb3QoewogIHBhaXJzKG11bHRpcHJlZCkKfSkKYGBgCgooU29tZSBpbnRlcmVzdGluZyByZWxhdGlvbnNoaXBzIGluIHRoaXMgcGxvdC4gV2Ugd2lsbCBleHBsb3JlIHNvbWUgb2YgdGhlc2UgcmVsYXRpb25zaGlwcyBpbiBmb2xsb3dpbmcgaW5zaWdodHMpCmBgYHtyfQptdWx0aXByZWRsbSA9IGxtKHRhcmdldF9kZWF0aHJhdGUgfiAuLCBkYXRhID0gbXVsdGlwcmVkKQpzdW1tYXJ5KG11bHRpcHJlZGxtKQpgYGAKV2Ugc2VlIHNvbWUgZ3JlYXQgcmVzdWx0cyBmcm9tIHRoaXMgbW9kZWwhIEFzaWRlIGZyb20gcG92ZXJ0eXBlcmNlbnQsIGFsbCBvZiBvdXIgcHJlZGljdG9ycyBhcmUgc3RhdGlzdGljYWxseSBzaWduaWZpY2FudCwgYW5kIG91ciBSLXNxdWFyZWQgaGFzIGltcHJvdmVkIHN1YnN0YW50aWFsbHkgKDAuNDI4NCkKVGhpcyBpcyBhIGdyZWF0IHN0YXJ0LCBidXQgY2FuIHdlIGRvIGJldHRlcj8gV2Ugd2lsbCBsb29rIGF0IGJldHRlciB3YXlzIG9mIGlkZW50aWZ5aW5nIHByZWRpY3RvcnMgZm9yIG91ciBtb2RlbC4KCgoKIyMjKipNb2RlbCBTZWxlY3Rpb24qKgojIyMjKipNb2RlbCBTZWxlY3Rpb24gLSBCZXN0IFN1YnNldCBSZWdyZXNzaW9uKioKYGBge3IsIHdhcm5pbmc9RkFMU0UsIG1lc3NhZ2UgPSBUUlVFfQpzdWJzZXRwcmVkID0gY2FuY2VyICU+JSBkcGx5cjo6c2VsZWN0KC1iaW5uZWRpbmMsIC1tZWRpYW5hZ2VmZW1hbGUsIC1tZWRpYW5hZ2VtYWxlLCAtZ2VvZ3JhcGh5LCAtcGN0aHMxOF8yNCwgLXBjdG5vaHMxOF8yNCwgLXBjdHNvbWVjb2wxOF8yNCwgLXBjdGJhY2hkZWcxOF8yNCwgLXBjdGVtcGxveWVkMTZfb3ZlciwgLXBjdHByaXZhdGVjb3ZlcmFnZWFsb25lLCAtcGN0ZW1wcHJpdmNvdmVyYWdlLCAtcGN0cHVibGljY292ZXJhZ2UsIC1wY3RwdWJsaWNjb3ZlcmFnZWFsb25lKQpzdWJzZXRwcmVkc3VibSA9IHJlZ3N1YnNldHModGFyZ2V0X2RlYXRocmF0ZSB+IC4sIGRhdGEgPSBzdWJzZXRwcmVkLCByZWFsbHkuYmlnID0gVCwgbnZtYXggPSAyMCkKc3VtbWFyeShzdWJzZXRwcmVkc3VibSkKc3Vic2V0cHJlZHN1bSA9IHN1bW1hcnkoc3Vic2V0cHJlZHN1Ym0pCiNuYW1lcyhzdWJzZXRwcmVkc3VtKQpyZW5kZXJQbG90KHsKICBwbG90KHN1YnNldHByZWRzdW0kY3AseGxhYj0iTnVtYmVyIG9mIFZhcmlhYmxlcyIseWxhYj0iQ3AiKQogIHdoaWNoLm1pbihzdWJzZXRwcmVkc3VtJGNwKQogIHBvaW50cygxNixzdWJzZXRwcmVkc3VtJGNwWzE2XSxwY2g9MjAsY29sPSJyZWQiKQp9KQoKcmVuZGVyUGxvdCh7CiAgcGxvdChzdWJzZXRwcmVkc3VibSwgc2NhbGUgPSAiQ3AiKQp9KQpjb2VmKHN1YnNldHByZWRzdWJtLCAxNikKYGBgCgojIyMjKipGb3J3YXJkIFN0ZXB3aXNlIFNlbGVjdGlvbioqCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpzdWJzZXRwcmVkc3VibS5md2QgPSByZWdzdWJzZXRzKHRhcmdldF9kZWF0aHJhdGUgfiAuLCBkYXRhID0gc3Vic2V0cHJlZCwgbnZtYXggPSAyMCxtZXRob2QgPSAiZm9yd2FyZCIpCnN1bW1hcnkoc3Vic2V0cHJlZHN1Ym0uZndkKQpyZW5kZXJQbG90KHsKICBwbG90KHN1YnNldHByZWRzdWJtLmZ3ZCwgc2NhbGU9IkNwIikKfSkKYGBgCgpBZGRpbmcgYSB2YWxpZGF0aW9uIHNldApgYGB7cn0KZGltKHN1YnNldHByZWQpCnNldC5zZWVkKDEpCnRyYWluID0gc2FtcGxlKHNlcSgzMDQ3KSwgMjEzMiwgcmVwbGFjZT1GQUxTRSkKcmVnZml0LmZ3ZD1yZWdzdWJzZXRzKHRhcmdldF9kZWF0aHJhdGUgfiAuLCBkYXRhID0gc3Vic2V0cHJlZFt0cmFpbixdLCBudm1heCA9IDIwLCBtZXRob2QgPSAiZm9yd2FyZCIpCmBgYAoKUHJlZGljdGluZyBvbiB0ZXN0IHNldApgYGB7cn0KdmFsLmVycm9ycyA9IHJlcChOQSwgMjApCngudGVzdCA9IG1vZGVsLm1hdHJpeCh0YXJnZXRfZGVhdGhyYXRlIH4gLiwgZGF0YSA9IHN1YnNldHByZWRbLXRyYWluLF0pCmZvcihpIGluIDE6MjApeyAKICBjb2VmaSA9IGNvZWYocmVnZml0LmZ3ZCwgaWQgPSBpKQogIHByZWQgPSB4LnRlc3RbLG5hbWVzKGNvZWZpKV0lKiVjb2VmaQogIHZhbC5lcnJvcnNbaV0gPSBtZWFuKChzdWJzZXRwcmVkJHRhcmdldF9kZWF0aHJhdGVbLXRyYWluXSAtIHByZWQpIF4gMikKfQpyZW5kZXJQbG90ICh7CiAgcGxvdChzcXJ0KHZhbC5lcnJvcnMpLCB5bGFiPSJSb290IE1TRSIsIHlsaW0gPSBjKDE5LCAyNSksIHBjaCA9IDIwLCB0eXBlID0gImIiKQogIHBvaW50cyhzcXJ0KHJlZ2ZpdC5md2QkcnNzWy0xXS8yMTMyKSxjb2w9ImJsdWUiLHBjaD0yMCx0eXBlPSJiIikKICBsZWdlbmQoInRvcHJpZ2h0IixsZWdlbmQ9YygiVHJhaW5pbmciLCJWYWxpZGF0aW9uIiksY29sPWMoImJsdWUiLCJibGFjayIpLHBjaD0yMCkKfSkKYGBgCgojIyMjKipNb2RlbCBTZWxlY3Rpb24gYnkgQ3Jvc3MgVmFsaWRhdGlvbioqCmBgYHtyLCBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzb3VyY2UoInByZWRpY3RGb3JtdWxhLlIiLCBlY2hvPUZBTFNFKQpmb2xkcwpyZW5kZXJUYWJsZSh7CiAgdGFibGUoZm9sZHMpCn0pCnJlbmRlclBsb3QoewogIHBsb3Qocm1zZS5jdixwY2g9MTksdHlwZT0iYiIpCn0pCgpgYGAKCgojIyMqKkxEQSoqCkNvbmZ1c2lvbiBtYXRyaWNlcyBhbmQgb3ZlcmFsbCBhY2N1cmFjeS4KT3VyIG9iamVjdGl2ZSB3YXMgdG8gdGVzdCBQcml2YXRlIEhlYWx0aCBDb3ZlcmFnZSAod2l0aCBwdWJsaWMgYXNzaXN0YW5jZSkgYXMgYSBwcmVkaWN0b3Igb2YgTWVkaWFuIEluY29tZS4gSW4gb3JkZXIgdG8gY29uZHVjdCBhIExpbmVhciBEaXNjcmltaW5hbnQgQW5hbHlzaXMsIHdlIGJ1Y2tldGVkIG91ciBNZWRpYW4gSW5jb21lIGRhdGEgaW50byB0d28gZ3JvdXBzOiBMZXNzIHRoYW4gNTAsMDAwIGFuZCBHcmVhdGVyIHRoYW4gNTAsMDAwLiBPdXIgYW5hbHlzaXMgcmV0dXJuZWQgYW4gTERBIGNvZWZmaWNpZW50IG9mIDAuMTE1Mjc3OgpgYGB7cn0KIyBCdWNrZXRpbmcgTWVkaWFuIEluY29tZSBpbnRvIDw1MEsgYW5kID41MEsKCmJ1Y2tldF9pbmNvbWUgPC0gIHRyYW5zZm9ybShjYW5jZXIsIGdyb3VwPWN1dChtZWRpbmNvbWUsIGJyZWFrcz1jKC1JbmYsIDUwMDAwLCBJbmYpLCBsYWJlbHM9YygiTGVzcyB0aGFuIDUwMDAwIiwgIkdyZWF0ZXIgdGhhbiA1MDAwMCIpKSkKc3VtbWFyeShidWNrZXRfaW5jb21lKQojY2xhc3MoYnVja2V0X2luY29tZSRncm91cCkKCiMgTGluZWFyIERpc2NyaW1pbmFudCBBbmFseXNpcyAtIFByaXZhdGUgQ292ZXJhZ2UgYXMgYSBQcmVkaWN0b3Igb2YgTWVkaWFuIEluY29tZQpsZGEuZml0PWxkYShidWNrZXRfaW5jb21lJGdyb3VwfnBjdHByaXZhdGVjb3ZlcmFnZSwgZGF0YT1jYW5jZXIpCgpsZGEuZml0CnJlbmRlclBsb3QoewogIHBsb3QobGRhLmZpdCkKfSkKbGRhLnByZWQ9cHJlZGljdChsZGEuZml0KQoKcmVuZGVyVGFibGUoewogIGRhdGEuZnJhbWUobGRhLnByZWQpWzE6NTAsXQp9KQoKYzEgPSBkYXRhLmZyYW1lKGxkYS5wcmVkKQoKZyA8LSBnZ3Bsb3QoYzEpICsgZ2VvbV9oaXN0b2dyYW0obWFwcGluZyA9IGFlcyh4PUxEMSkpICsgZmFjZXRfd3JhcCh+IGNsYXNzKQpyZW5kZXJQbG90KHsKICBnCn0pCmBgYApXZSB0aGVuIGNyZWF0ZWQgYSBjb25mdXNpb24gbWF0cml4IHRvIHRlc3Qgb3VyIHByZWRpY3RvcjoKYGBge3J9CnRhYmxlKGxkYS5wcmVkJGNsYXNzLGJ1Y2tldF9pbmNvbWUkZ3JvdXApCm1lYW4obGRhLnByZWQkY2xhc3M9PWJ1Y2tldF9pbmNvbWUkZ3JvdXApCmBgYApXZSBmb3VuZCB0aGF0IFByaXZhdGUgSGVhbHRoIENvdmVyYWdlIHdhcyBhbiBhY2N1cmF0ZSBwcmVkaWN0b3IgODMuMzMlIG9mIHRoZSB0aW1lLgoKIyMjKipRREEqKgpUaGUgb2JqZWN0aXZlIG9mIHRoaXMgaW5zaWdodCB3YXMgdG8gdGVzdCBQZXJjZW50YWdlIG9mIE1hcnJpZWQgSG91c2Vob2xkcyBhcyBhIHByZWRpY3RvciBvZiBNZWRpYW4gSW5jb21lIHVzaW5nIGEgUXVhZHJhdGljIERpc2NyaW1pbmFudCBBbmFseXNpcy4gV2UgYnVja2V0ZWQgdGhlIG1lZGlhbiBpbmNvbWUgaW50byB0d28gY2F0ZWdvcmllczogTGVzcyB0aGFuIDUwLDAwMCBhbmQgR3JlYXRlciB0aGFuIDUwLDAwMC4gT3VyIFFEQSBmaXQgcmV0dXJuZWQgdGhlIGZvbGxvd2luZzoKYGBge3J9CnFkYS5maXQ9cWRhKGJ1Y2tldF9pbmNvbWUkZ3JvdXB+cGN0bWFycmllZGhvdXNlaG9sZHMsIGRhdGE9Y2FuY2VyKQoKcWRhLmZpdApxZGEucHJlZD1wcmVkaWN0KHFkYS5maXQpCnJlbmRlclRhYmxlKHsKICBkYXRhLmZyYW1lKHFkYS5wcmVkKVsxOjUwLF0KfSkKYGBgClRoZSBkaXN0cmlidXRpb24gaXMgYXMgZm9sbG93czoKCmBgYHtyfQpyZW5kZXJQbG90KHsKICBnZ3Bsb3QoZGF0YT1jYW5jZXIsIGFlcyhidWNrZXRfaW5jb21lJGdyb3VwKSkgKyBnZW9tX2JhcigpCn0pCmBgYAoKV2UgdGhlbiBjcmVhdGVkIGEgY29uZnVzaW9uIG1hdHJpeCB0byB0ZXN0IHRoZSBwcmVkaWN0aW9uczoKYGBge3J9CnRhYmxlKHFkYS5wcmVkJGNsYXNzLGJ1Y2tldF9pbmNvbWUkZ3JvdXApCm1lYW4ocWRhLnByZWQkY2xhc3M9PWJ1Y2tldF9pbmNvbWUkZ3JvdXApCmBgYAoKV2UgZm91bmQgdGhhdCBQZXJjZW50YWdlIG9mIE1hcnJpZWQgSG91c2Vob2xkcyBhY2N1cmF0ZWx5IFByZWRpY3RlZCBNZWRpYW4gaW5jb21lIDcyLjUwJSBvZiB0aGUgdGltZS4KCiMjIyoqS05OIEFuYWx5c2lzKioKT3VyIG9iamVjdGl2ZSB3YXMgdG8gdXNlIGEgSyBOZWFyZXN0IE5laWdoYm9ycyBBbmFseXNpcyB0byB0ZXN0IEF2ZXJhZ2UgSG91c2Vob2xkIFNpemUsIFBlcmNlbnRhZ2Ugb2YgTWFycmllZCBIb3VzZWhvbGRzLCBhbmQgUGVyY2VudGFnZSBvZiBQcml2YXRlIENvdmVyYWdlIGFzIHByZWRpY3RvcnMgb2YgTWVkaWFuIEluY29tZS4KV2UgY29uZHVjdGVkIHRoZSBhbmFseXNpcyB1c2luZyAxLCA1LCAyMCwgYW5kIDEwMCBuZWFyZXN0IG5laWdoYm9ycy4gCgoKKioxIG5lYXJlc3QgbmVpZ2hib3IqKgoKYGBge3J9CiMgQ2hvb3NpbmcgdGhlIHJlbGV2YW50IHZhcmlhYmxlcyBhbmQgY3JlYXRpbmcgYSBzdWJzZXQKdmFycyA8LSBjKCJwY3Rwcml2YXRlY292ZXJhZ2UiLCAicGN0bWFycmllZGhvdXNlaG9sZHMiLCAiYXZnaG91c2Vob2xkc2l6ZSIpCmNhbmNlci5zdWJzZXQgPC0gY2FuY2VyW3ZhcnNdCgojIENyZWF0aW5nIHRlc3QgYW5kIHRyYWluIHN1YnNldHMKdGVzdCA8LSAxOjIwMDAKY2FuY2VyLnRyYWluIDwtIGNhbmNlci5zdWJzZXRbLXRlc3QsXQpjYW5jZXIudGVzdCA8LSBjYW5jZXIuc3Vic2V0W3Rlc3QsXQoKdHJhaW4uZGVmIDwtIGJ1Y2tldF9pbmNvbWUkZ3JvdXBbLXRlc3RdCnRlc3QuZGVmIDwtIGJ1Y2tldF9pbmNvbWUkZ3JvdXBbdGVzdF0KI2xlbmd0aChjYW5jZXIpCiMgRml0dGluZyB0aGUgbW9kZWxzCmtubi4xIDwtICBrbm4oY2FuY2VyLnRyYWluLCBjYW5jZXIudGVzdCwgdHJhaW4uZGVmLCBrPTEpCmtubi41IDwtICBrbm4oY2FuY2VyLnRyYWluLCBjYW5jZXIudGVzdCwgdHJhaW4uZGVmLCBrPTUpCmtubi4yMCA8LSBrbm4oY2FuY2VyLnRyYWluLCBjYW5jZXIudGVzdCwgdHJhaW4uZGVmLCBrPTIwKQprbm4uMTAwIDwtIGtubihjYW5jZXIudHJhaW4sIGNhbmNlci50ZXN0LCB0cmFpbi5kZWYsIGs9MTAwKQoKdGFibGUoa25uLjEsdGVzdC5kZWYpCm1lYW4oa25uLjE9PXRlc3QuZGVmKQpgYGAKCgoKKio1IG5lYXJlc3QgbmVpZ2hib3JzKioKCmBgYHtyfQp0YWJsZShrbm4uNSx0ZXN0LmRlZikKbWVhbihrbm4uNT09dGVzdC5kZWYpCgpgYGAKCgoKKioyMCBuZWFyZXN0IG5laWdoYm9ycyoqCgpgYGB7cn0KdGFibGUoa25uLjIwLHRlc3QuZGVmKQptZWFuKGtubi4yMD09dGVzdC5kZWYpCgpgYGAKV2UgZm91bmQgdGhhdCB1c2luZyAxIG5lYXJlc3QgbmVpZ2hib3IgeWllbGRlZCBhIDc2Ljk1JSByYXRlIG9mIGFjY3VyYWN5LgpVc2luZyA1IG5lYXJlc3QgbmVpZ2hib3JzIHlpZWxkZWQgYW4gODEuNCUgcmF0ZSBvZiBhY2N1cmFjeSwgYW5kIHRoZSBpbmNyZWFzZSB0byAyMCBhbmQgMTAwIG5lYXJlc3QgbmVpZ2hib3JzIG9ubHkgaW1wcm92ZWQgdGhlc2UgcmVzdWx0cyBtYXJnaW5hbGx5Lg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSBBbmFseXRpY3MgUHJvamVjdCA0OiBCYW5rIE1hcmtldGluZycKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CnJlcXVpcmUoTUFTUykKcmVxdWlyZShJU0xSKQpyZXF1aXJlKGdncGxvdDIpCnJlcXVpcmUoZGF0YS53b3JsZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoZHBseXIpCnJlcXVpcmUobGVhcHMpCnJlcXVpcmUodGlkeXZlcnNlKQpyZXF1aXJlKHNoaW55KQpyZXF1aXJlKGNsYXNzKQpyZXF1aXJlKGUxMDcxKQpyZXF1aXJlKHRyZWUpCnJlcXVpcmUocmFuZG9tRm9yZXN0KQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCm9wdGlvbnMoc2hpbnkuc2FuaXRpemUuZXJyb3JzID0gVFJVRSkKYGBgCgojICoqU2V0dGluZyBVcCB0aGUgRW52aXJvbm1lbnQqKiAgCiMjICoqUiBTZXNzaW9uIEluZm8qKgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCgojIyAqKmRhdGEud29ybGQgUHJvamVjdCBMaW5rKioKaHR0cHM6Ly9kYXRhLndvcmxkL25hdGFzaGFwaXJhbmk5Ni9mLTE3LWVkYS1wcm9qZWN0LTQKCiMjICoqQ29ubmVjdGluZyB0byBkYXRhLndvcmxkKioKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnNvdXJjZSgiZGF0YS5SIiwgZWNobyA9IEZBTFNFKQpgYGAKCiMgKipJbnRyb2R1Y3Rpb24qKiAKVGhpcyBkb2N1bWVudCBjb250YWlucyBhbiBhbmFseXNpcyBvbiB0aGUgY2FuY2VyIG1vcnRhbGl0eSByYXRlcyBwZXIgY291bnR5IGluIHRoZSBVU0EgCgojIyAqKkRhdGFzZXQgLSAgQmFuayBNYXJrZXRpbmcqKgpgYGB7ciwgd2FybmluZz1GQUxTRX0KI3NvdXJjZSgiYW5hbHlzaXMuUiIsIGVjaG8gPSBGQUxTRSkKcmVuZGVyRGF0YVRhYmxlKCBvcHRpb25zID0gbGlzdChwYWdlTGVuZ3RoID0gMTApLCB7CiAgYmFuawp9KQpgYGAKCiMgKipTdGF0aXN0aWNhbCBBbmFseXNpcyoqCiMjICoqRGVjaXNpb24gVHJlZXMqKgoKV2Ugd2FudCB0byBpZGVudGlmeSB0aGUgdmFyaWFibGVzIHRoYXQgYWNjdXJhdGVseSBwcmVkaWN0IHRoZSBvdXRwdXQgdmFyaWFibGU6IGRpZCB0aGUgY2xpZW50IHN1YnNjcmliZSB0byBhIHRlcm0gZGVwb3NpdCBkdXJpbmcgdGhlIGRpcmVjdCBtYXJrZXRpbmcgY2FtcGFpZ24/IFdlIHVzZSBhIHRyZWUtYmFzZWQgYXBwcm9hY2g6IGRlY2lzaW9uIHRyZWVzLgpgYGB7ciwgd2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0V9CmJhbmskb3V0cHV0ID0gYXMuZmFjdG9yKGJhbmskeSkKbmEub21pdChiYW5rKQpiYW5rID0gYmFuayAlPiUgbXV0YXRlX2lmKGlzLmNoYXJhY3RlciwgYXMuZmFjdG9yKQphdHRhY2goYmFuaykKdHJlZS5iYW5rID0gdHJlZShvdXRwdXQgfiAuIC0geSwgZGF0YSA9IGJhbmspCnN1bW1hcnkodHJlZS5iYW5rKQpyZW5kZXJQbG90KHsKICBwbG90KHRyZWUuYmFuaykKICB0ZXh0KHRyZWUuYmFuaywgcHJldHR5ID0gMCkKfSkKdHJlZS5iYW5rCmBgYApXZSBmaXJzdCB1c2UgdGhlIGVudGlyZSBkYXRhc2V0IHRvIGZpdCB0aGUgdHJlZSBtb2RlbC4gVGhlIHZhcmlhYmxlcyBhY3R1YWxseSB1c2VkIGluIHRyZWUgY29uc3RydWN0aW9uIHdlcmU6IG5yX2VtcGxveWVkLCBkdXJhdGlvbiwgcGRheXMsIGNvbnNfY29uZl9pZHgsIGFuZCBldXJpYm9yM20uCgpXZSB0aGVuIHVzZWQgYSByYW5kb20gc2FtcGxlIGZyb20gdGhlIG9yaWdpbmFsIGRhdGFzZXQgYW5kIHdlIHRyYWluIHRoZSBtb2RlbCBvbiB0aGF0IHRyYWluaW5nIHNhbXBsZQpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2V0LnNlZWQoMTAxMSkKdHJhaW4gPSBzYW1wbGUoMTpucm93KGJhbmspLCAyMDAwKQp0cmVlLmJhbmsgPSB0cmVlKG91dHB1dCB+IC4gLSB5LCBiYW5rLCBzdWJzZXQgPSB0cmFpbikKcmVuZGVyUGxvdCh7CiAgcGxvdCh0cmVlLmJhbmspO3RleHQodHJlZS5iYW5rLCBwcmV0dHkgPSAwKQp9KQpgYGAKV2hlbiB3ZSBsb29rIGF0IHRoZSBjb25mdXNpb24gbWF0cml4LCB3ZSBnZXQgYSB+OTAlIGFjY3VyYWN5IHJhdGUKYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnRyZWUucHJlZCA9IHByZWRpY3QodHJlZS5iYW5rLCBiYW5rWy10cmFpbixdLCB0eXBlPSJjbGFzcyIpCndpdGgoYmFua1stdHJhaW4sXSwgdGFibGUodHJlZS5wcmVkLCBvdXRwdXQpKQooMTg1NSs3MikvMjExOQpgYGAKCiMjKipTdXBwb3J0IFZlY3RvciBNYWNoaW5lcyoqCgpXZSBidWNrZXRlZCBtZWRpYW4gaW5jb21lIGludG8gIjw9IDUwLDAwMCIgYW5kICI+IDUwLDAwMCIgVGhlbiB3ZSB1c2VkIHBjdGJhY2hkZWcyNV9vdmVyIHRvIHByZWRpY3QgbWVkaWFuIGluY29tZS4KYGBge3IsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CgpgYGAKCkFsdGhvdWdoIHRoZSBwZXJjZW50YWdlIG9mIGNvcnJlY3QgcHJlZGljdGlvbnMgaXMgYWNjZXB0YWJsZSAoYXJvdW5kIDc2LjUlKSwgdGhpcyBkb2VzIG5vdCBtZWFuIHBjdGJhY2hkZWcyNV9vdmVyIGlzIGEgZ29vZCBwcmVkaWN0b3IuIFRoZSB2YXJpYWJsZSBwcmVkaWN0cyB0aGUgaW5jb21lIGJ1Y2tldCBvZiAiPD0gNTAsMDAwIiB3ZWxsLCBidXQgaXQgZG9lcyBub3QgcHJlZGljdCAiPiA1MCwwMDAiIHdlbGwuIFRoZSBoaWdoIG1lYW4gY29tZXMgZnJvbSB0aGUgbGFyZ2UgbnVtYmVyIG9mIGluc3RhbmNlcyBvZiBtZWRpYW4gaW5jb21lIDw9IDUwLDAwMC4KCiMjKipVbnN1cGVydmlzZWQgTGVhcm5pbmcqKgojIyMqKlByaW5jaXBhbCBDb21wb25lbnRzIEFuYWx5c2lzKioKClRvIGV4cGxvcmUgYmV0dGVyIHByZWRpY3RvcnMsIHdlIHVzZWQgcGN0aHMyNV9vdmVyIHdpdGggcGN0YmFjaGRlZzI1X292ZXIgdG8gcHJlZGljdCBtZWRpYW4gaW5jb21lLiAicGN0aHMyNV9vdmVyIiBkZWFscyB3aXRoIHRoZSBwZXJjZW50IG9mIGNvdW50eSByZXNpZGVudHMgYWdlcyAyNSBhbmQgb3ZlciB3aG9zZSBoaWdoZXN0IGxldmVsIG9mIGVkdWNhdGlvbiBpcyBoaWdoIHNjaG9vbC4KYGBge3J9CgpgYGAKVGhlIHZhcmlhYmxlIHNpbWlsYXJseSBwcm9kdWNlcyBhIHBlcmNlbnRhZ2Ugb2YgY3VycmVudCBwcmVkaWN0aW9ucyBvZiBhcm91bmQgNzclIGJ1dCBkb2VzIG5vdCBwcmVkaWN0IHRoZSAiPiA1MCwwMDAiIGJ1Y2tldCB3ZWxsLgpgYGB7ciwgbWVzc2FnZT1GQUxTRX0KCmBgYAoKIyMjKipLIE1lYW5zIENsdXN0ZXJpbmcqKgoKU2luY2Ugb25seSBjb25zaWRlcmluZyB0aGUgZWR1Y2F0aW9uIGRpZCBub3Qgc2VlbSB0byBwcm9kdWNlIGdvb2QgcHJlZGljdGlvbnMsIHdlIGRlY2lkZWQgdG8gaW5jbHVkZSBwZXJjZW50YWdlIG9mIG1hcnJpZWQgcGVvcGxlIGJlY2F1c2UgaXQgc2VlbWVkIHRvIGJlIHNvbWV3aGF0IGNvcnJlbGF0ZWQgdG8gbWVkaWFuIGluY29tZS4gU28gd2UgcHJlZGljdGVkIHVzaW5nIHRoZSB2YXJpYWJsZXMgcGN0bWFycmllZGhvdXNlaG9sZHMsIHBjdGJhY2hkZWcyNV9vdmVyLCBhbmQgcGN0aHMyNV9vdmVyLgpgYGB7cn0KCgpgYGAKClRoaXMgcHJvZHVjZXMgYSBtb3JlIGFjY3VyYXRlIHByZWRpY3Rpb24gZm9yIGJvdGggYnVja2V0cywgIjw9IDUwLDAwMCIgYW5kICI+IDUwLDAwMCIuIFRoZSBwZXJjZW50YWdlIG9mIGNvcnJlY3QgcHJlZGljdGlvbnMgaXMgYXJvdW5kIDgyJS4KCgpgYGB7ciwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KCmBgYAoKCgo=</div>
 
 
 </div>
