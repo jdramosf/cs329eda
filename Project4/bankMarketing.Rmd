@@ -91,12 +91,24 @@ with(bank[-train,], table(tree.pred, output))
 
 ##**Support Vector Machines**
 
-We bucketed median income into "<= 50,000" and "> 50,000" Then we used pctbachdeg25_over to predict median income.
-```{r, message=FALSE, warning=FALSE}
+Here, a model was created using the output (target) variable "y", duration (of the phone call), and consumer confidence index (CCI). This variable "y" is a boolean, indicating whether or not the client has subscribed to the term deposit.
 
+```{r, message=FALSE, warning=FALSE}
+bank = na.omit(bank)
+df = data.frame(output = as.factor(bank$y), CCI = bank$cons_conf_idx, duration = bank$duration)
+svmfit=svm(output~.,df,kernel="linear",cost=1000,scale=FALSE)
+svmfit
 ```
 
-Although the percentage of correct predictions is acceptable (around 76.5%), this does not mean pctbachdeg25_over is a good predictor. The variable predicts the income bucket of "<= 50,000" well, but it does not predict "> 50,000" well. The high mean comes from the large number of instances of median income <= 50,000.
+The plot of the linear support vector machine was created:
+
+```{r, message=FALSE, warning=FALSE}
+renderPlot({
+  plot(svmfit, df, CCI ~ duration)
+})
+```
+
+This plots duration on the X-axis and CCI on the Y-axis, separated by output "y".
 
 ##**Unsupervised Learning**
 ###**Principal Components Analysis**
