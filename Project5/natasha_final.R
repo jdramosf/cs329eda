@@ -82,12 +82,20 @@ table(abaloneCluster$cluster, abalone$sex)
 
 # Hierarchical Clustering
 
-ab.km.subset <- ab.km[1:1000]
+ab.km.subset <- ab.km[1:400]
 
 
-clusters <- hclust(dist(ab.km.subset))
+clusters <- hclust(dist(ab.km), method='average')
 plot(clusters)
 
-clusterCut <- cutree(clusters, 6)
+clusterCut <- cutree(clusters, 5)
 clusterCut
 plot(clusterCut)
+
+# Comparison to sex variable
+
+table(clusterCut, abalone$sex)
+
+ggplot(abalone, aes(diameter, rings, color = abalone$sex)) + 
+  geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
+  scale_color_manual(values = c('black', 'red', 'green'))
