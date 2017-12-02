@@ -99,3 +99,18 @@ table(clusterCut, abalone$sex)
 ggplot(abalone, aes(diameter, rings, color = abalone$sex)) + 
   geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
   scale_color_manual(values = c('black', 'red', 'green'))
+
+
+
+# Principal Component Analysis
+
+ab.continuous = cbind(length, diameter, height, wholeweight, shuckedweight, visceraweight, shellweight)
+
+ab.pca <- prcomp(ab.continuous, center = TRUE, scale. = TRUE)
+print(ab.pca)
+
+plot(ab.pca, type="l")
+
+summary(ab.pca)
+
+biplot(ab.pca)
