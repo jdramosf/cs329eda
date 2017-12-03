@@ -1,0 +1,133 @@
+---
+title: "Data Analytics Final Project: Abalone"
+author: "Ananya Kaushik, Natasha Pirani, Nolan Bentley, and Juan Ramos Fuentes"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(class)
+require(data.world)
+require(ggplot2)
+require(shiny)
+require(dplyr)
+require(ISLR)
+require(vcd)
+require(plotly)
+require(boot)
+require(leaps)
+require(tree)
+require(randomForest)
+require(gbm)
+packageVersion('plotly')
+knitr::opts_chunk$set(echo = TRUE)
+options(shiny.sanitize.errors = FALSE)
+```
+
+## **Setting Up the Environment**  
+### **R Session Info**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sessionInfo()
+```
+
+### **data.world Project Link**
+https://data.world/ananya-kaushik/f-17-eda-project-5
+
+### **Connecting to data.world**
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+project = "https://data.world/ananya-kaushik/f-17-eda-project-5"
+abalone <- data.world::query(
+  data.world::qry_sql("select * from abalone_data"),
+  dataset = project
+)
+
+colnames(abalone) <- c("sex", "length", "diameter", "height", "wholeweight", "shuckedweight", "visceraweight", "shellweight", "rings")
+abalone$sex = as.factor(abalone$sex)
+attach(abalone)
+```
+
+# **Introduction**
+This document contains an analysis on abalones. We used different statistical analysis methods to predict the number of rings in an abalone using different physical measures. The number of rings plus 1.5 gives the age of the abalone in years. The age of abalone is usually determined by cutting the shell through the cone, staining it, and counting the number of rings through a microscope -- a boring and time-consuming task. We hope that, through our analysis, we can simplify this process.
+
+## **Dataset -  Abalone**
+```{r, warning=FALSE}
+renderDataTable( options = list(pageLength = 10), {
+  abalone
+})
+```
+
+
+## **Statistical Analysis**
+### **Multi-predictor Linear Regression Using Cross Validation**
+
+Let's see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset
+
+```{r, warning=FALSE}
+renderPlot({
+  pairs(abalone[2:9])
+})
+```
+
+We exclude sex because is a qualitative variable.
+We observe that the number of rings has a positive relationship with most of the rest of the variables included in the visualization. Let's explore whether these relationships are significant in determining the number of rings in an abalone and, consequently, their age.
+
+Now that we've seen the relationship between the number of rings in an abalone and the rest of the features, let's see if we can create a model that can accurately predict the number of rings in an abalone, and consequently, its age.
+
+First, let's use all of the features:
+```{r, warning=FALSE}
+multiabalone = lm(rings ~ ., data = abalone)
+summary(multiabalone)
+```
+Almost all our predictors appear to be significant (length could be a case of multicollinearity), and we get an R-squared of ~0.54.
+
+We then use the cross validation formula to assess the accuracy of our model:
+```{r, warning=FALSE}
+loocv = function(fit) {
+  h = lm.influence(fit)$h
+  mean((residuals(fit) / (1 - h)) ^ 2)
+}
+loocv(multiabalone)
+```
+which yields a ~4.91 MSE for the model. Not too bad! In the next insights, we will analyze the residuals and figure out if we can improve our model with different model-selection methods.
+
+### **Forward Stepwise Model Selection Using Cross Validation**
+
+We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10):
+```{r definition}
+predict.regsubsets= function(object,newdata,id,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form,newdata)
+  coefi=coef(object,id=id)
+  mat[,names(coefi)]%*%coefi
+}
+```
+
+```{r}
+set.seed(11)
+train = sample(1:nrow(abalone), 3000)
+abaloneregfit = regsubsets(rings ~ ., data = abalone[train,], nvmax = 9, method = "forward")
+val.errors=rep(NA,9)
+x.test=model.matrix(rings~.,data=abalone[-train,])# notice the -index!
+for(i in 1:9){
+  coefi=coef(abaloneregfit,id=i)
+  pred=x.test[,names(coefi)]%*%coefi
+  val.errors[i]=mean((abalone$rings[-train]-pred)^2)
+}
+renderPlot({
+  plot(sqrt(val.errors),ylab="Root MSE",ylim=c(2, 3),pch=19,type="b")
+  points(sqrt(abaloneregfit$rss[-1]/3000),col="blue",pch=19,type="b")
+  legend("topright",legend=c("Training","Validation"),col=c("blue","black"),pch=19)
+})
+```
+
+We observe that shellweight was used at every step of the model, so we can conclude that is one of the most important variables.
+
+After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:

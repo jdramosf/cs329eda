@@ -31,7 +31,7 @@ summary(medagelm)
 # Let's add other variables
 plot(target_deathrate ~ medincome, data = cancer)
 medincomelm = lm(target_deathrate ~ medincome, data = cancer)
-summary(medincomelm)
+summary(medincomelm)  
 abline(medincomelm, col = "red")
 # There seems to be some relationship between median income and cancer death rate, a negative relationship to be precise
 # However, the R-squared value is too low (0.18), which means that our model does not fully explain the variance in the output variable
