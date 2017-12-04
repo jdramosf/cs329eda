@@ -100,7 +100,7 @@ plot(clusterCut)
 
 table(clusterCut, ringbuckets)
 
-ggplot(abalone, aes(diameter, rings, color = ringbuckets)) + 
+ggplot(abalone, aes(diameter, shellweight, color = ringbuckets)) + 
   geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
   scale_color_manual(values = c('black', 'red', 'green', 'blue'))
 
