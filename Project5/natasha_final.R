@@ -66,9 +66,7 @@ mean(knn.100==test.def)
 
 # K Means Clustering
 
-ggplot(abalone, aes(x=diameter, y=rings, color= ringbuckets)) + geom_point()
-
-ab.km = cbind(diameter, rings)
+ab.km = cbind(diameter, shellweight)
 ab.km
 
 set.seed(101)
@@ -76,12 +74,16 @@ abaloneCluster <- kmeans(ab.km, 4, nstart=20)
 abaloneCluster
 
 abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
-ggplot(abalone, aes(x=diameter, y=rings, color = abaloneCluster$cluster)) + geom_point()
+ggplot(abalone, aes(x=diameter, y=shellweight, color = abaloneCluster$cluster)) + geom_point()
 
 # Compare to ringbuckets variable
 
+ggplot(abalone, aes(x=diameter, y=shellweight, color= ringbuckets)) + geom_point()
+
 table(abaloneCluster$cluster, ringbuckets)
 
+summary(ringbuckets)
+summary(abaloneCluster$cluster)
 # Hierarchical Clustering
 
 ab.km.subset <- ab.km[1:400]
@@ -94,7 +96,7 @@ clusterCut <- cutree(clusters, 5)
 clusterCut
 plot(clusterCut)
 
-# Comparison to sex variable
+# Comparison to ringbuckets variable
 
 table(clusterCut, ringbuckets)
 
