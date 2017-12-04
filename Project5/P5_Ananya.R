@@ -17,6 +17,8 @@ abalone <- data.world::query(
 attach(abalone)
 summary(abalone)
 colnames(abalone) <- c("sex", "length", "diameter", "height", "wholeweight", "shuckedweight", "visceraweight", "shellweight", "rings")
+abalone$sex = as.factor(abalone$sex)
+attach(abalone)
 
 
 #Exploration: removing outliers
@@ -47,29 +49,21 @@ coef(cv.lasso)
 
 #Support Vector Machines
 ringbuckets2 = cut(abalone$rings, c(1, 10, 30), right = FALSE, labels = c("< 10", "> 10"))
-attach(abalone)
+#attach(abalone)
 df = data.frame(output = as.factor(ringbuckets2), shellweight = abalone$shellweight, length = abalone$length)
 plot_ly(data = df, x=~length, y=~shellweight)
-svmfit=svm(output~.,df,kernel="linear",cost=100,scale=FALSE)
+svmfit=svm(output~.,df,kernel="linear",cost=10,scale=FALSE)
 print(svmfit)
 plot(svmfit, df, shellweight ~ length)
+# tune.out <- tune(svm, output ~., data=df, kernel='linear',
+#                  ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
+# summary(tune.out)
 
-tune.out <- tune(svm, output ~., data=df, kernel='linear',
-                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
-summary(tune.out)
-
-svmfit2=svm(output~.,df,kernel="polynomial",cost=10,scale=FALSE)
-print(svmfit2)
-plot(svmfit2, df, shellweight ~ length)
-
-tune.out2 <- tune(svm, output ~., data=df, kernel='polynomial',
-                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
-summary(tune.out2)
+# svmfit2=svm(output~.,df,kernel="polynomial",cost=10,scale=FALSE)
+# print(svmfit2)
+# plot(svmfit2, df, shellweight ~ length)
 
 svmfit3=svm(output~.,df,kernel="radial",cost=10,scale=FALSE)
 print(svmfit3)
 plot(svmfit3, df, shellweight ~ length)
 
-tune.out3 <- tune(svm, output ~., data=df, kernel='radial',
-                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100)))
-summary(tune.out3)

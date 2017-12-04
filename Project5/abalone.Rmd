@@ -13,6 +13,7 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
+dwapi::configure(auth_token = Sys.getenv("DW_API"))
 library(tidyverse)
 library(class)
 require(data.world)
@@ -65,7 +66,7 @@ renderDataTable( options = list(pageLength = 10), {
 ```
 
 
-# **Statistical Analysis**
+# **Statistical Analysis - Supervised**
 ## **Multi-predictor Linear Regression Using Cross Validation**
 
 Let's see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset
@@ -97,6 +98,45 @@ loocv = function(fit) {
 loocv(multiabalone)
 ```
 which yields a ~4.91 MSE for the model. Not too bad! In the next insights, we will analyze the residuals and figure out if we can improve our model with different model-selection methods.
+
+## **KNN**
+
+After exploring the data, we wanted to use KNN classification to predict on an abalone's number of rings. We bucketed these numbers into four categories: 0 to 5, 5 to 10, 10 to 15, and greater than 15. These buckets reflect a somewhat normal distribution, but with a slight skew to the left. The buckets are represented below:
+
+```{r, warning = FALSE}
+ringbuckets = cut(abalone$rings, c(1, 5, 10, 15, 30), right = FALSE, labels = c("1 - 5", "6 - 10", "11 - 15", "> 15"))
+renderPlot({
+  ggplot(abalone, aes(x=ringbuckets)) + geom_histogram(stat="count", colour="black", fill="blue", binwidth=.05)
+})
+```
+
+Our dataset contains 4,177 instances, and we chose to use a little over half - 2,500 to be exact - the data as test data, while using the remainder as training data. We created a vector containing the variables 'diameter' and 'wholeweight' to predict the number of rings. We tested reducing the number of variables as well and didn't see a huge change in the accuracy of our KNN predictions. This is likely due to the fact that 'diameter' and 'wholeweight' are positively correlated with each other. Interestingly, however, adding 'sex' as a predicting variable also did not change our results significantly.
+
+We tested the KNN function using 1, 5, 20, and 100 nearest neighbors. The following represents our confusion matrix using 1 nearest neighbor:
+
+```{r, warning = FALSE}
+vars = cbind(diameter, wholeweight)
+df.subset <- vars
+#df.subset
+
+# Creating test and train subsets
+test <- 1:2500
+df.train <- df.subset[-test,]
+df.test <- df.subset[test,]
+
+train.def <- ringbuckets[-test]
+test.def <- ringbuckets[test]
+
+
+# Fitting the models
+knn.1 <-  knn(df.train, df.test, train.def, k=1)
+knn.5 <-  knn(df.train, df.test, train.def, k=5)
+knn.20 <- knn(df.train, df.test, train.def, k=20)
+knn.100 <- knn(df.train, df.test, train.def, k=100)
+
+table(knn.1,test.def)
+mean(knn.1==test.def)
+```
 
 ## **Forward Stepwise Model Selection Using Cross Validation**
 
@@ -211,3 +251,8 @@ renderPlot({
 })
 ```
 
+```{r, warning=FALSE}
+renderPlot({
+  summary(boost.abalone)
+})
+```
