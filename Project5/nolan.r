@@ -44,7 +44,10 @@ df1 = data.frame(lda.pred)
 
 summary(df1)
 
-ggplot(df1) + geom_histogram(mapping = aes(x=shellweight)) + facet_wrap(~ class)
+ggplot(df1) + geom_histogram(mapping = aes(x=LD1)) + facet_wrap(~ class)
+
+table(lda.pred$class, catabalone$rings)
+mean(lda.pred$class==catabalone$rings)
 
 # Quadratic Discriminant Analysis
 
@@ -54,4 +57,7 @@ df2 = data.frame(qda.pred)
 
 summary(df2)
 
-ggplot(data=df2, aes(rings)) + geom_bar()
+ggplot(data=df2, aes(catabalone$rings)) + geom_bar()
+
+table(qda.pred$class, catabalone$rings)
+mean(qda.pred$class==catabalone$rings)
