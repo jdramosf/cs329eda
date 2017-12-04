@@ -147,7 +147,7 @@ $(document).ready(function () {
 <script>
 $(document).ready(function () {
   window.initializeSourceEmbed("abalone.Rmd");
-  window.initializeCodeFolding("show" === "show");
+  window.initializeCodeFolding("hide" === "show");
 });
 </script>
 
@@ -329,6 +329,17 @@ loaded via a namespace (and not attached):
 <h3><strong>Connecting to data.world</strong></h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvamVjdCA9IFwiaHR0cHM6Ly9kYXRhLndvcmxkL2FuYW55YS1rYXVzaGlrL2YtMTctZWRhLXByb2plY3QtNVwiXG5hYmFsb25lIDwtIGRhdGEud29ybGQ6OnF1ZXJ5KFxuICBkYXRhLndvcmxkOjpxcnlfc3FsKFwic2VsZWN0ICogZnJvbSBhYmFsb25lX2RhdGFcIiksXG4gIGRhdGFzZXQgPSBwcm9qZWN0XG4pXG5cbmNvbG5hbWVzKGFiYWxvbmUpIDwtIGMoXCJzZXhcIiwgXCJsZW5ndGhcIiwgXCJkaWFtZXRlclwiLCBcImhlaWdodFwiLCBcIndob2xld2VpZ2h0XCIsIFwic2h1Y2tlZHdlaWdodFwiLCBcInZpc2NlcmF3ZWlnaHRcIiwgXCJzaGVsbHdlaWdodFwiLCBcInJpbmdzXCIpXG5hYmFsb25lJHNleCA9IGFzLmZhY3RvcihhYmFsb25lJHNleClcbmF0dGFjaChhYmFsb25lKVxuYGBgIn0= -->
+<pre class="r"><code>project = &quot;https://data.world/ananya-kaushik/f-17-eda-project-5&quot;
+abalone &lt;- data.world::query(
+  data.world::qry_sql(&quot;select * from abalone_data&quot;),
+  dataset = project
+)
+
+colnames(abalone) &lt;- c(&quot;sex&quot;, &quot;length&quot;, &quot;diameter&quot;, &quot;height&quot;, &quot;wholeweight&quot;, &quot;shuckedweight&quot;, &quot;visceraweight&quot;, &quot;shellweight&quot;, &quot;rings&quot;)
+abalone$sex = as.factor(abalone$sex)
+attach(abalone)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -345,58 +356,186 @@ loaded via a namespace (and not attached):
   abalone
 })</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiZnVuY3Rpb24gKC4uLikgXG57XG4gICAgaWYgKGxlbmd0aChvdXRwdXRBcmdzKSAhPSAwICYmICFoYXNFeGVjdXRlZCRnZXQoKSkge1xuICAgICAgICB3YXJuaW5nKFwiVW51c2VkIGFyZ3VtZW50OiBvdXRwdXRBcmdzLiBUaGUgYXJndW1lbnQgb3V0cHV0QXJncyBpcyBvbmx5IFwiLCBcbiAgICAgICAgICAgIFwibWVhbnQgdG8gYmUgdXNlZCB3aGVuIGVtYmVkZGluZyBzbmlwcGV0cyBvZiBTaGlueSBjb2RlIGluIGFuIFwiLCBcbiAgICAgICAgICAgIFwiUiBNYXJrZG93biBjb2RlIGNodW5rICh1c2luZyBydW50aW1lOiBzaGlueSkuIFdoZW4gcnVubmluZyBhIFwiLCBcbiAgICAgICAgICAgIFwiZnVsbCBTaGlueSBhcHAsIHBsZWFzZSBzZXQgdGhlIG91dHB1dCBhcmd1bWVudHMgZGlyZWN0bHkgaW4gXCIsIFxuICAgICAgICAgICAgXCJ0aGUgY29ycmVzcG9uZGluZyBvdXRwdXQgZnVuY3Rpb24gb2YgeW91ciBVSSBjb2RlLlwiKVxuICAgICAgICBoYXNFeGVjdXRlZCRzZXQoVFJVRSlcbiAgICB9XG4gICAgaWYgKGlzLm51bGwoZm9ybWFscyhvcmlnUmVuZGVyRnVuYykpKSBcbiAgICAgICAgb3JpZ1JlbmRlckZ1bmMoKVxuICAgIGVsc2Ugb3JpZ1JlbmRlckZ1bmMoLi4uKVxufVxuPGVudmlyb25tZW50OiAweDExODIwMDFjOD5cbmF0dHIoLFwiY2xhc3NcIilcblsxXSBcInNoaW55LnJlbmRlci5mdW5jdGlvblwiIFwiZnVuY3Rpb25cIiAgICAgICAgICAgICBcbmF0dHIoLFwib3V0cHV0RnVuY1wiKVxuZnVuY3Rpb24gKG91dHB1dElkKSBcbntcbiAgICBhdHRhY2hEZXBlbmRlbmNpZXMoZGl2KGlkID0gb3V0cHV0SWQsIGNsYXNzID0gXCJzaGlueS1kYXRhdGFibGUtb3V0cHV0XCIpLCBcbiAgICAgICAgZGF0YVRhYmxlRGVwZW5kZW5jeSlcbn1cbjxlbnZpcm9ubWVudDogbmFtZXNwYWNlOnNoaW55PlxuYXR0cigsXCJvdXRwdXRBcmdzXCIpXG5saXN0KClcbmF0dHIoLFwiaGFzRXhlY3V0ZWRcIilcbjxNdXRhYmxlPlxuICBQdWJsaWM6XG4gICAgY2xvbmU6IGZ1bmN0aW9uIChkZWVwID0gRkFMU0UpIFxuICAgIGdldDogZnVuY3Rpb24gKCkgXG4gICAgc2V0OiBmdW5jdGlvbiAodmFsdWUpIFxuICBQcml2YXRlOlxuICAgIHZhbHVlOiBGQUxTRVxuYXR0cigsXCJvdXRwdXRBdHRyc1wiKVxuYXR0cigsXCJvdXRwdXRBdHRyc1wiKSRzbmFwc2hvdFByZXByb2Nlc3NcbmZ1bmN0aW9uICh2YWx1ZSkgXG57XG4gICAgdmFsdWUkYWN0aW9uIDwtIE5VTExcbiAgICB2YWx1ZVxufVxuPGJ5dGVjb2RlOiAweDExYmE0Njc0MD5cbjxlbnZpcm9ubWVudDogMHgxMWIxYzljMzA+XG4ifQ== -->
-<pre><code>function (...) 
-{
-    if (length(outputArgs) != 0 &amp;&amp; !hasExecuted$get()) {
-        warning(&quot;Unused argument: outputArgs. The argument outputArgs is only &quot;, 
-            &quot;meant to be used when embedding snippets of Shiny code in an &quot;, 
-            &quot;R Markdown code chunk (using runtime: shiny). When running a &quot;, 
-            &quot;full Shiny app, please set the output arguments directly in &quot;, 
-            &quot;the corresponding output function of your UI code.&quot;)
-        hasExecuted$set(TRUE)
-    }
-    if (is.null(formals(origRenderFunc))) 
-        origRenderFunc()
-    else origRenderFunc(...)
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="section-statistical-analysis" class="section level1">
+<h1><strong>Statistical Analysis</strong></h1>
+<div id="section-multi-predictor-linear-regression-using-cross-validation" class="section level2">
+<h2><strong>Multi-predictor Linear Regression Using Cross Validation</strong></h2>
+<p>Let’s see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIHBhaXJzKGFiYWxvbmVbMjo5XSlcbn0pXG5gYGAifQ== -->
+<pre class="r"><code>renderPlot({
+  pairs(abalone[2:9])
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We exclude sex because is a qualitative variable. We observe that the number of rings has a positive relationship with most of the rest of the variables included in the visualization. Let’s explore whether these relationships are significant in determining the number of rings in an abalone and, consequently, their age.</p>
+<p>Now that we’ve seen the relationship between the number of rings in an abalone and the rest of the features, let’s see if we can create a model that can accurately predict the number of rings in an abalone, and consequently, its age.</p>
+<p>First, let’s use all of the features:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXVsdGlhYmFsb25lID0gbG0ocmluZ3MgfiAuLCBkYXRhID0gYWJhbG9uZSlcbnN1bW1hcnkobXVsdGlhYmFsb25lKVxuYGBgIn0= -->
+<pre class="r"><code>multiabalone = lm(rings ~ ., data = abalone)
+summary(multiabalone)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Almost all our predictors appear to be significant (length could be a case of multicollinearity), and we get an R-squared of ~0.54.</p>
+<p>We then use the cross validation formula to assess the accuracy of our model:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9vY3YgPSBmdW5jdGlvbihmaXQpIHtcbiAgaCA9IGxtLmluZmx1ZW5jZShmaXQpJGhcbiAgbWVhbigocmVzaWR1YWxzKGZpdCkgLyAoMSAtIGgpKSBeIDIpXG59XG5sb29jdihtdWx0aWFiYWxvbmUpXG5gYGAifQ== -->
+<pre class="r"><code>loocv = function(fit) {
+  h = lm.influence(fit)$h
+  mean((residuals(fit) / (1 - h)) ^ 2)
 }
-&lt;environment: 0x1182001c8&gt;
-attr(,&quot;class&quot;)
-[1] &quot;shiny.render.function&quot; &quot;function&quot;             
-attr(,&quot;outputFunc&quot;)
-function (outputId) 
-{
-    attachDependencies(div(id = outputId, class = &quot;shiny-datatable-output&quot;), 
-        dataTableDependency)
+loocv(multiabalone)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>which yields a ~4.91 MSE for the model. Not too bad! In the next insights, we will analyze the residuals and figure out if we can improve our model with different model-selection methods.</p>
+</div>
+<div id="section-forward-stepwise-model-selection-using-cross-validation" class="section level2">
+<h2><strong>Forward Stepwise Model Selection Using Cross Validation</strong></h2>
+<p>We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10):</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlZGljdC5yZWdzdWJzZXRzPSBmdW5jdGlvbihvYmplY3QsbmV3ZGF0YSxpZCwuLi4pe1xuICBmb3JtPWFzLmZvcm11bGEob2JqZWN0JGNhbGxbWzJdXSlcbiAgbWF0PW1vZGVsLm1hdHJpeChmb3JtLG5ld2RhdGEpXG4gIGNvZWZpPWNvZWYob2JqZWN0LGlkPWlkKVxuICBtYXRbLG5hbWVzKGNvZWZpKV0lKiVjb2VmaVxufVxuYGBgIn0= -->
+<pre class="r"><code>predict.regsubsets= function(object,newdata,id,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form,newdata)
+  coefi=coef(object,id=id)
+  mat[,names(coefi)]%*%coefi
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTEpXG50cmFpbiA9IHNhbXBsZSgxOm5yb3coYWJhbG9uZSksIDMwMDApXG5hYmFsb25lcmVnZml0ID0gcmVnc3Vic2V0cyhyaW5ncyB+IC4sIGRhdGEgPSBhYmFsb25lW3RyYWluLF0sIG52bWF4ID0gOSwgbWV0aG9kID0gXCJmb3J3YXJkXCIpXG52YWwuZXJyb3JzPXJlcChOQSw5KVxueC50ZXN0PW1vZGVsLm1hdHJpeChyaW5nc34uLGRhdGE9YWJhbG9uZVstdHJhaW4sXSkjIG5vdGljZSB0aGUgLWluZGV4IVxuZm9yKGkgaW4gMTo5KXtcbiAgY29lZmk9Y29lZihhYmFsb25lcmVnZml0LGlkPWkpXG4gIHByZWQ9eC50ZXN0WyxuYW1lcyhjb2VmaSldJSolY29lZmlcbiAgdmFsLmVycm9yc1tpXT1tZWFuKChhYmFsb25lJHJpbmdzWy10cmFpbl0tcHJlZCleMilcbn1cbnJlbmRlclBsb3Qoe1xuICBwbG90KHNxcnQodmFsLmVycm9ycykseWxhYj1cIlJvb3QgTVNFXCIseWxpbT1jKDIsIDMpLHBjaD0xOSx0eXBlPVwiYlwiKVxuICBwb2ludHMoc3FydChhYmFsb25lcmVnZml0JHJzc1stMV0vMzAwMCksY29sPVwiYmx1ZVwiLHBjaD0xOSx0eXBlPVwiYlwiKVxuICBsZWdlbmQoXCJ0b3ByaWdodFwiLGxlZ2VuZD1jKFwiVHJhaW5pbmdcIixcIlZhbGlkYXRpb25cIiksY29sPWMoXCJibHVlXCIsXCJibGFja1wiKSxwY2g9MTkpXG59KVxuYGBgIn0= -->
+<pre class="r"><code>set.seed(11)
+train = sample(1:nrow(abalone), 3000)
+abaloneregfit = regsubsets(rings ~ ., data = abalone[train,], nvmax = 9, method = &quot;forward&quot;)
+val.errors=rep(NA,9)
+x.test=model.matrix(rings~.,data=abalone[-train,])# notice the -index!
+for(i in 1:9){
+  coefi=coef(abaloneregfit,id=i)
+  pred=x.test[,names(coefi)]%*%coefi
+  val.errors[i]=mean((abalone$rings[-train]-pred)^2)
 }
-&lt;environment: namespace:shiny&gt;
-attr(,&quot;outputArgs&quot;)
-list()
-attr(,&quot;hasExecuted&quot;)
-&lt;Mutable&gt;
-  Public:
-    clone: function (deep = FALSE) 
-    get: function () 
-    set: function (value) 
-  Private:
-    value: FALSE
-attr(,&quot;outputAttrs&quot;)
-attr(,&quot;outputAttrs&quot;)$snapshotPreprocess
-function (value) 
-{
-    value$action &lt;- NULL
-    value
+renderPlot({
+  plot(sqrt(val.errors),ylab=&quot;Root MSE&quot;,ylim=c(2, 3),pch=19,type=&quot;b&quot;)
+  points(sqrt(abaloneregfit$rss[-1]/3000),col=&quot;blue&quot;,pch=19,type=&quot;b&quot;)
+  legend(&quot;topright&quot;,legend=c(&quot;Training&quot;,&quot;Validation&quot;),col=c(&quot;blue&quot;,&quot;black&quot;),pch=19)
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We observe that shellweight was used at every step of the model, so we can conclude that is one of the most important variables.</p>
+<p>After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:</p>
+</div>
+<div id="section-bagging-random-forest-and-boosting" class="section level2">
+<h2><strong>Bagging, Random Forest, and Boosting</strong></h2>
+<p>We previously used a simple multi predictor regression model and subset selection to predict the number of rings in an abalone. Now, we use more sophisticated tree-based methods to see if we can get improvements on our predictions.</p>
+<div id="section-random-forest-and-bagging" class="section level3">
+<h3><strong>Random Forest and Bagging</strong></h3>
+<p>We start by fitting a simple random forest model:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTAxMSlcbnRyYWluID0gc2FtcGxlKDE6bnJvdyhhYmFsb25lKSwgMjUwMClcbnJmLmFiYWxvbmUgPSByYW5kb21Gb3Jlc3QocmluZ3MgfiAuLCBkYXRhID0gYWJhbG9uZSwgc3Vic2V0ID0gdHJhaW4pXG5yZi5hYmFsb25lXG5gYGAifQ== -->
+<pre class="r"><code>set.seed(1011)
+train = sample(1:nrow(abalone), 2500)
+rf.abalone = randomForest(rings ~ ., data = abalone, subset = train)
+rf.abalone</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Random Forest uses a random number of variables when creating the trees, and is able to figure out the MSE by using out-of-bag estimates. Here we see that the MSE already as good as the subset selection model. Let’s modify the number of random variables for random forest and see if we can improve it.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub29iLmVyciA9IGRvdWJsZSg4KVxudGVzdC5lcnIgPSBkb3VibGUoOClcbmZvciAobXRyeSBpbiAxOjgpIHtcbiAgZml0ID0gcmFuZG9tRm9yZXN0KHJpbmdzIH4gLiwgZGF0YSA9IGFiYWxvbmUsIHN1YnNldCA9IHRyYWluLCBtdHJ5ID0gbXRyeSwgbnRyZWUgPSA1MDApXG4gIG9vYi5lcnJbbXRyeV0gPSBmaXQkbXNlWzUwMF1cbiAgcHJlZCA9IHByZWRpY3QoZml0LCBhYmFsb25lWy10cmFpbixdKVxuICB0ZXN0LmVyclttdHJ5XSA9IHdpdGgoYWJhbG9uZVstdHJhaW4sXSwgbWVhbigocmluZ3MgLSBwcmVkKSBeIDIpKVxuICAjY2F0KG10cnksIFwiIFwiKVxufVxuXG5yZW5kZXJQbG90KHtcbiAgbWF0cGxvdCgxOm10cnksIGNiaW5kKHRlc3QuZXJyLCBvb2IuZXJyKSwgcGNoID0gMTksIGNvbCA9IGMoXCJyZWRcIiwgXCJibHVlXCIpLCB0eXBlID0gXCJiXCIsIHlsYWIgPSBcIk1lYW4gU3F1YXJlZCBFcnJvclwiKVxuICBsZWdlbmQoXCJyaWdodFwiLCBsZWdlbmQgPSBjKFwiT09CXCIsIFwiVGVzdFwiKSwgcGNoID0gMTksIGNvbCA9IGMoXCJyZWRcIiwgXCJibHVlXCIpKVxufSlcbmBgYCJ9 -->
+<pre class="r"><code>oob.err = double(8)
+test.err = double(8)
+for (mtry in 1:8) {
+  fit = randomForest(rings ~ ., data = abalone, subset = train, mtry = mtry, ntree = 500)
+  oob.err[mtry] = fit$mse[500]
+  pred = predict(fit, abalone[-train,])
+  test.err[mtry] = with(abalone[-train,], mean((rings - pred) ^ 2))
+  #cat(mtry, &quot; &quot;)
 }
-&lt;bytecode: 0x11ba46740&gt;
-&lt;environment: 0x11b1c9c30&gt;</code></pre>
-<!-- rnb-output-end -->
+
+renderPlot({
+  matplot(1:mtry, cbind(test.err, oob.err), pch = 19, col = c(&quot;red&quot;, &quot;blue&quot;), type = &quot;b&quot;, ylab = &quot;Mean Squared Error&quot;)
+  legend(&quot;right&quot;, legend = c(&quot;OOB&quot;, &quot;Test&quot;), pch = 19, col = c(&quot;red&quot;, &quot;blue&quot;))
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The out-of-bag MSE here outperforms the subset selection model, while the test MSE remains the same. We even see the MSE increase after 2 random variables.</p>
+</div>
+<div id="section-boosting" class="section level3">
+<h3><strong>Boosting</strong></h3>
+<p>We now use boosting to identify what predictors are most significant and see we can get any improvement on our predictions.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9vc3QuYWJhbG9uZSA9IGdibShyaW5ncyB+IC4sIGRhdGEgPSBhYmFsb25lW3RyYWluLF0sIGRpc3RyaWJ1dGlvbiA9IFwiZ2F1c3NpYW5cIiwgbi50cmVlcyA9IDEwMDAwLCBzaHJpbmthZ2UgPSAwLjAxLCBpbnRlcmFjdGlvbi5kZXB0aCA9IDQpXG5zdW1tYXJ5KGJvb3N0LmFiYWxvbmUpXG5cbmBgYCJ9 -->
+<pre class="r"><code>boost.abalone = gbm(rings ~ ., data = abalone[train,], distribution = &quot;gaussian&quot;, n.trees = 10000, shrinkage = 0.01, interaction.depth = 4)
+summary(boost.abalone)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIHN1bW1hcnkoYm9vc3QuYWJhbG9uZSlcbn0pXG5gYGAifQ== -->
+<pre class="r"><code>renderPlot({
+  summary(boost.abalone)
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Boosting allows us to see what variables have higher influence in the model. Here we see that shellweight and shuckedweight have the most influence. Let’s see how they influence the response variable:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdCh7XG4gIHBsb3QoYm9vc3QuYWJhbG9uZSwgaSA9IFwic2hlbGx3ZWlnaHRcIilcbn0pXG5cbnJlbmRlclBsb3Qoe1xuICBwbG90KGJvb3N0LmFiYWxvbmUsIGkgPSBcInNodWNrZWR3ZWlnaHRcIilcbn0pXG4jcGxvdChib29zdC5hYmFsb25lLCBpID0gXCJzaHVja2Vkd2VpZ2h0XCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>renderPlot({
+  plot(boost.abalone, i = &quot;shellweight&quot;)
+})
+
+renderPlot({
+  plot(boost.abalone, i = &quot;shuckedweight&quot;)
+})
+#plot(boost.abalone, i = &quot;shuckedweight&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>As expected, we see a positive and negative relationship for shellweight and shuckedweight, respectively. Boosting builds lots of smaller trees. Unlike random forests, each new tree in boosting tries to patch up the deficiencies of the current ensemble. Let’s find out how many trees are necessary to optimize our model.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubi50cmVlcyA9IHNlcShmcm9tID0gMTAwLCB0byA9IDEwMDAwLCBieSA9IDEwMClcbnByZWRtYXQgPSBwcmVkaWN0KGJvb3N0LmFiYWxvbmUsIG5ld2RhdGEgPSBhYmFsb25lWy10cmFpbixdLCBuLnRyZWVzID0gbi50cmVlcylcbmRpbShwcmVkbWF0KVxuYmVyciA9IHdpdGgoYWJhbG9uZVstdHJhaW4sXSwgYXBwbHkoKHByZWRtYXQgLSByaW5ncykgXiAyLCAyLCBtZWFuKSlcbnJlbmRlclBsb3Qoe1xuICBwbG90KG4udHJlZXMsIGJlcnIsIHBjaCA9IDE5LCB5bGFiID0gXCJNZWFuIFNxdWFyZWQgRXJyb3JcIiwgeGxhYiA9IFwiIyBUcmVlc1wiLCBtYWluID0gXCJCb29zdGluZyBUZXN0IEVycm9yXCIpXG4gIHBvaW50cyh4ID0gMjAwMCwgeSA9IG1pbihiZXJyKSwgcGNoID0gMTksIGNvbCA9IFwicmVkXCIpXG59KVxuYGBgIn0= -->
+<pre class="r"><code>n.trees = seq(from = 100, to = 10000, by = 100)
+predmat = predict(boost.abalone, newdata = abalone[-train,], n.trees = n.trees)
+dim(predmat)
+berr = with(abalone[-train,], apply((predmat - rings) ^ 2, 2, mean))
+renderPlot({
+  plot(n.trees, berr, pch = 19, ylab = &quot;Mean Squared Error&quot;, xlab = &quot;# Trees&quot;, main = &quot;Boosting Test Error&quot;)
+  points(x = 2000, y = min(berr), pch = 19, col = &quot;red&quot;)
+})</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXRpY3MgRmluYWwgUHJvamVjdDogQWJhbG9uZSIKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IHNob3cKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGNsYXNzKQpyZXF1aXJlKGRhdGEud29ybGQpCnJlcXVpcmUoZ2dwbG90MikKcmVxdWlyZShzaGlueSkKcmVxdWlyZShkcGx5cikKcmVxdWlyZShJU0xSKQpyZXF1aXJlKHZjZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoYm9vdCkKcmVxdWlyZShsZWFwcykKcmVxdWlyZSh0cmVlKQpyZXF1aXJlKHJhbmRvbUZvcmVzdCkKcmVxdWlyZShnYm0pCnBhY2thZ2VWZXJzaW9uKCdwbG90bHknKQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCmBgYAoKIyMgKipTZXR0aW5nIFVwIHRoZSBFbnZpcm9ubWVudCoqICAKIyMjICoqUiBTZXNzaW9uIEluZm8qKgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCiMjIyAqKmRhdGEud29ybGQgUHJvamVjdCBMaW5rKioKaHR0cHM6Ly9kYXRhLndvcmxkL2FuYW55YS1rYXVzaGlrL2YtMTctZWRhLXByb2plY3QtNQoKIyMjICoqQ29ubmVjdGluZyB0byBkYXRhLndvcmxkKioKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnByb2plY3QgPSAiaHR0cHM6Ly9kYXRhLndvcmxkL2FuYW55YS1rYXVzaGlrL2YtMTctZWRhLXByb2plY3QtNSIKYWJhbG9uZSA8LSBkYXRhLndvcmxkOjpxdWVyeSgKICBkYXRhLndvcmxkOjpxcnlfc3FsKCJzZWxlY3QgKiBmcm9tIGFiYWxvbmVfZGF0YSIpLAogIGRhdGFzZXQgPSBwcm9qZWN0CikKYGBgCgojICoqSW50cm9kdWN0aW9uKioKVGhpcyBkb2N1bWVudCBjb250YWlucyBhbiBhbmFseXNpcyBvbiBhYmFsb25lcy4gV2UgdXNlZCBkaWZmZXJlbnQgc3RhdGlzdGljYWwgYW5hbHlzaXMgbWV0aG9kcyB0byBwcmVkaWN0IHRoZSBudW1iZXIgb2YgcmluZ3MgaW4gYW4gYWJhbG9uZSB1c2luZyBkaWZmZXJlbnQgcGh5c2ljYWwgbWVhc3VyZXMuIFRoZSBudW1iZXIgb2YgcmluZ3MgcGx1cyAxLjUgZ2l2ZXMgdGhlIGFnZSBvZiB0aGUgYWJhbG9uZSBpbiB5ZWFycy4gVGhlIGFnZSBvZiBhYmFsb25lIGlzIHVzdWFsbHkgZGV0ZXJtaW5lZCBieSBjdXR0aW5nIHRoZSBzaGVsbCB0aHJvdWdoIHRoZSBjb25lLCBzdGFpbmluZyBpdCwgYW5kIGNvdW50aW5nIHRoZSBudW1iZXIgb2YgcmluZ3MgdGhyb3VnaCBhIG1pY3Jvc2NvcGUgLS0gYSBib3JpbmcgYW5kIHRpbWUtY29uc3VtaW5nIHRhc2suIFdlIGhvcGUgdGhhdCwgdGhyb3VnaCBvdXIgYW5hbHlzaXMsIHdlIGNhbiBzaW1wbGlmeSB0aGlzIHByb2Nlc3MuCgojIyAqKkRhdGFzZXQgLSAgQWJhbG9uZSoqCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpyZW5kZXJEYXRhVGFibGUoIG9wdGlvbnMgPSBsaXN0KHBhZ2VMZW5ndGggPSAxMCksIHsKICBhYmFsb25lCn0pCmBgYAoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBBbmFseXRpY3MgRmluYWwgUHJvamVjdDogQWJhbG9uZSIKYXV0aG9yOiAiQW5hbnlhIEthdXNoaWssIE5hdGFzaGEgUGlyYW5pLCBOb2xhbiBCZW50bGV5LCBhbmQgSnVhbiBSYW1vcyBGdWVudGVzIgpyZXNvdXJjZV9maWxlczoKLSAuUmVudmlyb24Kb3V0cHV0OgogIGh0bWxfbm90ZWJvb2s6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDQKICAgIHRvY19mbG9hdDogeWVzCnJ1bnRpbWU6IHNoaW55Ci0tLQoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGNsYXNzKQpyZXF1aXJlKGRhdGEud29ybGQpCnJlcXVpcmUoZ2dwbG90MikKcmVxdWlyZShzaGlueSkKcmVxdWlyZShkcGx5cikKcmVxdWlyZShJU0xSKQpyZXF1aXJlKHZjZCkKcmVxdWlyZShwbG90bHkpCnJlcXVpcmUoYm9vdCkKcmVxdWlyZShsZWFwcykKcmVxdWlyZSh0cmVlKQpyZXF1aXJlKHJhbmRvbUZvcmVzdCkKcmVxdWlyZShnYm0pCnBhY2thZ2VWZXJzaW9uKCdwbG90bHknKQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpCm9wdGlvbnMoc2hpbnkuc2FuaXRpemUuZXJyb3JzID0gRkFMU0UpCmBgYAoKIyMgKipTZXR0aW5nIFVwIHRoZSBFbnZpcm9ubWVudCoqICAKIyMjICoqUiBTZXNzaW9uIEluZm8qKgpgYGB7ciwgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2Vzc2lvbkluZm8oKQpgYGAKCiMjIyAqKmRhdGEud29ybGQgUHJvamVjdCBMaW5rKioKaHR0cHM6Ly9kYXRhLndvcmxkL2FuYW55YS1rYXVzaGlrL2YtMTctZWRhLXByb2plY3QtNQoKIyMjICoqQ29ubmVjdGluZyB0byBkYXRhLndvcmxkKioKYGBge3IsIGVjaG89VFJVRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KcHJvamVjdCA9ICJodHRwczovL2RhdGEud29ybGQvYW5hbnlhLWthdXNoaWsvZi0xNy1lZGEtcHJvamVjdC01IgphYmFsb25lIDwtIGRhdGEud29ybGQ6OnF1ZXJ5KAogIGRhdGEud29ybGQ6OnFyeV9zcWwoInNlbGVjdCAqIGZyb20gYWJhbG9uZV9kYXRhIiksCiAgZGF0YXNldCA9IHByb2plY3QKKQoKY29sbmFtZXMoYWJhbG9uZSkgPC0gYygic2V4IiwgImxlbmd0aCIsICJkaWFtZXRlciIsICJoZWlnaHQiLCAid2hvbGV3ZWlnaHQiLCAic2h1Y2tlZHdlaWdodCIsICJ2aXNjZXJhd2VpZ2h0IiwgInNoZWxsd2VpZ2h0IiwgInJpbmdzIikKYWJhbG9uZSRzZXggPSBhcy5mYWN0b3IoYWJhbG9uZSRzZXgpCmF0dGFjaChhYmFsb25lKQpgYGAKCiMgKipJbnRyb2R1Y3Rpb24qKgpUaGlzIGRvY3VtZW50IGNvbnRhaW5zIGFuIGFuYWx5c2lzIG9uIGFiYWxvbmVzLiBXZSB1c2VkIGRpZmZlcmVudCBzdGF0aXN0aWNhbCBhbmFseXNpcyBtZXRob2RzIHRvIHByZWRpY3QgdGhlIG51bWJlciBvZiByaW5ncyBpbiBhbiBhYmFsb25lIHVzaW5nIGRpZmZlcmVudCBwaHlzaWNhbCBtZWFzdXJlcy4gVGhlIG51bWJlciBvZiByaW5ncyBwbHVzIDEuNSBnaXZlcyB0aGUgYWdlIG9mIHRoZSBhYmFsb25lIGluIHllYXJzLiBUaGUgYWdlIG9mIGFiYWxvbmUgaXMgdXN1YWxseSBkZXRlcm1pbmVkIGJ5IGN1dHRpbmcgdGhlIHNoZWxsIHRocm91Z2ggdGhlIGNvbmUsIHN0YWluaW5nIGl0LCBhbmQgY291bnRpbmcgdGhlIG51bWJlciBvZiByaW5ncyB0aHJvdWdoIGEgbWljcm9zY29wZSAtLSBhIGJvcmluZyBhbmQgdGltZS1jb25zdW1pbmcgdGFzay4gV2UgaG9wZSB0aGF0LCB0aHJvdWdoIG91ciBhbmFseXNpcywgd2UgY2FuIHNpbXBsaWZ5IHRoaXMgcHJvY2Vzcy4KCiMjICoqRGF0YXNldCAtICBBYmFsb25lKioKYGBge3IsIHdhcm5pbmc9RkFMU0V9CnJlbmRlckRhdGFUYWJsZSggb3B0aW9ucyA9IGxpc3QocGFnZUxlbmd0aCA9IDEwKSwgewogIGFiYWxvbmUKfSkKYGBgCgoKIyAqKlN0YXRpc3RpY2FsIEFuYWx5c2lzKioKIyMgKipNdWx0aS1wcmVkaWN0b3IgTGluZWFyIFJlZ3Jlc3Npb24gVXNpbmcgQ3Jvc3MgVmFsaWRhdGlvbioqCgpMZXQncyBzZWUgaWYgd2UgY2FuIGlkZW50aWZ5IHN0cm9uZyByZWxhdGlvbnNoaXBzIGJldHdlZW4gdGhlIG51bWJlciBvZiByaW5ncyBmb3VuZCBpbiBhbiBhYmFsb25lIGFuZCB0aGUgcmVzdCBvZiBmZWF0dXJlcyBjb2xsZWN0ZWQgb24gdGhpcyBkYXRhc2V0CgpgYGB7ciwgd2FybmluZz1GQUxTRX0KcmVuZGVyUGxvdCh7CiAgcGFpcnMoYWJhbG9uZVsyOjldKQp9KQpgYGAKCldlIGV4Y2x1ZGUgc2V4IGJlY2F1c2UgaXMgYSBxdWFsaXRhdGl2ZSB2YXJpYWJsZS4KV2Ugb2JzZXJ2ZSB0aGF0IHRoZSBudW1iZXIgb2YgcmluZ3MgaGFzIGEgcG9zaXRpdmUgcmVsYXRpb25zaGlwIHdpdGggbW9zdCBvZiB0aGUgcmVzdCBvZiB0aGUgdmFyaWFibGVzIGluY2x1ZGVkIGluIHRoZSB2aXN1YWxpemF0aW9uLiBMZXQncyBleHBsb3JlIHdoZXRoZXIgdGhlc2UgcmVsYXRpb25zaGlwcyBhcmUgc2lnbmlmaWNhbnQgaW4gZGV0ZXJtaW5pbmcgdGhlIG51bWJlciBvZiByaW5ncyBpbiBhbiBhYmFsb25lIGFuZCwgY29uc2VxdWVudGx5LCB0aGVpciBhZ2UuCgpOb3cgdGhhdCB3ZSd2ZSBzZWVuIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiB0aGUgbnVtYmVyIG9mIHJpbmdzIGluIGFuIGFiYWxvbmUgYW5kIHRoZSByZXN0IG9mIHRoZSBmZWF0dXJlcywgbGV0J3Mgc2VlIGlmIHdlIGNhbiBjcmVhdGUgYSBtb2RlbCB0aGF0IGNhbiBhY2N1cmF0ZWx5IHByZWRpY3QgdGhlIG51bWJlciBvZiByaW5ncyBpbiBhbiBhYmFsb25lLCBhbmQgY29uc2VxdWVudGx5LCBpdHMgYWdlLgoKRmlyc3QsIGxldCdzIHVzZSBhbGwgb2YgdGhlIGZlYXR1cmVzOgpgYGB7ciwgd2FybmluZz1GQUxTRX0KbXVsdGlhYmFsb25lID0gbG0ocmluZ3MgfiAuLCBkYXRhID0gYWJhbG9uZSkKc3VtbWFyeShtdWx0aWFiYWxvbmUpCmBgYApBbG1vc3QgYWxsIG91ciBwcmVkaWN0b3JzIGFwcGVhciB0byBiZSBzaWduaWZpY2FudCAobGVuZ3RoIGNvdWxkIGJlIGEgY2FzZSBvZiBtdWx0aWNvbGxpbmVhcml0eSksIGFuZCB3ZSBnZXQgYW4gUi1zcXVhcmVkIG9mIH4wLjU0LgoKV2UgdGhlbiB1c2UgdGhlIGNyb3NzIHZhbGlkYXRpb24gZm9ybXVsYSB0byBhc3Nlc3MgdGhlIGFjY3VyYWN5IG9mIG91ciBtb2RlbDoKYGBge3IsIHdhcm5pbmc9RkFMU0V9Cmxvb2N2ID0gZnVuY3Rpb24oZml0KSB7CiAgaCA9IGxtLmluZmx1ZW5jZShmaXQpJGgKICBtZWFuKChyZXNpZHVhbHMoZml0KSAvICgxIC0gaCkpIF4gMikKfQpsb29jdihtdWx0aWFiYWxvbmUpCmBgYAp3aGljaCB5aWVsZHMgYSB+NC45MSBNU0UgZm9yIHRoZSBtb2RlbC4gTm90IHRvbyBiYWQhIEluIHRoZSBuZXh0IGluc2lnaHRzLCB3ZSB3aWxsIGFuYWx5emUgdGhlIHJlc2lkdWFscyBhbmQgZmlndXJlIG91dCBpZiB3ZSBjYW4gaW1wcm92ZSBvdXIgbW9kZWwgd2l0aCBkaWZmZXJlbnQgbW9kZWwtc2VsZWN0aW9uIG1ldGhvZHMuCgojIyAqKkZvcndhcmQgU3RlcHdpc2UgTW9kZWwgU2VsZWN0aW9uIFVzaW5nIENyb3NzIFZhbGlkYXRpb24qKgoKV2Ugd2lsbCBub3cgdXNlIGEgZm9yd2FyZCBzdGVwd2lzZSBtZXRob2QgdG8gY3JlYXRlIGEgbW9kZWwgdG8gYWNjdXJhdGUgcHJlZGljdCB0aGUgbnVtYmVyIG9mIHJpbmdzIGluIGFiYWxvbmVzLiBXZSB3aWxsIHVzZSBjcm9zcy12YWxpZGF0aW9uIHRvIGdldCBiZXR0ZXIgcmVzdWx0cy4gTW9yZSBzcGVjaWZpY2FsbHksIHdlIHdpbGwgdXNlIHRoZSBrLWZvbGRzIG1ldGhvZCwgd2l0aCBrID0gMTAuIFRoaXMgaXMgdGhlIGxhc3QgY2FsbCBmb3IgdGhlIG1vZGVsIChrID0gMTApOgpgYGB7ciBkZWZpbml0aW9ufQpwcmVkaWN0LnJlZ3N1YnNldHM9IGZ1bmN0aW9uKG9iamVjdCxuZXdkYXRhLGlkLC4uLil7CiAgZm9ybT1hcy5mb3JtdWxhKG9iamVjdCRjYWxsW1syXV0pCiAgbWF0PW1vZGVsLm1hdHJpeChmb3JtLG5ld2RhdGEpCiAgY29lZmk9Y29lZihvYmplY3QsaWQ9aWQpCiAgbWF0WyxuYW1lcyhjb2VmaSldJSolY29lZmkKfQpgYGAKCmBgYHtyfQpzZXQuc2VlZCgxMSkKdHJhaW4gPSBzYW1wbGUoMTpucm93KGFiYWxvbmUpLCAzMDAwKQphYmFsb25lcmVnZml0ID0gcmVnc3Vic2V0cyhyaW5ncyB+IC4sIGRhdGEgPSBhYmFsb25lW3RyYWluLF0sIG52bWF4ID0gOSwgbWV0aG9kID0gImZvcndhcmQiKQp2YWwuZXJyb3JzPXJlcChOQSw5KQp4LnRlc3Q9bW9kZWwubWF0cml4KHJpbmdzfi4sZGF0YT1hYmFsb25lWy10cmFpbixdKSMgbm90aWNlIHRoZSAtaW5kZXghCmZvcihpIGluIDE6OSl7CiAgY29lZmk9Y29lZihhYmFsb25lcmVnZml0LGlkPWkpCiAgcHJlZD14LnRlc3RbLG5hbWVzKGNvZWZpKV0lKiVjb2VmaQogIHZhbC5lcnJvcnNbaV09bWVhbigoYWJhbG9uZSRyaW5nc1stdHJhaW5dLXByZWQpXjIpCn0KcmVuZGVyUGxvdCh7CiAgcGxvdChzcXJ0KHZhbC5lcnJvcnMpLHlsYWI9IlJvb3QgTVNFIix5bGltPWMoMiwgMykscGNoPTE5LHR5cGU9ImIiKQogIHBvaW50cyhzcXJ0KGFiYWxvbmVyZWdmaXQkcnNzWy0xXS8zMDAwKSxjb2w9ImJsdWUiLHBjaD0xOSx0eXBlPSJiIikKICBsZWdlbmQoInRvcHJpZ2h0IixsZWdlbmQ9YygiVHJhaW5pbmciLCJWYWxpZGF0aW9uIiksY29sPWMoImJsdWUiLCJibGFjayIpLHBjaD0xOSkKfSkKYGBgCgpXZSBvYnNlcnZlIHRoYXQgc2hlbGx3ZWlnaHQgd2FzIHVzZWQgYXQgZXZlcnkgc3RlcCBvZiB0aGUgbW9kZWwsIHNvIHdlIGNhbiBjb25jbHVkZSB0aGF0IGlzIG9uZSBvZiB0aGUgbW9zdCBpbXBvcnRhbnQgdmFyaWFibGVzLgoKQWZ0ZXIgY2FsY3VsYXRpbmcgdGhlIFJNU0UgZm9yIGV2ZXJ5IGZvbGQsIHdlIGNhbiBncmFwaCBpdCBhZ2FpbnN0IGVhY2ggb2YgdGhlIHByZWRpY3RvcnMgdXNlZCwgYW5kIGlkZW50aWZ5IGF0IHdoYXQgcG9pbnQgd2Ugbm90aWNlIGRpbWluaXNoaW5nIHJldHVybnM6CgoKIyMgKipCYWdnaW5nLCBSYW5kb20gRm9yZXN0LCBhbmQgQm9vc3RpbmcqKgoKV2UgcHJldmlvdXNseSB1c2VkIGEgc2ltcGxlIG11bHRpIHByZWRpY3RvciByZWdyZXNzaW9uIG1vZGVsIGFuZCBzdWJzZXQgc2VsZWN0aW9uIHRvIHByZWRpY3QgdGhlIG51bWJlciBvZiByaW5ncyBpbiBhbiBhYmFsb25lLiBOb3csIHdlIHVzZSBtb3JlIHNvcGhpc3RpY2F0ZWQgdHJlZS1iYXNlZCBtZXRob2RzIHRvIHNlZSBpZiB3ZSBjYW4gZ2V0IGltcHJvdmVtZW50cyBvbiBvdXIgcHJlZGljdGlvbnMuCgojIyMgKipSYW5kb20gRm9yZXN0IGFuZCBCYWdnaW5nKioKCldlIHN0YXJ0IGJ5IGZpdHRpbmcgYSBzaW1wbGUgcmFuZG9tIGZvcmVzdCBtb2RlbDoKCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpzZXQuc2VlZCgxMDExKQp0cmFpbiA9IHNhbXBsZSgxOm5yb3coYWJhbG9uZSksIDI1MDApCnJmLmFiYWxvbmUgPSByYW5kb21Gb3Jlc3QocmluZ3MgfiAuLCBkYXRhID0gYWJhbG9uZSwgc3Vic2V0ID0gdHJhaW4pCnJmLmFiYWxvbmUKYGBgCgpSYW5kb20gRm9yZXN0IHVzZXMgYSByYW5kb20gbnVtYmVyIG9mIHZhcmlhYmxlcyB3aGVuIGNyZWF0aW5nIHRoZSB0cmVlcywgYW5kIGlzIGFibGUgdG8gZmlndXJlIG91dCB0aGUgTVNFIGJ5IHVzaW5nIG91dC1vZi1iYWcgZXN0aW1hdGVzLiBIZXJlIHdlIHNlZSB0aGF0IHRoZSBNU0UgYWxyZWFkeSBhcyBnb29kIGFzIHRoZSBzdWJzZXQgc2VsZWN0aW9uIG1vZGVsLiBMZXQncyBtb2RpZnkgdGhlIG51bWJlciBvZiByYW5kb20gdmFyaWFibGVzIGZvciByYW5kb20gZm9yZXN0IGFuZCBzZWUgaWYgd2UgY2FuIGltcHJvdmUgaXQuCgpgYGB7ciwgd2FybmluZz1GQUxTRX0Kb29iLmVyciA9IGRvdWJsZSg4KQp0ZXN0LmVyciA9IGRvdWJsZSg4KQpmb3IgKG10cnkgaW4gMTo4KSB7CiAgZml0ID0gcmFuZG9tRm9yZXN0KHJpbmdzIH4gLiwgZGF0YSA9IGFiYWxvbmUsIHN1YnNldCA9IHRyYWluLCBtdHJ5ID0gbXRyeSwgbnRyZWUgPSA1MDApCiAgb29iLmVyclttdHJ5XSA9IGZpdCRtc2VbNTAwXQogIHByZWQgPSBwcmVkaWN0KGZpdCwgYWJhbG9uZVstdHJhaW4sXSkKICB0ZXN0LmVyclttdHJ5XSA9IHdpdGgoYWJhbG9uZVstdHJhaW4sXSwgbWVhbigocmluZ3MgLSBwcmVkKSBeIDIpKQogICNjYXQobXRyeSwgIiAiKQp9CgpyZW5kZXJQbG90KHsKICBtYXRwbG90KDE6bXRyeSwgY2JpbmQodGVzdC5lcnIsIG9vYi5lcnIpLCBwY2ggPSAxOSwgY29sID0gYygicmVkIiwgImJsdWUiKSwgdHlwZSA9ICJiIiwgeWxhYiA9ICJNZWFuIFNxdWFyZWQgRXJyb3IiKQogIGxlZ2VuZCgicmlnaHQiLCBsZWdlbmQgPSBjKCJPT0IiLCAiVGVzdCIpLCBwY2ggPSAxOSwgY29sID0gYygicmVkIiwgImJsdWUiKSkKfSkKYGBgCgpUaGUgb3V0LW9mLWJhZyBNU0UgaGVyZSBvdXRwZXJmb3JtcyB0aGUgc3Vic2V0IHNlbGVjdGlvbiBtb2RlbCwgd2hpbGUgdGhlIHRlc3QgTVNFIHJlbWFpbnMgdGhlIHNhbWUuIFdlIGV2ZW4gc2VlIHRoZSBNU0UgaW5jcmVhc2UgYWZ0ZXIgMiByYW5kb20gdmFyaWFibGVzLgoKIyMjICoqQm9vc3RpbmcqKgoKV2Ugbm93IHVzZSBib29zdGluZyB0byBpZGVudGlmeSB3aGF0IHByZWRpY3RvcnMgYXJlIG1vc3Qgc2lnbmlmaWNhbnQgYW5kIHNlZSB3ZSBjYW4gZ2V0IGFueSBpbXByb3ZlbWVudCBvbiBvdXIgcHJlZGljdGlvbnMuCgpgYGB7ciwgd2FybmluZz1GQUxTRSwgZmlnLnNob3c9J2hpZGUnfQpib29zdC5hYmFsb25lID0gZ2JtKHJpbmdzIH4gLiwgZGF0YSA9IGFiYWxvbmVbdHJhaW4sXSwgZGlzdHJpYnV0aW9uID0gImdhdXNzaWFuIiwgbi50cmVlcyA9IDEwMDAwLCBzaHJpbmthZ2UgPSAwLjAxLCBpbnRlcmFjdGlvbi5kZXB0aCA9IDQpCnN1bW1hcnkoYm9vc3QuYWJhbG9uZSkKCmBgYAoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CnJlbmRlclBsb3QoewogIHN1bW1hcnkoYm9vc3QuYWJhbG9uZSkKfSkKYGBgCgpCb29zdGluZyBhbGxvd3MgdXMgdG8gc2VlIHdoYXQgdmFyaWFibGVzIGhhdmUgaGlnaGVyIGluZmx1ZW5jZSBpbiB0aGUgbW9kZWwuIEhlcmUgd2Ugc2VlIHRoYXQgc2hlbGx3ZWlnaHQgYW5kIHNodWNrZWR3ZWlnaHQgaGF2ZSB0aGUgbW9zdCBpbmZsdWVuY2UuIExldCdzIHNlZSBob3cgdGhleSBpbmZsdWVuY2UgdGhlIHJlc3BvbnNlIHZhcmlhYmxlOgoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CnJlbmRlclBsb3QoewogIHBsb3QoYm9vc3QuYWJhbG9uZSwgaSA9ICJzaGVsbHdlaWdodCIpCn0pCgpyZW5kZXJQbG90KHsKICBwbG90KGJvb3N0LmFiYWxvbmUsIGkgPSAic2h1Y2tlZHdlaWdodCIpCn0pCiNwbG90KGJvb3N0LmFiYWxvbmUsIGkgPSAic2h1Y2tlZHdlaWdodCIpCgpgYGAKCkFzIGV4cGVjdGVkLCB3ZSBzZWUgYSBwb3NpdGl2ZSBhbmQgbmVnYXRpdmUgcmVsYXRpb25zaGlwIGZvciBzaGVsbHdlaWdodCBhbmQgc2h1Y2tlZHdlaWdodCwgcmVzcGVjdGl2ZWx5LiBCb29zdGluZyBidWlsZHMgbG90cyBvZiBzbWFsbGVyIHRyZWVzLiBVbmxpa2UgcmFuZG9tIGZvcmVzdHMsIGVhY2ggbmV3IHRyZWUgaW4gYm9vc3RpbmcgdHJpZXMgdG8gcGF0Y2ggdXAgdGhlIGRlZmljaWVuY2llcyBvZiB0aGUgY3VycmVudCBlbnNlbWJsZS4gTGV0J3MgZmluZCBvdXQgaG93IG1hbnkgdHJlZXMgYXJlIG5lY2Vzc2FyeSB0byBvcHRpbWl6ZSBvdXIgbW9kZWwuCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpuLnRyZWVzID0gc2VxKGZyb20gPSAxMDAsIHRvID0gMTAwMDAsIGJ5ID0gMTAwKQpwcmVkbWF0ID0gcHJlZGljdChib29zdC5hYmFsb25lLCBuZXdkYXRhID0gYWJhbG9uZVstdHJhaW4sXSwgbi50cmVlcyA9IG4udHJlZXMpCmRpbShwcmVkbWF0KQpiZXJyID0gd2l0aChhYmFsb25lWy10cmFpbixdLCBhcHBseSgocHJlZG1hdCAtIHJpbmdzKSBeIDIsIDIsIG1lYW4pKQpyZW5kZXJQbG90KHsKICBwbG90KG4udHJlZXMsIGJlcnIsIHBjaCA9IDE5LCB5bGFiID0gIk1lYW4gU3F1YXJlZCBFcnJvciIsIHhsYWIgPSAiIyBUcmVlcyIsIG1haW4gPSAiQm9vc3RpbmcgVGVzdCBFcnJvciIpCiAgcG9pbnRzKHggPSAyMDAwLCB5ID0gbWluKGJlcnIpLCBwY2ggPSAxOSwgY29sID0gInJlZCIpCn0pCmBgYAoK</div>
 
 
 </div>
