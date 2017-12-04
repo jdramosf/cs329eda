@@ -28,6 +28,7 @@ require(leaps)
 require(tree)
 require(randomForest)
 require(gbm)
+require(glmnet)
 packageVersion('plotly')
 knitr::opts_chunk$set(echo = TRUE)
 options(shiny.sanitize.errors = FALSE)
@@ -138,9 +139,21 @@ table(knn.1,test.def)
 mean(knn.1==test.def)
 ```
 
+This returned a mean of 53.84% indicating that the predictions using one neighbor are only accurate a little over half the time.
+
+Using 5 nearest neighbors increased the mean to 58.88%, and using 20 nearest neighbors increased it to 64.2%. That's almost a 10% increase from using 1 nearest neighbor. Here is our confusion matrix for 20 nearest neighbors:
+
+```{r}
+table(knn.20,test.def)
+mean(knn.20==test.def)
+```
+
+We conclude that using 100 nearest neighbors does not increase accuracy significantly, providing a mean of 65.04%, less than 1% greater than using 20 neighbors.
+
 ## **Forward Stepwise Model Selection Using Cross Validation**
 
-We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10):
+We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10).
+After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:
 ```{r definition}
 predict.regsubsets= function(object,newdata,id,...){
   form=as.formula(object$call[[2]])
@@ -150,10 +163,13 @@ predict.regsubsets= function(object,newdata,id,...){
 }
 ```
 
+We observe that shellweight was used at every step of the model, so we can conclude that is one of the most important variables.
+
 ```{r}
 set.seed(11)
 train = sample(1:nrow(abalone), 3000)
 abaloneregfit = regsubsets(rings ~ ., data = abalone[train,], nvmax = 9, method = "forward")
+summary(abaloneregfit)
 val.errors=rep(NA,9)
 x.test=model.matrix(rings~.,data=abalone[-train,])# notice the -index!
 for(i in 1:9){
@@ -172,6 +188,57 @@ We observe that shellweight was used at every step of the model, so we can concl
 
 After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:
 
+## **Shrinkage**
+### **Ridge Regression**
+Ridge regression minimizes the residual sum of squares by penalizing the sum of squares of the coefficients. As lambda (the tuning parameter) gets higher, the the sum of the squares of the coefficients shrinks to 0. When lambda is 0, the coefficients are unregularized. We can see this in the following graph for 10 coefficients of the abalone data.
+
+```{r, warning = FALSE}
+x=model.matrix(rings~.-1,data=abalone) #construct a matrix of the x'es
+y=abalone$rings
+
+fit.ridge=glmnet(x,y,alpha=0)
+renderPlot({
+  plot(fit.ridge,xvar="lambda",label=TRUE)
+})
+```
+
+Now we apply cross validation on it (the function's default is 10-fold cross validation) that plots the mean squares error against log(lambda).
+
+```{r, warning = FALSE}
+cv.ridge=cv.glmnet(x,y,alpha=0)
+renderPlot({
+  plot(cv.ridge)
+})
+```
+
+Here, the first vertical line represents the minimum, and the second is at 1 SE (standard error) away from the minimum. We see that at the high MSE the coefficients are restricted to small values. We also see that at the beginning of the curve (where the MSE is small), the graph is not very flat. This indicates that we should find a better model for this data.
+
+
+###**Lasso**
+While ridge regression uses all the predictors for the model, the Lasso uses only a subset of the predictors. Lasso minimizes the residual sum of squares by penalizing the the absolute of the coefficients. As lambda (the tuning parameter) gets higher, some of the coefficients are restricted to exactly 0. The top of the graph shows the number of non-zero coefficients as lambda increases.
+
+```{r, warning = FALSE}
+fit.lasso=glmnet(x,y)
+renderPlot({
+  plot(fit.lasso,xvar="lambda",label=TRUE)
+})
+```
+
+We can plot the cross validation for this as well:
+
+```{r, warning = FALSE}
+cv.lasso=cv.glmnet(x,y)
+renderPlot({
+  plot(cv.lasso)
+})
+```
+
+We can see that the minimum error is at the model of size 7, while the error 1 SE away is at the model of size 6.
+
+We can also see the suggested model from the coeff function is the model with 6 coefficients:
+```{r, warning = FALSE}
+coef(cv.lasso)
+```
 
 ## **Bagging, Random Forest, and Boosting**
 
@@ -243,7 +310,7 @@ As expected, we see a positive and negative relationship for shellweight and shu
 ```{r, warning=FALSE}
 n.trees = seq(from = 100, to = 10000, by = 100)
 predmat = predict(boost.abalone, newdata = abalone[-train,], n.trees = n.trees)
-dim(predmat)
+#dim(predmat)
 berr = with(abalone[-train,], apply((predmat - rings) ^ 2, 2, mean))
 renderPlot({
   plot(n.trees, berr, pch = 19, ylab = "Mean Squared Error", xlab = "# Trees", main = "Boosting Test Error")
