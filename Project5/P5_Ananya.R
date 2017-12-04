@@ -6,7 +6,7 @@ require(plotly)
 require(dplyr)
 require(glmnet)
 require(e1071)
-require
+
 
 project <- "https://data.world/ananya-kaushik/f-17-eda-project-5"
 data.world::set_config(cfg_env("DW_API"))
@@ -52,18 +52,20 @@ ringbuckets2 = cut(abalone$rings, c(1, 10, 30), right = FALSE, labels = c("< 10"
 #attach(abalone)
 df = data.frame(output = as.factor(ringbuckets2), shellweight = abalone$shellweight, length = abalone$length)
 plot_ly(data = df, x=~length, y=~shellweight)
-svmfit=svm(output~.,df,kernel="linear",cost=10,scale=FALSE)
+svmfit=svm(output~.,df,kernel="linear",cost=1000,scale=FALSE)
 print(svmfit)
 plot(svmfit, df, shellweight ~ length)
 # tune.out <- tune(svm, output ~., data=df, kernel='linear',
-#                  ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
+#                   ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
 # summary(tune.out)
 
 # svmfit2=svm(output~.,df,kernel="polynomial",cost=10,scale=FALSE)
 # print(svmfit2)
 # plot(svmfit2, df, shellweight ~ length)
 
-svmfit3=svm(output~.,df,kernel="radial",cost=10,scale=FALSE)
+svmfit3=svm(output~.,df,kernel="radial",cost=1000,scale=FALSE)
 print(svmfit3)
 plot(svmfit3, df, shellweight ~ length)
-
+# tune.out <- tune(svm, output ~., data=df, kernel='radial',
+#                  ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
+# summary(tune.out)

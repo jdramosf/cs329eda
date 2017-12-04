@@ -21,6 +21,7 @@ require(ggplot2)
 require(shiny)
 require(dplyr)
 require(ISLR)
+require(MASS)
 require(vcd)
 require(plotly)
 require(boot)
@@ -29,6 +30,7 @@ require(tree)
 require(randomForest)
 require(gbm)
 require(glmnet)
+require(e1071)
 packageVersion('plotly')
 knitr::opts_chunk$set(echo = TRUE)
 options(shiny.sanitize.errors = FALSE)
@@ -68,9 +70,10 @@ renderDataTable( options = list(pageLength = 10), {
 
 
 # **Statistical Analysis - Supervised**
-## **Multi-predictor Linear Regression Using Cross Validation**
+## **[Multi-predictor Linear Regression Using Cross Validation](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/126d3136-f451-49a5-a179-85af71452de7)** 
 
-Let's see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset
+Let's see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset.
+[Pairs Plot](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/1c391d4a-1022-45b0-9abf-962bd4253737)
 
 ```{r, warning=FALSE}
 renderPlot({
@@ -100,7 +103,63 @@ loocv(multiabalone)
 ```
 which yields a ~4.91 MSE for the model. Not too bad! In the next insights, we will analyze the residuals and figure out if we can improve our model with different model-selection methods.
 
-## **KNN**
+## **Classification**
+
+###**[LDA](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/5ffe1d7d-d8b7-4750-8d8e-ca272e3a0e0c)**
+
+Here we have shellweight predicting on the count of rings bucketed into groups. The higher the count gets, the fewer data points there are, implying the old game ones are rare. Interestingly though is the decreasing weight, implying that significantly older abalone downsize.
+
+```{r, warning = FALSE}
+catabalone <- abalone
+ringbuckets = cut(abalone$rings, c(1, 5, 10, 15, 30), right = FALSE, labels = c("1 - 5", "6 - 10", "11 - 15", "> 15"))
+
+#summary(ringbuckets)
+
+catabalone$wholeweight <- as.factor(wholeweight)
+catabalone$rings <- ringbuckets
+attach(catabalone)
+
+summary(as.factor(sex))
+
+lda.fit = lda(rings ~ shellweight, data = catabalone)
+lda.pred = predict(lda.fit)
+df1 = data.frame(lda.pred)
+
+#summary(df1)
+renderPlot({
+  ggplot(df1) + geom_histogram(mapping = aes(x=LD1)) + facet_wrap(~ class)
+})
+```
+
+With a mean of .6696, LDA is a fairly good predictor of count of abalone rings. The extreme sides are fairly inaccurate, with low and high number of rings being inaccurate. While this is not ideal, the useful part of the data for commercial purposes is focused in the middle, so this is an acceptable mistake.
+[Confusion Matrix:](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/3240e060-4535-4480-8bdf-f1c0f597fb32)
+
+```{r, warning = FALSE}
+table(lda.pred$class, catabalone$rings)
+mean(lda.pred$class==catabalone$rings)
+```
+###**[QDA](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/a4eeec4e-42a5-4338-96cc-f7f0d2ba539b)**
+
+This graph is the number of rings predicted solely off of shuckedweight (the weight of the meat).
+
+```{r, warning = FALSE}
+qda.fit = qda(rings ~ shuckedweight, data = catabalone)
+qda.pred = predict(qda.fit)
+df2 = data.frame(qda.pred)
+
+#summary(df2)
+
+renderPlot({
+  ggplot(data=df2, aes(catabalone$rings)) + geom_bar()
+})
+
+table(qda.pred$class, catabalone$rings)
+mean(qda.pred$class==catabalone$rings)
+```
+
+With a mean of .6662, LDA and QDA perform very similarly in this case. Again, the edge cases of 1 - 5 and > 15 are fairly inaccurate, but this is inconsequential to the purpose of harvesting abalone.
+
+## **[KNN](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/bc6d8565-d224-4d64-b38e-788e4e065cdc)**
 
 After exploring the data, we wanted to use KNN classification to predict on an abalone's number of rings. We bucketed these numbers into four categories: 0 to 5, 5 to 10, 10 to 15, and greater than 15. These buckets reflect a somewhat normal distribution, but with a slight skew to the left. The buckets are represented below:
 
@@ -150,7 +209,7 @@ mean(knn.20==test.def)
 
 We conclude that using 100 nearest neighbors does not increase accuracy significantly, providing a mean of 65.04%, less than 1% greater than using 20 neighbors.
 
-## **Forward Stepwise Model Selection Using Cross Validation**
+## **[Forward Stepwise Model Selection Using Cross Validation](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/d2e026a7-a104-4592-be49-dd4e06d569c9)**
 
 We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10).
 After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:
@@ -189,7 +248,7 @@ We observe that shellweight was used at every step of the model, so we can concl
 After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:
 
 ## **Shrinkage**
-### **Ridge Regression**
+### **[Ridge Regression](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/8607a4d4-6072-4971-9405-ae3fbbaf0315)**
 Ridge regression minimizes the residual sum of squares by penalizing the sum of squares of the coefficients. As lambda (the tuning parameter) gets higher, the the sum of the squares of the coefficients shrinks to 0. When lambda is 0, the coefficients are unregularized. We can see this in the following graph for 10 coefficients of the abalone data.
 
 ```{r, warning = FALSE}
@@ -214,7 +273,7 @@ renderPlot({
 Here, the first vertical line represents the minimum, and the second is at 1 SE (standard error) away from the minimum. We see that at the high MSE the coefficients are restricted to small values. We also see that at the beginning of the curve (where the MSE is small), the graph is not very flat. This indicates that we should find a better model for this data.
 
 
-###**Lasso**
+###**[Lasso](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/5791694b-99fa-4c48-a976-6f9b06f56b5d)**
 While ridge regression uses all the predictors for the model, the Lasso uses only a subset of the predictors. Lasso minimizes the residual sum of squares by penalizing the the absolute of the coefficients. As lambda (the tuning parameter) gets higher, some of the coefficients are restricted to exactly 0. The top of the graph shows the number of non-zero coefficients as lambda increases.
 
 ```{r, warning = FALSE}
@@ -240,7 +299,45 @@ We can also see the suggested model from the coeff function is the model with 6 
 coef(cv.lasso)
 ```
 
-## **Bagging, Random Forest, and Boosting**
+## **Support Vector Machines**
+
+###**[Linear SVM](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/39509c58-a88e-4c90-9ee6-da20fa891cbc)**
+
+We use the two variables shellweight and length to see if we can predict the number of rings (and in turn, the age group) of the abalone. We bucketed the rings into to groups: "<=10" and ">10". Then we fit a linear SVM and plot the fit.
+
+```{r, warning=FALSE}
+ringbuckets2 = cut(abalone$rings, c(1, 10, 30), right = FALSE, labels = c("< 10", "> 10"))
+#attach(abalone)
+svmdf = data.frame(output = as.factor(ringbuckets2), shellweight = abalone$shellweight, length = abalone$length)
+#plot_ly(data = svmdf, x=~length, y=~shellweight)
+svmfit=svm(output~.,svmdf,kernel="linear",cost=1000,scale=FALSE)
+print(svmfit)
+
+renderPlot({
+  plot(svmfit, svmdf, shellweight ~ length)
+})
+
+```
+
+We can see a clear decision boundary based on the separating hyperplane that the svm function choses with the biggest distance between the classes. However, we see that there are 2238 support vectors, or points that are on the wrong side of the boundary or too close to the boundary. So we will see if we can find a better predictor of the number of rings.
+
+###**[Non-linear SVM](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/6af03fa6-7c2b-43d4-8693-5d6e805506bf)**
+
+We use the same two variables used in the previous SVM model to see if we can predict the number of rings (and in turn, the age group) of the abalone. We have the rings bucketed into groups: "<=10" and ">10". Now, we fit a non-linear SVM and plot the fit to see if it performs better than the linear SVM.
+
+```{r, warning=FALSE}
+svmfit3=svm(output~.,svmdf,kernel="radial",cost=1000,scale=FALSE)
+print(svmfit3)
+renderPlot({
+  plot(svmfit3, svmdf, shellweight ~ length)
+})
+
+```
+
+Since the kernel was set to "radial", the svm function fits a non-linear decision boundary, that we can clearly see in the plot above. We do, however, see that there are 2186 support vectors, which is marginally better than the linear SVM's 2238. So there are still a lot of points that are on the wrong side of the boundary or too close to the boundary.
+
+
+## **[Bagging, Random Forest, and Boosting](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/924247fb-8d82-46d4-986b-768bba723196)**
 
 We previously used a simple multi predictor regression model and subset selection to predict the number of rings in an abalone. Now, we use more sophisticated tree-based methods to see if we can get improvements on our predictions.
 
@@ -318,8 +415,94 @@ renderPlot({
 })
 ```
 
-```{r, warning=FALSE}
+# **Statistical Analysis - Unsupervised**
+## **Clustering**
+
+### **[K-Means Clustering](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/6121e5be-3b37-4246-aacb-9b9750658f0a)**
+
+We wanted to test out some unsupervised learning techniques to look for patterns in the data, so we decided to use 'diameter' and 'shellweight' in the k-means clustering algorithm, with k=4. The algorithm returned 4 clusters of sizes 1538, 1253, 793, 593, as well as the following cluster means and the sum of squares grouped by cluster:
+
+```{r, warning = FALSE}
+ringbuckets = cut(abalone$rings, c(1, 5, 10, 15, 30), right = FALSE, labels = c("1 - 5", "6 - 10", "11 - 15", "> 15"))
+ab.km = cbind(diameter, rings)
+#ab.km
+
+set.seed(101)
+abaloneCluster <- kmeans(ab.km, 4, nstart=20)
+abaloneCluster
+```
+
+We also created a visual representation of the clustering:
+
+```{r, warning = FALSE}
+abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
 renderPlot({
-  summary(boost.abalone)
+  ggplot(abalone, aes(x=diameter, y=rings, color = abaloneCluster$cluster)) + geom_point()
 })
 ```
+
+From this we observe that each of the clusters has a mean with increasing diameter and shellweight. We then wanted to compare this to our graph of diameter and shellweight, grouped by ringbuckets, which is shown here:
+
+```{r, warning = FALSE}
+abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
+renderPlot({
+  ggplot(abalone, aes(x=diameter, y=rings, color= ringbuckets)) + geom_point()
+})
+```
+
+The results were as follows:
+
+```{r, warning = FALSE}
+table(abaloneCluster$cluster, ringbuckets)
+```
+
+We see that, while about half the data falls into the 6-10 ringbuckets category (2022 instances), only 1253 points fall into cluster two. Meanwhile, there are 1538 points in cluster 1, but only 74 instances of the data contain between 1 and 5 rings. These kinds of results come with the realm of unsupervised learning - while we may have found clusters in the data, they won't always mean something important.
+
+
+### **[Heirarchical Clustering](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/9d3e8131-06b0-4e4f-9552-48dcedcbe9bc)**
+
+Now let's try another form of unsupervised learning - hierarchical clusters. We want to see how these results differ from the kmeans clusters. Our hclust call using the mean linkage method returned the following cluster dendogram (only a subset of the data was used to generate this dendogram, as it was illegible otherwise, but the remainder of the comparison uses the entire dataset):
+
+```{r, warning = FALSE}
+ab.km.subset <- ab.km[1:400]
+
+clusters <- hclust(dist(ab.km), method='average')
+renderPlot({
+  plot(clusters)
+})
+```
+
+From this we can see that the best choices for number of clusters are either 4 or 5. We chose to cut the tree of at five clusters. Plotting this returned the following:
+
+```{r, warning = FALSE}
+clusterCut <- cutree(clusters, 5)
+clusterCut
+renderPlot({
+  plot(clusterCut)
+})
+```
+
+We also wanted to compare these clusters to the ringbuckets variable to see how well the data was clustered, so we created a confusion matrix comparing the clusters to the number classified in each category:
+
+```{r, warning = FALSE}
+table(abaloneCluster$cluster, ringbuckets)
+```
+
+We observed that most of the data was classified into cluster 2, with a little less than one tenth of the data classified in cluster 1, and the remainder sprinkled among clusters 3, 4, and 5.
+
+Finally, we wanted to create a visual representation of the clustering returned by the hierarchical clustering algorithm. We created a geom_point plot:
+
+```{r, warning=FALSE}
+
+renderPlot({
+  
+ggplot(abalone, aes(diameter, rings, color = ringbuckets)) + 
+  geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
+  scale_color_manual(values = c('black', 'red', 'green', 'blue'))
+})
+
+```
+
+The points where the inner color does not match the outer color are the ones that were classified incorrectly. We observe that there was a good distribution of clusters that were classified correctly. This may be due to the fact that the number of rings is increasing as diameter increases, so the buckets should be forming clusters in the data.
+
+
