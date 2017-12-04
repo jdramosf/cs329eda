@@ -424,11 +424,12 @@ We wanted to test out some unsupervised learning techniques to look for patterns
 
 ```{r, warning = FALSE}
 ringbuckets = cut(abalone$rings, c(1, 5, 10, 15, 30), right = FALSE, labels = c("1 - 5", "6 - 10", "11 - 15", "> 15"))
-ab.km = cbind(diameter, rings)
+ab.km = cbind(diameter, shellweight)
 #ab.km
 
 set.seed(101)
 abaloneCluster <- kmeans(ab.km, 4, nstart=20)
+
 abaloneCluster
 ```
 
@@ -437,16 +438,16 @@ We also created a visual representation of the clustering:
 ```{r, warning = FALSE}
 abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
 renderPlot({
-  ggplot(abalone, aes(x=diameter, y=rings, color = abaloneCluster$cluster)) + geom_point()
+  ggplot(abalone, aes(x=diameter, y=shellweight, color = abaloneCluster$cluster)) + geom_point()
 })
 ```
 
 From this we observe that each of the clusters has a mean with increasing diameter and shellweight. We then wanted to compare this to our graph of diameter and shellweight, grouped by ringbuckets, which is shown here:
 
 ```{r, warning = FALSE}
-abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
+#abaloneCluster$cluster <- as.factor(abaloneCluster$cluster)
 renderPlot({
-  ggplot(abalone, aes(x=diameter, y=rings, color= ringbuckets)) + geom_point()
+  ggplot(abalone, aes(x=diameter, y=shellweight, color= ringbuckets)) + geom_point()
 })
 ```
 
@@ -464,6 +465,7 @@ We see that, while about half the data falls into the 6-10 ringbuckets category 
 Now let's try another form of unsupervised learning - hierarchical clusters. We want to see how these results differ from the kmeans clusters. Our hclust call using the mean linkage method returned the following cluster dendogram (only a subset of the data was used to generate this dendogram, as it was illegible otherwise, but the remainder of the comparison uses the entire dataset):
 
 ```{r, warning = FALSE}
+set.seed(101)
 ab.km.subset <- ab.km[1:400]
 
 clusters <- hclust(dist(ab.km), method='average')
@@ -476,7 +478,7 @@ From this we can see that the best choices for number of clusters are either 4 o
 
 ```{r, warning = FALSE}
 clusterCut <- cutree(clusters, 5)
-clusterCut
+#clusterCut
 renderPlot({
   plot(clusterCut)
 })
@@ -496,13 +498,46 @@ Finally, we wanted to create a visual representation of the clustering returned 
 
 renderPlot({
   
-ggplot(abalone, aes(diameter, rings, color = ringbuckets)) + 
+ggplot(abalone, aes(diameter, shellweight, color = ringbuckets)) + 
   geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
   scale_color_manual(values = c('black', 'red', 'green', 'blue'))
 })
 
 ```
 
-The points where the inner color does not match the outer color are the ones that were classified incorrectly. We observe that there was a good distribution of clusters that were classified correctly. This may be due to the fact that the number of rings is increasing as diameter increases, so the buckets should be forming clusters in the data.
+The points where the inner color does not match the outer color are the ones that were classified incorrectly. We observe that there was a good distribution of clusters that were classified correctly - particularly in cluster. This may be due to the fact that the number of rings is increasing as diameter and shellweight increase.
 
+## **[Principle Component Variables](https://data.world/ananya-kaushik/f-17-eda-project-5/insights/a9277472-afad-4e9c-a5ea-eff368090af1) **
+
+We wanted to find the vectors that explain the most variability in the dataset. Through this unsupervised learning technique, we may be able to minimize loss of information. We applied PCA to the 7 continuous variables. Our call returned the following standard deviations and principal components:
+  
+```{r, warning = FALSE}
+ab.continuous = cbind(length, diameter, height, wholeweight, shuckedweight, visceraweight, shellweight)
+#ab.continuous = cbind(as.numeric(as.factor(length)), as.numeric(as.factor(diameter)), as.numeric(as.factor(height)), as.numeric(as.factor(wholeweight)), as.numeric(as.factor(shuckedweight)), as.numeric(as.factor(visceraweight)), as.numeric(as.factor(shellweight)))
+#dfab <- data.frame(list(length, diameter, height, wholeweight, shuckedweight, visceraweight, shellweight))
+dfab <- data.frame(length = abalone$length, diameter = abalone$diameter, height = abalone$height, wholeweight = abalone$wholeweight, shuckedweight = abalone$shuckedweight, visceraweight = abalone$visceraweight, shellweight = abalone$shellweight)
+ab.pca <- prcomp(dfab, center = TRUE, scale. = TRUE)
+print(ab.pca)
+```
+
+We observe that the first principal component explains a majority of the variability in the data for most of these variables. We also wanted to visualize and summarize the results of our analysis.
+
+```{r, warning=FALSE}
+renderPlot({
+  plot(ab.pca, type="l")
+})
+summary(ab.pca)
+```
+
+The results of the plot further support our conclusion that a large chunk of the variability in the data is explained by the first principal component. The summary method describes the importance of each of the principal components in terms of their standard deviations and the proportion of variance explained. We observe that almost 91% of the variance is explained by PC1.
+
+Finally, we wanted to create a biplot to visually represent our findings
+
+```{r, warning=FALSE}
+renderPlot({
+  biplot(ab.pca)
+})
+```
+
+This biplot shows that most of these variables are clustered in the bottom left, and are very similar in terms of their variability.
 
