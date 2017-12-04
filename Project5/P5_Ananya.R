@@ -5,6 +5,8 @@ require(data.world)
 require(plotly)
 require(dplyr)
 require(glmnet)
+require(e1071)
+require
 
 project <- "https://data.world/ananya-kaushik/f-17-eda-project-5"
 data.world::set_config(cfg_env("DW_API"))
@@ -15,12 +17,12 @@ abalone <- data.world::query(
 attach(abalone)
 summary(abalone)
 colnames(abalone) <- c("sex", "length", "diameter", "height", "wholeweight", "shuckedweight", "visceraweight", "shellweight", "rings")
-#plot_ly(data=abalone, x = ~rings, y = ~height)
 
 
 #Exploration: removing outliers
 abalone2 <- abalone%>%dplyr::filter(height<=.3)
 ggplot(abalone2, aes(x=rings,y=height))+geom_jitter()
+#plot_ly(data=abalone, x = ~rings, y = ~height)
 
 
 #Ridge Regression
@@ -41,3 +43,33 @@ plot(fit.lasso,xvar="lambda",label=TRUE) #plot how lambda changes with the coffe
 cv.lasso=cv.glmnet(x,y) #cross validation. default  is 100 lambdas, so 100 models
 plot(cv.lasso) #mean squared error of all 100 models
 coef(cv.lasso)
+
+
+#Support Vector Machines
+ringbuckets2 = cut(abalone$rings, c(1, 10, 30), right = FALSE, labels = c("< 10", "> 10"))
+attach(abalone)
+df = data.frame(output = as.factor(ringbuckets2), shellweight = abalone$shellweight, length = abalone$length)
+plot_ly(data = df, x=~length, y=~shellweight)
+svmfit=svm(output~.,df,kernel="linear",cost=100,scale=FALSE)
+print(svmfit)
+plot(svmfit, df, shellweight ~ length)
+
+tune.out <- tune(svm, output ~., data=df, kernel='linear',
+                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
+summary(tune.out)
+
+svmfit2=svm(output~.,df,kernel="polynomial",cost=10,scale=FALSE)
+print(svmfit2)
+plot(svmfit2, df, shellweight ~ length)
+
+tune.out2 <- tune(svm, output ~., data=df, kernel='polynomial',
+                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100,1000)))
+summary(tune.out2)
+
+svmfit3=svm(output~.,df,kernel="radial",cost=10,scale=FALSE)
+print(svmfit3)
+plot(svmfit3, df, shellweight ~ length)
+
+tune.out3 <- tune(svm, output ~., data=df, kernel='radial',
+                 ranges=list(cost=c(0.001,0.01,0.1,1,5,10,100)))
+summary(tune.out3)

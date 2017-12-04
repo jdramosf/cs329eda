@@ -65,8 +65,8 @@ renderDataTable( options = list(pageLength = 10), {
 ```
 
 
-## **Statistical Analysis**
-### **Multi-predictor Linear Regression Using Cross Validation**
+# **Statistical Analysis**
+## **Multi-predictor Linear Regression Using Cross Validation**
 
 Let's see if we can identify strong relationships between the number of rings found in an abalone and the rest of features collected on this dataset
 
@@ -98,7 +98,7 @@ loocv(multiabalone)
 ```
 which yields a ~4.91 MSE for the model. Not too bad! In the next insights, we will analyze the residuals and figure out if we can improve our model with different model-selection methods.
 
-### **Forward Stepwise Model Selection Using Cross Validation**
+## **Forward Stepwise Model Selection Using Cross Validation**
 
 We will now use a forward stepwise method to create a model to accurate predict the number of rings in abalones. We will use cross-validation to get better results. More specifically, we will use the k-folds method, with k = 10. This is the last call for the model (k = 10):
 ```{r definition}
@@ -131,3 +131,83 @@ renderPlot({
 We observe that shellweight was used at every step of the model, so we can conclude that is one of the most important variables.
 
 After calculating the RMSE for every fold, we can graph it against each of the predictors used, and identify at what point we notice diminishing returns:
+
+
+## **Bagging, Random Forest, and Boosting**
+
+We previously used a simple multi predictor regression model and subset selection to predict the number of rings in an abalone. Now, we use more sophisticated tree-based methods to see if we can get improvements on our predictions.
+
+### **Random Forest and Bagging**
+
+We start by fitting a simple random forest model:
+
+```{r, warning=FALSE}
+set.seed(1011)
+train = sample(1:nrow(abalone), 2500)
+rf.abalone = randomForest(rings ~ ., data = abalone, subset = train)
+rf.abalone
+```
+
+Random Forest uses a random number of variables when creating the trees, and is able to figure out the MSE by using out-of-bag estimates. Here we see that the MSE already as good as the subset selection model. Let's modify the number of random variables for random forest and see if we can improve it.
+
+```{r, warning=FALSE}
+oob.err = double(8)
+test.err = double(8)
+for (mtry in 1:8) {
+  fit = randomForest(rings ~ ., data = abalone, subset = train, mtry = mtry, ntree = 500)
+  oob.err[mtry] = fit$mse[500]
+  pred = predict(fit, abalone[-train,])
+  test.err[mtry] = with(abalone[-train,], mean((rings - pred) ^ 2))
+  #cat(mtry, " ")
+}
+
+renderPlot({
+  matplot(1:mtry, cbind(test.err, oob.err), pch = 19, col = c("red", "blue"), type = "b", ylab = "Mean Squared Error")
+  legend("right", legend = c("OOB", "Test"), pch = 19, col = c("red", "blue"))
+})
+```
+
+The out-of-bag MSE here outperforms the subset selection model, while the test MSE remains the same. We even see the MSE increase after 2 random variables.
+
+### **Boosting**
+
+We now use boosting to identify what predictors are most significant and see we can get any improvement on our predictions.
+
+```{r, warning=FALSE, fig.show='hide'}
+boost.abalone = gbm(rings ~ ., data = abalone[train,], distribution = "gaussian", n.trees = 10000, shrinkage = 0.01, interaction.depth = 4)
+summary(boost.abalone)
+
+```
+
+```{r, warning=FALSE}
+renderPlot({
+  summary(boost.abalone)
+})
+```
+
+Boosting allows us to see what variables have higher influence in the model. Here we see that shellweight and shuckedweight have the most influence. Let's see how they influence the response variable:
+
+```{r, warning=FALSE}
+renderPlot({
+  plot(boost.abalone, i = "shellweight")
+})
+
+renderPlot({
+  plot(boost.abalone, i = "shuckedweight")
+})
+#plot(boost.abalone, i = "shuckedweight")
+
+```
+
+As expected, we see a positive and negative relationship for shellweight and shuckedweight, respectively. Boosting builds lots of smaller trees. Unlike random forests, each new tree in boosting tries to patch up the deficiencies of the current ensemble. Let's find out how many trees are necessary to optimize our model.
+```{r, warning=FALSE}
+n.trees = seq(from = 100, to = 10000, by = 100)
+predmat = predict(boost.abalone, newdata = abalone[-train,], n.trees = n.trees)
+dim(predmat)
+berr = with(abalone[-train,], apply((predmat - rings) ^ 2, 2, mean))
+renderPlot({
+  plot(n.trees, berr, pch = 19, ylab = "Mean Squared Error", xlab = "# Trees", main = "Boosting Test Error")
+  points(x = 2000, y = min(berr), pch = 19, col = "red")
+})
+```
+
